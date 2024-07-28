@@ -161,17 +161,17 @@ const experiences = [{
 ];
 
 const testimonials = [{
-    testimonial: "I thought it was impossible to make a website as beautiful as our product, but Rick proved me wrong.",
+    testimonial: "I thought it was impossible to make a website as beautiful as our product, but Adnan proved me wrong.",
     name: "Sara Lee",
     image: "https://randomuser.me/api/portraits/women/4.jpg",
   },
   {
-    testimonial: "I've never met a web developer who truly cares about their clients' success like Rick does.",
+    testimonial: "I've never met a web developer who truly cares about their clients' success like Adnan does.",
     name: "Chris Brown",
     image: "https://randomuser.me/api/portraits/men/5.jpg",
   },
   {
-    testimonial: "After Rick optimized our website, our traffic increased by 50%. We can't thank them enough!",
+    testimonial: "After Adnan optimized our website, our traffic increased by 50%. We can't thank them enough!",
     name: "Lisa Wang",
     image: "https://randomuser.me/api/portraits/women/6.jpg",
   },
