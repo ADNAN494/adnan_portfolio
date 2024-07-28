@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { styles } from "../styles";
 import { ComputersCanvas } from "./canvas";
 import { useTypewriter, Cursor } from "react-simple-typewriter";
-
+import technology from "../assets/technology.jpg"
 const Hero = () => {
   const [text] = useTypewriter({
     words: ['Adnan Yousaf', 'Web Designer', 'Web Developer'],
@@ -34,7 +34,9 @@ const Hero = () => {
       <span className="max-[640px]:hidden">
         <ComputersCanvas />
       </span>
-
+      <div className="max-[640px]:flex hidden absolute top-80 h-[50%]">
+        <img src={technology} alt="technology-img" className="w-full h-auto bg-cover" />
+      </div>
     </section>
   );
 };

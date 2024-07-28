@@ -2,7 +2,9 @@ import React from "react";
 import { BallCanvas } from "./canvas";
 import { SectionWrapper } from "../hoc";
 import { technologies } from "../constants";
-
+import { styles } from "../styles";
+import { motion } from "framer-motion";
+import { textVariant } from "../utils/motion";
 const Tech = () => {
   return (
     <>
@@ -14,12 +16,25 @@ const Tech = () => {
           </div>
         ))}
       </div>
-      
+
       {/* This div will be shown only on mobile devices */}
-      <div className='max-[640px]:flex hidden'>
-        {/* Add content here for mobile devices */}
-        <p>This is content for mobile devices</p>
+      <div className="max-[767px]:flex flex-col hidden">
+        <p className={`${styles.heroSubText} text-center text-white-100`}>
+          Latest technologies
+        </p>
+        <h2 className={`${styles.sectionHeadText} text-center`}>
+          My Technology Stack
+        </h2>
+        <div className="grid gap-y-4 max-[767px]:grid-cols-4 max-[640px]:grid-cols-3 max-[480px]:grid-cols-2 justify-items-center items-center pt-8">
+          {technologies.map((technology) => (
+            <div key={technology.name} className="w-20 h-20">
+              <img src={technology.icon} alt="" className="h-full w-full bg-cover" />
+            </div>
+          ))}
+        </div>
+
       </div>
+
     </>
   );
 };

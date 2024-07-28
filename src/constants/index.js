@@ -116,10 +116,6 @@ const technologies = [{
     icon: mysql,
   },
   {
-    name: "Mssql",
-    icon: mssql,
-  },
-  {
     name: "git",
     icon: git,
   },
