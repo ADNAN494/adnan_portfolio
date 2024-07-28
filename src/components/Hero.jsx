@@ -4,11 +4,11 @@ import { ComputersCanvas } from "./canvas";
 import { useTypewriter, Cursor } from "react-simple-typewriter";
 
 const Hero = () => {
-  const  [text]  = useTypewriter({
+  const [text] = useTypewriter({
     words: ['Adnan Yousaf', 'Web Designer', 'Web Developer'],
-    loop:{},
-    typeSpeed:120,
-    deleteSpeed:80
+    loop: {},
+    typeSpeed: 120,
+    deleteSpeed: 80
   })
   return (
     <section className={`relative w-full h-screen mx-auto`}>
@@ -31,7 +31,9 @@ const Hero = () => {
         </div>
       </div>
 
-      <ComputersCanvas />
+      <span className="max-[640px]:hidden">
+        <ComputersCanvas />
+      </span>
 
     </section>
   );
