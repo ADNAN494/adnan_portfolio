@@ -26,7 +26,9 @@ import shopify from "./company/shopify.png";
 import starbucks from "./company/starbucks.png";
 import tesla from "./company/tesla.png";
 import ikonic from "./company/ikonic.png";
+import pak_det from "./company/pak_det.jfif";
 import sys from "./company/sysreforms.png";
+import  free_lan from "./company/free-lan.png";
 
 import carrent from "./carrent.png";
 import pvs from "./pvs.png";
@@ -39,6 +41,8 @@ import boostrap from "./tech/boostrap.png";
 import mui from "./tech/mui.png"
 import mssql from "./tech/mssql.png"
 import mysql from "./tech/mysql.png"
+import drap from "./drap.png";
+import tech_pedia from "./tech_pedia.png";
 export {
   logo,
   backend,
@@ -78,5 +82,9 @@ export {
   immi,
   sys1,
   logo_1,
-  undp
+  undp,
+  pak_det,
+  free_lan,
+  drap,
+  tech_pedia
 };

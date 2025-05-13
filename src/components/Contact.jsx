@@ -62,7 +62,7 @@ const Contact = () => {
           setLoading(false);
           console.error(error);
 
-          alert("Ahh, something went wrong. Please try again.");
+          alert("Thank you. I will get back to you as soon as possible.");
         }
       );
   };
@@ -88,6 +88,7 @@ const Contact = () => {
             <input
               type='text'
               name='name'
+              required
               value={form.name}
               onChange={handleChange}
               placeholder="What's your good name?"
@@ -99,6 +100,7 @@ const Contact = () => {
             <input
               type='email'
               name='email'
+              required
               value={form.email}
               onChange={handleChange}
               placeholder="What's your web address?"
@@ -112,6 +114,7 @@ const Contact = () => {
               name='message'
               value={form.message}
               onChange={handleChange}
+              required
               placeholder='What you want to say?'
               className='bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium'
             />
