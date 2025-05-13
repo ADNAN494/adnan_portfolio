@@ -24,7 +24,6 @@ const Computers = ({ isMobile }) => {
       if (child.isMesh) {
         const { geometry } = child;
         if (geometry) {
-          console.log('Geometry attributes:', geometry.attributes);
           try {
             geometry.computeBoundingSphere();
           } catch (error) {
