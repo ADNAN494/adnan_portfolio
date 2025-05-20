@@ -43,6 +43,7 @@ import mssql from "./tech/mssql.png"
 import mysql from "./tech/mysql.png"
 import drap from "./drap.png";
 import tech_pedia from "./tech_pedia.png";
+import sont from "./sont.png"
 export {
   logo,
   backend,
@@ -86,5 +87,6 @@ export {
   pak_det,
   free_lan,
   drap,
-  tech_pedia
+  tech_pedia,
+  sont
 };
