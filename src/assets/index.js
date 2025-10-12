@@ -46,7 +46,8 @@ import tech_pedia from "./tech_pedia.png";
 import sont from "./sont.png";
 import psy from "./psy.png";
 import wello from "./wello.jpeg";
-import trueClosure from "./true.jpeg"
+import trueClosure from "./true.jpeg";
+import opy from "./ot-logo.png";
 export {
   logo,
   backend,
@@ -94,5 +95,6 @@ export {
   sont,
   psy,
   wello,
-  trueClosure
+  trueClosure,
+  opy
 };

@@ -40,7 +40,8 @@ import {
   sont,
   psy,
   wello,
-  trueClosure
+  trueClosure,
+  opy
 } from "../assets";
 
 export const navLinks = [{
@@ -129,12 +130,30 @@ const technologies = [{
   },
 ];
 
-const experiences = [{
+const experiences = [
+  {
+    title: "Frontend Developer",
+    company_name: "Optymyze Technologies",
+    icon: opy,
+    iconBg: "#383E56",
+    date: "July 2025 - Present",
+    points: [
+      "Develop frontend web applications by converting Figma designs into Next.js and React projects using Bootstrap and Tailwind CSS.",
+      "Improve workflow efficiency by integrating Figma MCP Server with Claude AI agents in VS Code.",
+      "Design pixel-perfect, mobile-responsive web applications optimized for Android and iOS, ensuring cross-browser compatibility across Firefox, Safari, and other major browsers.",
+      "Develop real-time chat functionality using Firebase and PubNub, enabling instant messaging, live updates, image sharing, and emoji support.",
+      "Implement authentication (Google, Apple, phone number) using Firebase, and integrate payment gateways (Apple Pay, PayPal) through Stripe.",
+      "Collaborate with backend developers to integrate REST APIs using Next.js SSR, CSR, ISR, and RTK Query."
+    ],
+    link: "https://optymyzetech.com/",
+  },
+  
+  {
     title: "Mern Stack Developer",
     company_name: "Sysreforms International",
     icon: sys,
     iconBg: "#383E56",
-    date: "Feb 2024 - Present",
+    date: "Nov 2023 - June 2025",
     points: [
       "Design responsive UIs using Material UI, Tailwind CSS, and Bootstrap 5, ensuring cross-browser compatibility.",
       "Developed and optimized high-performance web applications using Next.js and React.js, leveraging SSR, SSG, hooks, code splitting, lazy loading, and React virtualization.",
@@ -158,18 +177,7 @@ const experiences = [{
     ],
     link: "https://golddetectorprice.pk/"
   },
-  {
-    title: "Full Stack Developer",
-    company_name: "Self",
-    icon: free_lan,
-    iconBg: "#E6DEDD",
-    date: "2023 - Present",
-    points: [
-      "Develope web applications using Mern Stack technologies",
-      "Work with local & international client to design and develope top notch applications.",
-      "Implement frontend and backend myself.",
-    ],
-  },
+
 
 ];
 
