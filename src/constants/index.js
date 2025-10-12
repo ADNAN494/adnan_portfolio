@@ -37,7 +37,10 @@ import {
   free_lan,
   drap,
   tech_pedia,
-  sont
+  sont,
+  psy,
+  wello,
+  trueClosure
 } from "../assets";
 
 export const navLinks = [{
@@ -187,7 +190,60 @@ const testimonials = [{
   },
 ];
 
-const projects = [{
+const projects = [
+  {
+    name: "Psychic Txt",
+    description: "PsychicTxt is an online platform offering live psychic chat and text-based readings, connecting clients with professional psychics for real-time guidance on relationships, personal growth, and future insights.",
+
+    tags: [{
+        name: "next",
+        color: "blue-text-gradient",
+      },
+      {
+        name: "boostrap",
+        color: "pink-text-gradient",
+      },
+      {
+        name: "node",
+        color: "green-text-gradient",
+      },
+      {
+        name: "mui",
+        color: "pink-text-gradient",
+      },
+      {
+        name: "mssql",
+        color: "blue-text-gradient",
+      },
+    ],
+    image: psy,
+    source_code_link: "https://www.psychictxt.com/",
+  },
+  {
+    name: "Wello Move",
+    description: "Wello is a wellness platform that connects users with health experts and resources to improve their overall well-being. It offers personalized wellness plans, expert consultations, and community support.",
+
+    tags: [{
+        name: "react",
+        color: "blue-text-gradient",
+      },
+      {
+        name: "node",
+        color: "green-text-gradient",
+      },
+      {
+        name: "tailwind",
+        color: "pink-text-gradient",
+      },
+      {
+        name: "mysql",
+        color: "blue-text-gradient",
+      },
+    ],
+    image: wello,
+    source_code_link: "https://quiz.joinwello.com/landing",
+  },
+  {
     name: "Sont (WOAH)",
     description: "Sont is a web-based tool platform for the WOAH organization to manage animal diseases and their complete history across the world.",
 
@@ -295,6 +351,31 @@ const projects = [{
     ],
     image: pvs,
     source_code_link: "https://pvs-preprod.woah.org/",
+  },
+  {
+    name: "True Closure",
+    description: "TrueClosure is a modern platform designed to offer meaningful closure and emotional support for individuals navigating loss and healing. With an intuitive interface, it provides users access to guided resource...",
+
+    tags: [{
+        name: "react",
+        color: "blue-text-gradient",
+      },
+      {
+        name: "tailwind css",
+        color: "pink-text-gradient",
+      },
+      {
+        name: "php",
+        color: "green-text-gradient",
+      },
+    
+      {
+        name: "mysql",
+        color: "blue-text-gradient",
+      },
+    ],
+    image: trueClosure,
+    source_code_link: "https://join.trueclosureapp.com/landing",
   },
   {
     name: "Immigra Conslutant",

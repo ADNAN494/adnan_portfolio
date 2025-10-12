@@ -43,7 +43,10 @@ import mssql from "./tech/mssql.png"
 import mysql from "./tech/mysql.png"
 import drap from "./drap.png";
 import tech_pedia from "./tech_pedia.png";
-import sont from "./sont.png"
+import sont from "./sont.png";
+import psy from "./psy.png";
+import wello from "./wello.jpeg";
+import trueClosure from "./true.jpeg"
 export {
   logo,
   backend,
@@ -88,5 +91,8 @@ export {
   free_lan,
   drap,
   tech_pedia,
-  sont
+  sont,
+  psy,
+  wello,
+  trueClosure
 };
