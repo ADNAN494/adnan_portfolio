@@ -6,7 +6,7 @@ import { styles } from "../styles";
 const letterContainer = {
   hidden: {},
   show: {
-    transition: { staggerChildren: 0.05, delayChildren: 0.2 },
+    transition: { staggerChildren: 0.04, delayChildren: 0.05 },
   },
 };
 
@@ -98,9 +98,9 @@ const Hero = () => {
           </motion.h1>
 
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0.01, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 0.6 }}
+            transition={{ delay: 0.15, duration: 0.45 }}
             className={`${styles.heroSubText} mt-8 max-w-xl`}
           >
             I help businesses grow online — fast websites, online stores,
@@ -111,7 +111,7 @@ const Hero = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1, duration: 0.6 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
             className='mt-10 flex flex-wrap gap-4'
           >
             <a
@@ -132,7 +132,7 @@ const Hero = () => {
         <motion.div
           initial={{ opacity: 0, x: 40 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.5, duration: 0.7 }}
+          transition={{ delay: 0.25, duration: 0.6 }}
           className='flex-1 w-full max-w-[560px]'
         >
           <CodeWindow />
