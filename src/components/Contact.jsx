@@ -20,6 +20,7 @@ const Contact = () => {
   });
 
   const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState(null);
 
   const handleChange = (e) => {
     const { target } = e;
@@ -34,6 +35,7 @@ const Contact = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
+    setStatus(null);
 
     emailjs
       .send(
@@ -51,7 +53,10 @@ const Contact = () => {
       .then(
         () => {
           setLoading(false);
-          alert("Thank you. I will get back to you as soon as possible.");
+          setStatus({
+            type: "success",
+            text: "Message sent — thank you! I'll get back to you as soon as possible.",
+          });
 
           setForm({
             name: "",
@@ -63,7 +68,10 @@ const Contact = () => {
           setLoading(false);
           console.error(error);
 
-          alert("Thank you. I will get back to you as soon as possible.");
+          setStatus({
+            type: "error",
+            text: "Something went wrong — your message was not sent. Please try again, or reach me on WhatsApp.",
+          });
         }
       );
   };
@@ -125,10 +133,22 @@ const Contact = () => {
 
           <button
             type='submit'
-            className='bg-peach py-3 px-10 rounded-full outline-none w-fit text-primary font-semibold hover:bg-peach-dark transition-colors'
+            disabled={loading}
+            className='bg-peach py-3 px-10 rounded-full outline-none w-fit text-primary font-semibold hover:bg-peach-dark transition-colors disabled:opacity-60 disabled:cursor-not-allowed'
           >
             {loading ? "Sending..." : "Send"}
           </button>
+
+          {status && (
+            <p
+              className={`font-mono text-[14px] leading-6 ${
+                status.type === "success" ? "text-mint" : "text-red-400"
+              }`}
+            >
+              {status.type === "success" ? "✓ " : "✗ "}
+              {status.text}
+            </p>
+          )}
         </form>
       </motion.div>
 
