@@ -4,16 +4,16 @@ import close from "./close.svg";
 import pak_det from "./company/pak_det.jfif";
 import sys from "./company/sysreforms.png";
 
-import pvs from "./pvs.png";
-import immi from "./immi.png";
-import sys1 from "./sys.png";
-import undp from "./undp.png";
-import drap from "./drap.png";
-import tech_pedia from "./tech_pedia.png";
-import sont from "./sont.png";
-import psy from "./psy.png";
-import wello from "./wello.jpeg";
-import trueClosure from "./true.jpeg";
+import pvs from "./pvs.jpg";
+import immi from "./immi.jpg";
+import sys1 from "./sys.jpg";
+import undp from "./undp.jpg";
+import drap from "./drap.jpg";
+import tech_pedia from "./tech_pedia.jpg";
+import sont from "./sont.jpg";
+import psy from "./psy.jpg";
+import wello from "./wello.jpg";
+import trueClosure from "./true.jpg";
 import opy from "./ot-logo.png";
 
 export {

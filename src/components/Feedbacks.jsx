@@ -28,6 +28,8 @@ const FeedbackCard = ({ index, testimonial, name, image }) => (
       <img
         src={image}
         alt={`feedback by ${name}`}
+        loading='lazy'
+        decoding='async'
         className='w-11 h-11 rounded-full object-cover border-2 border-peach/60'
       />
       <div>

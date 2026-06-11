@@ -39,7 +39,9 @@ const ProjectCard = ({
           <img
             src={image}
             alt={name}
-            className="absolute inset-0 group-hover:scale-[1.03] transition-transform duration-500"
+            loading="lazy"
+            decoding="async"
+            className="absolute inset-0 h-full w-full object-cover object-top group-hover:scale-[1.03] transition-transform duration-500"
           />
         </div>
 
