@@ -26,7 +26,6 @@ Fonts: **Archivo Expanded** (display headings), **Inter** (body), **JetBrains Mo
 adnan_portfolio/
 ├── public/
 │   ├── planet/              # 3D GLTF model — rotating Earth (Contact section)
-│   ├── adnan-fr.pdf         # CV/resume
 │   └── logo1.png            # Favicon
 │
 ├── src/
@@ -56,10 +55,9 @@ adnan_portfolio/
 │   │   ├── SocialIcons.jsx   # Facebook / WhatsApp / LinkedIn links
 │   │   └── index.js          # Barrel export
 │   │
-│   ├── components/canvas/
+│   ├── components/canvas/    # Lazy-loaded via React.lazy — Three.js is code-split
 │   │   ├── Earth.jsx         # Rotating planet GLTF (Contact)
-│   │   ├── Stars.jsx         # 5,000 mint particles drifting (Contact background)
-│   │   └── index.js
+│   │   └── Stars.jsx         # 5,000 mint particles drifting (Contact background)
 │   │
 │   ├── hoc/
 │   │   └── SectionWrapper.jsx  # Framer-motion stagger wrapper + anchor ids
