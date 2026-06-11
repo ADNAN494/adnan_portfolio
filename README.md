@@ -26,7 +26,7 @@ Fonts: **Archivo Expanded** (display headings), **Inter** (body), **JetBrains Mo
 adnan_portfolio/
 ├── public/
 │   ├── planet/              # 3D GLTF model — rotating Earth (Contact section)
-│   └── logo1.png            # Favicon
+│   └── favicon.svg          # Terminal-style ~/ favicon
 │
 ├── src/
 │   ├── main.jsx             # React entry point
