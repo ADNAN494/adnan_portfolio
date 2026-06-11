@@ -1,11 +1,9 @@
 import React, { useState } from "react";
-import Tilt from "react-tilt";
 import { motion } from "framer-motion";
 
 import { styles } from "../styles";
-import { github } from "../assets";
 import { SectionWrapper } from "../hoc";
-import { projects as initialProjects } from "../constants"; 
+import { projects } from "../constants";
 import { fadeIn, textVariant } from "../utils/motion";
 
 const ProjectCard = ({
@@ -17,101 +15,107 @@ const ProjectCard = ({
   source_code_link,
 }) => {
   return (
-    <motion.div variants={fadeIn("up", "spring", index * 0.5, 0.75)} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      <a href={source_code_link} target="_blank" rel="noopener noreferrer">
-        <Tilt
-          options={{
-            max: 45,
-            scale: 1,
-            speed: 450,
-          }}
-          className="bg-tertiary p-5 rounded-2xl sm:w-[360px] w-full md:w-[calc(50% - 1rem)] lg:w-[calc(33.33% - 1rem)]"
-        >
-          <div className="relative w-full h-[230px]">
-            <img
-              src={image}
-              alt="project_image"
-              className="h-full w-full rounded-2xl"
-            />
+    <motion.div
+      variants={fadeIn("up", "spring", (index % 3) * 0.25, 0.6)}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+    >
+      <a
+        href={source_code_link}
+        target='_blank'
+        rel='noopener noreferrer'
+        className='block rounded-2xl border border-white/10 bg-black-100 overflow-hidden hover:border-peach/60 hover:shadow-glow transition-all duration-300 group h-full'
+      >
+        <div className='flex items-center gap-1.5 px-4 py-3 border-b border-white/10 bg-white/[0.02]'>
+          <span className='w-2.5 h-2.5 rounded-full bg-white/15' />
+          <span className='w-2.5 h-2.5 rounded-full bg-white/15' />
+          <span className='w-2.5 h-2.5 rounded-full bg-white/15' />
+          <span className='ml-3 font-mono text-[12px] text-secondary truncate'>
+            {source_code_link.replace(/^https?:\/\//, "").replace(/\/.*$/, "")}
+          </span>
+        </div>
 
-            <div className="absolute inset-0 flex justify-end m-3 card-img_hover">
-              <div className="black-gradient w-10 h-10 rounded-full flex justify-center items-center cursor-pointer">
-                <img
-                  src={github}
-                  alt="source code"
-                  className="w-1/2 h-1/2 object-contain"
-                />
-              </div>
-            </div>
+        <div className='relative w-full aspect-video sm:aspect-auto sm:h-[220px] overflow-hidden bg-black-200'>
+          <img
+            src={image}
+            alt={name}
+            className='absolute inset-0 h-full w-full object-cover object-top group-hover:scale-[1.03] transition-transform duration-500'
+          />
+        </div>
+
+        <div className='p-6'>
+          <div className='flex items-start justify-between gap-3'>
+            <h3 className='font-heading text-white font-bold text-[22px]'>
+              {name}
+            </h3>
+            <span className='text-peach text-[20px] group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform'>
+              ↗
+            </span>
           </div>
+          <p className='mt-3 text-secondary text-[14px] leading-6'>
+            {description}
+          </p>
 
-          <div className="mt-5">
-            <h3 className="text-white font-semibold text-[24px]">{name}</h3>
-            <p className="mt-2 text-secondary text-[14px]">{description}</p>
-          </div>
-
-          <div className="mt-4 flex flex-wrap gap-2">
-            {tags.map((tag, tagIndex) => (
-              <p key={`${name}-${tagIndex}`} className={`text-[14px] ${tag.color}`}>
-                #{tag.name}
-              </p>
+          <div className='mt-4 flex flex-wrap gap-2'>
+            {tags.map((tag) => (
+              <span
+                key={`${name}-${tag.name}`}
+                className='font-mono text-[12px] text-secondary border border-white/10 rounded-full px-3 py-1'
+              >
+                {tag.name}
+              </span>
             ))}
           </div>
-        </Tilt>
+        </div>
       </a>
     </motion.div>
   );
 };
 
 const Works = () => {
-  const [visibleProjects, setVisibleProjects] = useState(3); 
-  const [projects, setProjects] = useState(initialProjects); 
+  const [visibleProjects, setVisibleProjects] = useState(4);
 
   const loadMoreProjects = () => {
-    setVisibleProjects(prevVisible => prevVisible + 3); 
+    setVisibleProjects((prevVisible) => prevVisible + 4);
   };
 
   return (
     <>
       <motion.div variants={textVariant()}>
-        <p className={`${styles.heroSubText}  text-white-100`}>My work</p>
-        <h2 className={`${styles.sectionHeadText}`}>Projects.</h2>
+        <p className={styles.sectionSubText}>
+          <span className='text-secondary'>{"// "}</span>projects
+        </p>
+        <h2 className={`${styles.sectionHeadText} mt-2`}>Selected work</h2>
       </motion.div>
 
-      <div className="w-full flex">
+      <div className='w-full flex'>
         <motion.p
           variants={fadeIn("", "", 0.1, 1)}
-          className="mt-3 text-secondary text-[17px] max-w-3xl leading-[30px]"
+          className='mt-3 text-secondary text-[17px] max-w-3xl leading-[30px]'
         >
-          Following projects showcase my skills and experience through real-world
-          examples of my work. Each project is briefly described with links to code
-          repositories and live demos. They reflect my ability to solve complex
-          problems, work with different technologies, and manage projects effectively.
+          Real products used by real businesses — online stores, wellness
+          platforms, government systems and international organisations.
+          Every card links to the live website, so you can click around and
+          see the quality for yourself.
         </motion.p>
       </div>
 
-      {/* Grid for displaying projects */}
-      <div className="mt-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 h-full cursor-pointer opacity-100">
+      <div className='mt-14 grid grid-cols-1 md:grid-cols-2 gap-7'>
         {projects.slice(0, visibleProjects).map((project, index) => (
-          <ProjectCard key={`project-${index}`} index={index} {...project} className="opacity-100"/>
+          <ProjectCard key={`project-${index}`} index={index} {...project} />
         ))}
       </div>
 
-      {/* Load More Button */}
       {visibleProjects < projects.length && (
-        <div className="mt-5 flex justify-center">
+        <div className='mt-10 flex justify-center'>
           <button
             onClick={loadMoreProjects}
-            className="relative inline-flex items-center justify-start px-4 py-2 overflow-hidden font-medium transition-all bg-white rounded hover:bg-white group border border-[#915EFF] text-[#6330d1] hover:text-white"
+            className='font-mono text-[14px] border border-peach text-peach px-8 py-3 rounded-full hover:bg-peach hover:text-primary transition-colors'
           >
-            <span className="w-48 h-48 rounded rotate-[-40deg] bg-[#915EFF] absolute bottom-0 left-0 -translate-x-full ease-out duration-500 transition-all translate-y-full mb-9 ml-9 group-hover:ml-0 group-hover:mb-32 group-hover:translate-x-0"></span>
-            <span className="relative w-full text-left transition-colors duration-300 ease-in-out">
-              Load More
-            </span>
+            load_more()
           </button>
         </div>
       )}
-
     </>
   );
 };

@@ -46,19 +46,157 @@ import {
 
 export const navLinks = [{
     id: "about",
-    title: "About Me",
+    title: "About",
+  },
+  {
+    id: "skills",
+    title: "Skills",
   },
   {
     id: "work",
-    title: "My Experience",
+    title: "Experience",
   },
   {
     id: "project",
-    title: "My Projects",
+    title: "Projects",
   },
   {
     id: "contact",
-    title: "Contact Me",
+    title: "Contact",
+  },
+];
+
+const stats = [{
+    value: "3+",
+    label: "Years experience",
+  },
+  {
+    value: "10+",
+    label: "Projects shipped",
+  },
+  {
+    value: "12+",
+    label: "Happy clients",
+  },
+  {
+    value: "99.9%",
+    label: "Uptime maintained",
+  },
+];
+
+const mernSkills = [{
+    letter: "M",
+    name: "MongoDB",
+    highlight: false,
+    description: "Your business data — customers, orders, content — organised, safe and fast to search, ready to scale as you grow.",
+    bullets: ["Mongoose ODM", "Aggregation", "Indexing & perf", "Atlas / Replica sets"],
+  },
+  {
+    letter: "E",
+    name: "Express",
+    highlight: false,
+    description: "The engine room — secure connections between your website, payments, logins and data. Nothing leaks, nothing breaks.",
+    bullets: ["JWT / OAuth", "Middleware design", "Validation (Yup/Joi)", "Error handling"],
+  },
+  {
+    letter: "R",
+    name: "React",
+    highlight: true,
+    description: "The part your customers see — fast, polished pages that feel great on every phone, tablet and desktop.",
+    bullets: ["Next.js / SSR", "Redux Toolkit", "Framer Motion", "Tailwind CSS"],
+  },
+  {
+    letter: "N",
+    name: "Node.js",
+    highlight: false,
+    description: "Features that feel instant — live chat, notifications, online payments and automation running behind the scenes.",
+    bullets: ["Socket.io / PubNub", "Firebase", "Stripe payments", "Docker & CI/CD"],
+  },
+];
+
+const aiSkill = {
+  letter: "AI",
+  name: "AI Integration & Chatbots",
+  description: "I plug AI into your business: chatbots that answer your customers 24/7 in any language, smart search that understands what people mean, and automation that saves hours of manual work every week.",
+  bullets: [
+    "Customer support chatbots",
+    "WhatsApp & web bots",
+    "OpenAI / Claude APIs",
+    "Workflow automation",
+  ],
+};
+
+const paymentsSkill = {
+  letter: "$",
+  name: "Payments & Online Checkout",
+  description: "Get paid online without the headache — secure checkout your customers already trust. I integrate Stripe, Apple Pay and PayPal so money flows in safely, whether it's one-off sales, subscriptions or in-app purchases.",
+  bullets: [
+    "Stripe checkout",
+    "Apple Pay & PayPal",
+    "Subscriptions & billing",
+    "Secure transactions",
+  ],
+};
+
+const extraTech = [{
+    name: "Next.js",
+    highlight: true,
+  },
+  {
+    name: "Stripe",
+    highlight: true,
+  },
+  {
+    name: "Apple Pay",
+    highlight: true,
+  },
+  {
+    name: "PayPal",
+    highlight: true,
+  },
+  {
+    name: "AI Chatbots",
+    highlight: true,
+  },
+  {
+    name: "OpenAI API",
+    highlight: true,
+  },
+  {
+    name: "Claude API",
+    highlight: true,
+  },
+  {
+    name: "TypeScript",
+    highlight: false,
+  },
+  {
+    name: "Bootstrap",
+    highlight: false,
+  },
+  {
+    name: "MUI",
+    highlight: false,
+  },
+  {
+    name: "MySQL",
+    highlight: false,
+  },
+  {
+    name: "MSSQL",
+    highlight: false,
+  },
+  {
+    name: "Firebase",
+    highlight: false,
+  },
+  {
+    name: "Git & GitHub",
+    highlight: false,
+  },
+  {
+    name: "Figma",
+    highlight: false,
   },
 ];
 
@@ -135,7 +273,7 @@ const experiences = [
     title: "Frontend Developer",
     company_name: "Optymyze Technologies",
     icon: opy,
-    iconBg: "#383E56",
+    iconBg: "#141b19",
     date: "July 2025 - Present",
     points: [
       "Develop frontend web applications by converting Figma designs into Next.js and React projects using Bootstrap and Tailwind CSS.",
@@ -152,7 +290,7 @@ const experiences = [
     title: "Mern Stack Developer",
     company_name: "Sysreforms International",
     icon: sys,
-    iconBg: "#383E56",
+    iconBg: "#141b19",
     date: "Nov 2023 - June 2025",
     points: [
       "Design responsive UIs using Material UI, Tailwind CSS, and Bootstrap 5, ensuring cross-browser compatibility.",
@@ -167,7 +305,7 @@ const experiences = [
     title: "WEB Designer & SEO",
     company_name: "Pakistan Detector Technologies",
     icon: pak_det,
-    iconBg: "#383E56",
+    iconBg: "#141b19",
     date: "Jan 2022 - Jun 2022",
     points: [
       "Designed and developed user-interactive pages using Bootstrap and JavaScript.",
@@ -446,6 +584,11 @@ const projects = [
 ];
 
 export {
+  stats,
+  mernSkills,
+  aiSkill,
+  paymentsSkill,
+  extraTech,
   services,
   technologies,
   experiences,

@@ -16,10 +16,12 @@ const ExperienceCard = ({ experience }) => {
   return (
     <VerticalTimelineElement
       contentStyle={{
-        background: "#1d1836",
+        background: "#101715",
         color: "#fff",
+        border: "1px solid rgba(255, 255, 255, 0.1)",
+        boxShadow: "0 20px 50px -20px rgba(0, 0, 0, 0.6)",
       }}
-      contentArrowStyle={{ borderRight: "7px solid  #232631" }}
+      contentArrowStyle={{ borderRight: "7px solid #1d2926" }}
       date={experience.date}
       iconStyle={{ background: experience.iconBg }}
       icon={
@@ -65,11 +67,11 @@ const Experience = () => {
   return (
     <>
       <motion.div variants={textVariant()}>
-        <p className={`${styles.heroSubText} text-center text-white-100`}>
-          What I have done so far
+        <p className={styles.sectionSubText}>
+          <span className='text-secondary'>{"// "}</span>experience
         </p>
-        <h2 className={`${styles.sectionHeadText} text-center`}>
-          Work Experience.
+        <h2 className={`${styles.sectionHeadText} mt-2`}>
+          Where I've worked
         </h2>
       </motion.div>
 

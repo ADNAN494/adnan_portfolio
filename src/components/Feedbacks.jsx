@@ -16,17 +16,17 @@ const FeedbackCard = ({
 }) => (
   <motion.div
     variants={fadeIn("", "spring", index * 0.5, 0.75)}
-    className='bg-black-200 p-10 rounded-3xl xs:w-[320px] w-auto'
+    className='bg-black-200 p-10 rounded-3xl xs:w-[320px] w-auto border border-white/10 hover:shadow-glow-mint transition-shadow duration-300'
   >
-    <p className='text-white font-black text-[48px]'>"</p>
+    <p className='font-heading text-peach font-black text-[48px]'>"</p>
 
     <div className='mt-1'>
       <p className='text-white tracking-wider text-[18px]'>{testimonial}</p>
 
       <div className='mt-7 flex justify-between items-center gap-1'>
         <div className='flex-1 flex flex-col'>
-          <p className='text-white font-medium text-[16px]'>
-            <span className='blue-text-gradient'>@</span> {name}
+          <p className='text-white font-medium text-[16px] font-mono'>
+            <span className='text-mint'>@</span> {name}
           </p>
         </div>
 
@@ -47,8 +47,10 @@ const Feedbacks = () => {
         className={`bg-tertiary rounded-2xl ${styles.padding} min-h-[300px]`}
       >
         <motion.div variants={textVariant()}>
-          <p className={`${styles.heroSubText}  text-white-100`}>What others say</p>
-          <h2 className={styles.sectionHeadText}>Testimonials.</h2>
+          <p className={styles.sectionSubText}>
+            <span className='text-secondary'>{"// "}</span>testimonials
+          </p>
+          <h2 className={`${styles.sectionHeadText} mt-2`}>What clients say</h2>
         </motion.div>
       </div>
       <div className={`-mt-20 pb-14 max-[640px]:pl-14 max-[440px]:pl-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7`}>

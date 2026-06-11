@@ -75,8 +75,10 @@ const Contact = () => {
         variants={slideIn("left", "tween", 0.2, 1)}
         className='flex-[0.75] bg-black-100 p-8 rounded-2xl'
       >
-        <p className={`${styles.heroSubText}  text-white-100`}>Get in touch</p>
-        <h3 className={styles.sectionHeadText}>Contact.</h3>
+        <p className={styles.sectionSubText}>
+          <span className='text-secondary'>{"// "}</span>contact
+        </p>
+        <h3 className={`${styles.sectionHeadText} mt-2`}>Get in touch</h3>
 
         <form
           ref={formRef}
@@ -122,7 +124,7 @@ const Contact = () => {
 
           <button
             type='submit'
-            className='bg-tertiary py-3 px-8 rounded-xl outline-none w-fit text-white font-bold shadow-md shadow-primary'
+            className='bg-peach py-3 px-10 rounded-full outline-none w-fit text-primary font-semibold hover:bg-peach-dark transition-colors'
           >
             {loading ? "Sending..." : "Send"}
           </button>

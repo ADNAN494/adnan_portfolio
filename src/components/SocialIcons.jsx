@@ -4,7 +4,7 @@ import { styles } from "../styles";
 const SocialIcons = () => {
     return (
         <div className={`max-w-7xl mx-auto md:mt-5 flex flex-col items-start gap-2 max-[640px]:mt-5`}>
-            <h1 className={`${styles.heroSubText} text-white-100`}>Social Links</h1>
+            <h1 className='font-mono text-[14px] text-secondary'>find_me_on:</h1>
             <div className="max-[640px]:mt-2 flex gap-3">
                 <a href="https://www.facebook.com/profile.php?id=100015302744231&mibextid=ZbWKwL" target="_blank" rel="noopener noreferrer" className="block w-8 h-8 relative overflow-hidden rounded-full bg-blue-500 group transition-all duration-500 hover:scale-110 flex items-center justify-center">
                     <svg className="relative z-10 transition-all duration-300 fill-white" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 72 72" fill="none">
