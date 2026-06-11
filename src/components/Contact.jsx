@@ -1,6 +1,5 @@
 import React, { Suspense, lazy, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import emailjs from "@emailjs/browser";
 
 import { styles } from "../styles";
 import { SectionWrapper } from "../hoc";
@@ -33,13 +32,15 @@ const Contact = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setStatus(null);
 
-    emailjs
-      .send(
+    try {
+      const { default: emailjs } = await import("@emailjs/browser");
+
+      await emailjs.send(
         "service_9f24tvg",
         "template_28wreop",
         {
@@ -50,31 +51,28 @@ const Contact = () => {
           message: form.message,
         },
         "U3qABvJ4-H4JbjcKl"
-      )
-      .then(
-        () => {
-          setLoading(false);
-          setStatus({
-            type: "success",
-            text: "Message sent — thank you! I'll get back to you as soon as possible.",
-          });
-
-          setForm({
-            name: "",
-            email: "",
-            message: "",
-          });
-        },
-        (error) => {
-          setLoading(false);
-          console.error(error);
-
-          setStatus({
-            type: "error",
-            text: "Something went wrong — your message was not sent. Please try again, or reach me on WhatsApp.",
-          });
-        }
       );
+
+      setLoading(false);
+      setStatus({
+        type: "success",
+        text: "Message sent — thank you! I'll get back to you as soon as possible.",
+      });
+
+      setForm({
+        name: "",
+        email: "",
+        message: "",
+      });
+    } catch (error) {
+      setLoading(false);
+      console.error(error);
+
+      setStatus({
+        type: "error",
+        text: "Something went wrong — your message was not sent. Please try again, or reach me on WhatsApp.",
+      });
+    }
   };
 
   return (
