@@ -6,7 +6,6 @@ import {
 import { motion } from "framer-motion";
 
 import "react-vertical-timeline-component/style.min.css";
-import { Link } from "react-router-dom";
 import { styles } from "../styles";
 import { experiences } from "../constants";
 import { SectionWrapper } from "../hoc";
@@ -26,13 +25,18 @@ const ExperienceCard = ({ experience }) => {
       iconStyle={{ background: experience.iconBg }}
       icon={
         <div className='flex justify-center items-center w-full h-full cursor-pointer'>
-          <Link to={experience.link} className='flex justify-center items-center w-full h-full'>
+          <a
+            href={experience.link}
+            target='_blank'
+            rel='noopener noreferrer'
+            className='flex justify-center items-center w-full h-full'
+          >
             <img
               src={experience.icon}
               alt={experience.company_name}
               className='w-[60%] h-[60%] object-contain'
             />
-          </Link>
+          </a>
         </div>
 
       }
@@ -43,9 +47,14 @@ const ExperienceCard = ({ experience }) => {
           className='text-secondary text-[16px] font-semibold cursor-pointer'
           style={{ margin: 0 }}
         >
-          <Link to={experience.link}>
+          <a
+            href={experience.link}
+            target='_blank'
+            rel='noopener noreferrer'
+            className='hover:text-peach transition-colors'
+          >
             {experience.company_name}
-          </Link>
+          </a>
         </p>
       </div>
 

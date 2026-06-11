@@ -1,40 +1,10 @@
 import {
-  mobile,
-  backend,
-  creator,
-  web,
-  javascript,
-  typescript,
-  html,
-  css,
-  reactjs,
-  redux,
-  tailwind,
-  nodejs,
-  mongodb,
-  git,
-  figma,
-  docker,
-  meta,
-  starbucks,
   sys,
-  tesla,
-  shopify,
-  ikonic,
-  carrent,
   pvs,
   immi,
   sys1,
-  jobit,
-  tripguide,
-  threejs,
-  boostrap,
-  mui,
-  mssql,
-  mysql,
   undp,
   pak_det,
-  free_lan,
   drap,
   tech_pedia,
   sont,
@@ -197,74 +167,6 @@ const extraTech = [{
   {
     name: "Figma",
     highlight: false,
-  },
-];
-
-const services = [{
-    title: "Frontend Developer",
-    icon: web,
-  },
-  {
-    title: "Backend Developer",
-    icon: mobile,
-  },
-  {
-    title: "3rd Party Apis Integration",
-    icon: backend,
-  },
-  {
-    title: "Mobile Reponsiveness",
-    icon: creator,
-  },
-];
-
-const technologies = [{
-    name: "HTML 5",
-    icon: html,
-  },
-  {
-    name: "CSS 3",
-    icon: css,
-  },
-  {
-    name: "Boostrap 5",
-    icon: boostrap,
-  },
-  {
-    name: "MUI 5",
-    icon: mui,
-  },
-  {
-    name: "JavaScript",
-    icon: javascript,
-  },
-  {
-    name: "React JS",
-    icon: reactjs,
-  },
-  {
-    name: "Redux Toolkit",
-    icon: redux,
-  },
-  {
-    name: "Tailwind CSS",
-    icon: tailwind,
-  },
-  {
-    name: "Node JS",
-    icon: nodejs,
-  },
-  {
-    name: "MongoDB",
-    icon: mongodb,
-  },
-  {
-    name: "Mysql",
-    icon: mysql,
-  },
-  {
-    name: "git",
-    icon: git,
   },
 ];
 
@@ -589,8 +491,6 @@ export {
   aiSkill,
   paymentsSkill,
   extraTech,
-  services,
-  technologies,
   experiences,
   testimonials,
   projects
