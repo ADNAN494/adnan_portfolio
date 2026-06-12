@@ -1,15 +1,28 @@
-import { useState, useRef, Suspense } from "react";
+import { useState, useRef, useEffect, Suspense } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Points, PointMaterial, Preload } from "@react-three/drei";
 import * as random from "maath/random/dist/maath-random.esm";
 
 const Stars = (props) => {
   const ref = useRef();
-  const [sphere] = useState(() => random.inSphere(new Float32Array(5000), { radius: 1.2 }));
+  const [sphere] = useState(() => {
+    // Length must be a multiple of 3 (x, y, z per point). maath's inSphere can
+    // also emit the odd NaN, so scrub them — otherwise Three.js warns about a
+    // NaN bounding sphere.
+    const positions = random.inSphere(new Float32Array(5001), { radius: 1.2 });
+    for (let i = 0; i < positions.length; i++) {
+      if (Number.isNaN(positions[i])) positions[i] = 0;
+    }
+    return positions;
+  });
 
   useFrame((state, delta) => {
-    ref.current.rotation.x -= delta / 10;
-    ref.current.rotation.y -= delta / 15;
+    if (!ref.current) return;
+    // Clamp delta so resuming after the frameloop was paused (off-screen)
+    // doesn't produce a sudden rotation jump.
+    const d = Math.min(delta, 0.05);
+    ref.current.rotation.x -= d / 10;
+    ref.current.rotation.y -= d / 15;
   });
 
   return (
@@ -27,10 +40,31 @@ const Stars = (props) => {
   );
 };
 
-const StarsCanvas = () => {
+const StarsCanvas = ({ className = "w-full h-full absolute inset-0" }) => {
+  const containerRef = useRef(null);
+  // Only animate while the canvas is on screen. Two starfields (Hero + Contact)
+  // are never visible at once on a tall page, so the off-screen one stays idle.
+  const [active, setActive] = useState(true);
+
+  useEffect(() => {
+    const node = containerRef.current;
+    if (!node || typeof IntersectionObserver === "undefined") return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setActive(entry.isIntersecting),
+      { rootMargin: "0px" }
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className='w-full h-auto absolute inset-0 z-[-1]'>
-      <Canvas camera={{ position: [0, 0, 1] }}>
+    <div ref={containerRef} className={className}>
+      <Canvas
+        frameloop={active ? "always" : "never"}
+        camera={{ position: [0, 0, 1] }}
+        dpr={[1, 1.5]}
+      >
         <Suspense fallback={null}>
           <Stars />
         </Suspense>

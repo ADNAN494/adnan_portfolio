@@ -1,7 +1,10 @@
+import { lazy, Suspense, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useTypewriter, Cursor } from "react-simple-typewriter";
 
 import { styles } from "../styles";
+
+const StarsCanvas = lazy(() => import("./canvas/Stars"));
 
 const letterContainer = {
   hidden: {},
@@ -69,10 +72,37 @@ const Hero = () => {
     delaySpeed: 1800,
   });
 
+  // Defer loading the Three.js starfield until the browser is idle so it
+  // never blocks the hero's first paint (LCP). It fades in a moment later.
+  const [showStars, setShowStars] = useState(false);
+  useEffect(() => {
+    const ric = window.requestIdleCallback;
+    if (ric) {
+      // timeout guarantees it fires even if the main thread never goes idle.
+      const id = ric(() => setShowStars(true), { timeout: 600 });
+      return () => window.cancelIdleCallback?.(id);
+    }
+    const id = setTimeout(() => setShowStars(true), 200);
+    return () => clearTimeout(id);
+  }, []);
+
   return (
-    <section className='relative w-full min-h-screen mx-auto flex items-center'>
+    <section className='relative isolate w-full min-h-screen mx-auto flex items-center'>
+      {showStars && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1.2 }}
+          className='absolute inset-0 z-0'
+        >
+          <Suspense fallback={null}>
+            <StarsCanvas />
+          </Suspense>
+        </motion.div>
+      )}
+
       <div
-        className={`max-w-7xl mx-auto ${styles.paddingX} w-full flex lg:flex-row flex-col items-center lg:gap-16 gap-12 pt-32 pb-20`}
+        className={`relative z-10 max-w-7xl mx-auto ${styles.paddingX} w-full flex lg:flex-row flex-col items-center lg:gap-16 gap-12 pt-32 pb-20`}
       >
         <div className='flex-1'>
           <motion.p
@@ -141,7 +171,7 @@ const Hero = () => {
 
       <a
         href='#about'
-        className='absolute bottom-8 left-1/2 -translate-x-1/2 font-mono text-secondary text-[14px] hover:text-peach transition-colors'
+        className='absolute bottom-8 left-1/2 -translate-x-1/2 z-10 font-mono text-secondary text-[14px] hover:text-peach transition-colors'
       >
         scroll ↓
       </a>
