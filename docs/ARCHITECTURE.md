@@ -10,15 +10,15 @@ job is a data edit, not a component edit.
 
 ## 1. Stack
 
-| Layer | Choice |
-|---|---|
-| Framework | React 18, Vite 4 (`type: module`) |
-| Styling | Tailwind CSS 3 + PostCSS + Autoprefixer, plus `src/index.css` for fonts / dot-grid / timeline overrides |
-| Shared type scale | `src/styles.js` (plain object of Tailwind class strings) |
-| Animation | Framer Motion 9 (scroll reveals, hero letter stagger), `react-simple-typewriter` |
-| 3D | Three.js 0.149, `@react-three/fiber` 8, `@react-three/drei` 9, `maath` (star positions) |
-| Timeline | `react-vertical-timeline-component` |
-| Contact form | `@emailjs/browser` (dynamically imported on submit) |
+| Layer             | Choice                                                                                                  |
+| ----------------- | ------------------------------------------------------------------------------------------------------- |
+| Framework         | React 18, Vite 4 (`type: module`)                                                                       |
+| Styling           | Tailwind CSS 3 + PostCSS + Autoprefixer, plus `src/index.css` for fonts / dot-grid / timeline overrides |
+| Shared type scale | `src/styles.js` (plain object of Tailwind class strings)                                                |
+| Animation         | Framer Motion 9 (scroll reveals, hero letter stagger), `react-simple-typewriter`                        |
+| 3D                | Three.js 0.149, `@react-three/fiber` 8, `@react-three/drei` 9, `maath` (star positions)                 |
+| Timeline          | `react-vertical-timeline-component`                                                                     |
+| Contact form      | `@emailjs/browser` (dynamically imported on submit)                                                     |
 
 Fonts: **Archivo Expanded** (display), **Inter** (body), **JetBrains Mono**
 (labels, tags, code). Palette: charcoal base with peach (`#e8a76f`) and mint
@@ -88,16 +88,16 @@ React.useEffect(() => {
 and `unmountComponentAtNode` runs its teardown **inside a `setTimeout(…, 500)`**:
 
 ```js
-state.gl?.renderLists?.dispose()
-state.gl?.forceContextLoss()
-roots.delete(canvas)
+state.gl?.renderLists?.dispose();
+state.gl?.forceContextLoss();
+roots.delete(canvas);
 ```
 
 Refs survive StrictMode's simulated remount, so the sequence is:
 
 1. mount → renderer created on canvas element `C`
 2. StrictMode simulated unmount → teardown **queued** for +500 ms
-3. StrictMode remount → `root.current` is still set, so the *same live renderer*
+3. StrictMode remount → `root.current` is still set, so the _same live renderer_
    keeps rendering on `C`
 4. **+500 ms** → the queued teardown fires and calls `forceContextLoss()` on a
    canvas that is actively rendering
@@ -153,7 +153,7 @@ canvas/SafeCanvas.jsx                     ErrorBoundary + <Canvas>. Failure mode
 can word the message per failure and offer a retry. `Earth.jsx` uses that: it
 shows a styled disc with a reason-specific message and a "try again" link
 (hidden for `unsupported`, where retrying can't help), and passes `onRetry` to
-call `useGLTF.clear(MODEL_PATH)` — drei caches the *rejected* promise, so
+call `useGLTF.clear(MODEL_PATH)` — drei caches the _rejected_ promise, so
 without clearing it a retry fails instantly with the same error instead of
 refetching the model.
 
@@ -198,30 +198,30 @@ src/
 
 ### 5.1 Sections (nav order)
 
-| Anchor | Section | Source data |
-|---|---|---|
-| — | Hero | inline |
-| `#about` | About + stats | `stats` |
-| `#work` | Experience timeline | `experiences` |
-| `#skills` | Skills / tech | `mernSkills`, `aiSkill`, `paymentsSkill`, `extraTech` |
-| `#project` | Projects | `projects` |
-| — | Testimonials | `testimonials` |
-| `#contact` | Contact form + Earth | inline / EmailJS |
+| Anchor     | Section              | Source data                                           |
+| ---------- | -------------------- | ----------------------------------------------------- |
+| —          | Hero                 | inline                                                |
+| `#about`   | About + stats        | `stats`                                               |
+| `#work`    | Experience timeline  | `experiences`                                         |
+| `#skills`  | Skills / tech        | `mernSkills`, `aiSkill`, `paymentsSkill`, `extraTech` |
+| `#project` | Projects             | `projects`                                            |
+| —          | Testimonials         | `testimonials`                                        |
+| `#contact` | Contact form + Earth | inline / EmailJS                                      |
 
 ### 5.2 Projects (10, in display order)
 
-| # | Project | Stack | Live |
-|---|---|---|---|
-| 1 | **Psychic Txt** — live psychic chat & text-reading platform | Next.js, Bootstrap, Node, MUI, MSSQL | https://www.psychictxt.com/ |
-| 2 | **Wello Move** — wellness platform, plans + expert consults | React, Node, Tailwind, MySQL | https://quiz.joinwello.com/landing |
-| 3 | **Sont (WOAH)** — animal-disease tracking for the World Organisation for Animal Health | React, Bootstrap, Node, MUI, MSSQL | https://sont-uat.woah.org/ |
-| 4 | **Techypedia** — UK digital-solutions company site | React/Next.js, Bootstrap, Node, MUI, MSSQL | https://techypedia.co.uk/ |
-| 5 | **MDMC (DRAP)** — medical drug management for Pakistan's DRAP | React, Bootstrap, Node, MUI, MSSQL | https://drap.sysreformsint.com/login |
-| 6 | **PVSIS** — WHO/WOAH veterinary & aquatic animal health services | React, Node, MUI, MSSQL | https://pvs-preprod.woah.org/ |
-| 7 | **True Closure** — grief support & guided resources | React, Tailwind CSS, PHP, MySQL | https://join.trueclosureapp.com/landing |
-| 8 | **Immigra Consultants** — study-abroad student advisory | React, Redux, Bootstrap | https://www.immigraconsultants.com/ |
-| 9 | **Sysreforms International** — software house corporate site | React, Bootstrap, Redux | https://www.sysreforms.com/ |
-| 10 | **UNDP** — UN home energy-efficiency programme (CMS, LMS, Energy modules) | React, Bootstrap, Redux | https://drcundp.sysreformsint.com/ |
+| #   | Project                                                                                | Stack                                      | Live                                    |
+| --- | -------------------------------------------------------------------------------------- | ------------------------------------------ | --------------------------------------- |
+| 1   | **Psychic Txt** — live psychic chat & text-reading platform                            | Next.js, Bootstrap, Node, MUI, MSSQL       | https://www.psychictxt.com/             |
+| 2   | **Wello Move** — wellness platform, plans + expert consults                            | React, Node, Tailwind, MySQL               | https://quiz.joinwello.com/landing      |
+| 3   | **Sont (WOAH)** — animal-disease tracking for the World Organisation for Animal Health | React, Bootstrap, Node, MUI, MSSQL         | https://sont-uat.woah.org/              |
+| 4   | **Techypedia** — UK digital-solutions company site                                     | React/Next.js, Bootstrap, Node, MUI, MSSQL | https://techypedia.co.uk/               |
+| 5   | **MDMC (DRAP)** — medical drug management for Pakistan's DRAP                          | React, Bootstrap, Node, MUI, MSSQL         | https://e.dra.gov.pk/login              |
+| 6   | **PVSIS** — WHO/WOAH veterinary & aquatic animal health services                       | React, Node, MUI, MSSQL                    | https://pvs-preprod.woah.org/           |
+| 7   | **True Closure** — grief support & guided resources                                    | React, Tailwind CSS, PHP, MySQL            | https://join.trueclosureapp.com/landing |
+| 8   | **Immigra Consultants** — study-abroad student advisory                                | React, Redux, Bootstrap                    | https://www.immigraconsultants.com/     |
+| 9   | **Sysreforms International** — software house corporate site                           | React, Bootstrap, Redux                    | https://www.sysreforms.com/             |
+| 10  | **UNDP** — UN home energy-efficiency programme (CMS, LMS, Energy modules)              | React, Bootstrap, Redux                    | https://www.undp.org/                   |
 
 Screenshots live in `src/assets/` (`psy`, `wello`, `sont`, `tech_pedia`, `drap`,
 `pvs`, `trueClosure`, `immi`, `sys1`, `undp`) and are exported through
@@ -229,11 +229,11 @@ Screenshots live in `src/assets/` (`psy`, `wello`, `sont`, `tech_pedia`, `drap`,
 
 ### 5.3 Experience
 
-| Role | Company | Dates |
-|---|---|---|
-| Frontend Developer | Optymyze Technologies | Jul 2025 – Present |
-| MERN Stack Developer | Sysreforms International | Nov 2023 – Jun 2025 |
-| Web Designer & SEO | Pakistan Detector Technologies | Jan 2022 – Jun 2022 |
+| Role                 | Company                        | Dates               |
+| -------------------- | ------------------------------ | ------------------- |
+| Frontend Developer   | Optymyze Technologies          | Jul 2025 – Present  |
+| MERN Stack Developer | Sysreforms International       | Nov 2023 – Jun 2025 |
+| Web Designer & SEO   | Pakistan Detector Technologies | Jan 2022 – Jun 2022 |
 
 ### 5.4 Skills surfaced
 

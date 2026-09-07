@@ -11,10 +11,11 @@ import {
   psy,
   wello,
   trueClosure,
-  opy
+  opy,
 } from "../assets";
 
-export const navLinks = [{
+export const navLinks = [
+  {
     id: "about",
     title: "About",
   },
@@ -36,7 +37,8 @@ export const navLinks = [{
   },
 ];
 
-const stats = [{
+const stats = [
+  {
     value: "3+",
     label: "Years experience",
   },
@@ -54,40 +56,66 @@ const stats = [{
   },
 ];
 
-const mernSkills = [{
+const mernSkills = [
+  {
     letter: "M",
     name: "MongoDB",
     highlight: false,
-    description: "Your business data — customers, orders, content — organised, safe and fast to search, ready to scale as you grow.",
-    bullets: ["Mongoose ODM", "Aggregation", "Indexing & perf", "Atlas / Replica sets"],
+    description:
+      "Your business data — customers, orders, content — organised, safe and fast to search, ready to scale as you grow.",
+    bullets: [
+      "Mongoose ODM",
+      "Aggregation",
+      "Indexing & perf",
+      "Atlas / Replica sets",
+    ],
   },
   {
     letter: "E",
     name: "Express",
     highlight: false,
-    description: "The engine room — secure connections between your website, payments, logins and data. Nothing leaks, nothing breaks.",
-    bullets: ["JWT / OAuth", "Middleware design", "Validation (Yup/Joi)", "Error handling"],
+    description:
+      "The engine room — secure connections between your website, payments, logins and data. Nothing leaks, nothing breaks.",
+    bullets: [
+      "JWT / OAuth",
+      "Middleware design",
+      "Validation (Yup/Joi)",
+      "Error handling",
+    ],
   },
   {
     letter: "R",
     name: "React",
     highlight: true,
-    description: "The part your customers see — fast, polished pages that feel great on every phone, tablet and desktop.",
-    bullets: ["Next.js / SSR", "Redux Toolkit", "Framer Motion", "Tailwind CSS"],
+    description:
+      "The part your customers see — fast, polished pages that feel great on every phone, tablet and desktop.",
+    bullets: [
+      "Next.js / SSR",
+      "Redux Toolkit",
+      "Framer Motion",
+      "Tailwind CSS",
+    ],
   },
   {
     letter: "N",
     name: "Node.js",
     highlight: false,
-    description: "Features that feel instant — live chat, notifications, online payments and automation running behind the scenes.",
-    bullets: ["Socket.io / PubNub", "Firebase", "Stripe payments", "Docker & CI/CD"],
+    description:
+      "Features that feel instant — live chat, notifications, online payments and automation running behind the scenes.",
+    bullets: [
+      "Socket.io / PubNub",
+      "Firebase",
+      "Stripe payments",
+      "Docker & CI/CD",
+    ],
   },
 ];
 
 const aiSkill = {
   letter: "AI",
   name: "AI Integration & Chatbots",
-  description: "I plug AI into your business: chatbots that answer your customers 24/7 in any language, smart search that understands what people mean, and automation that saves hours of manual work every week.",
+  description:
+    "I plug AI into your business: chatbots that answer your customers 24/7 in any language, smart search that understands what people mean, and automation that saves hours of manual work every week.",
   bullets: [
     "Customer support chatbots",
     "WhatsApp & web bots",
@@ -99,7 +127,8 @@ const aiSkill = {
 const paymentsSkill = {
   letter: "$",
   name: "Payments & Online Checkout",
-  description: "Get paid online without the headache — secure checkout your customers already trust. I integrate Stripe, Apple Pay and PayPal so money flows in safely, whether it's one-off sales, subscriptions or in-app purchases.",
+  description:
+    "Get paid online without the headache — secure checkout your customers already trust. I integrate Stripe, Apple Pay and PayPal so money flows in safely, whether it's one-off sales, subscriptions or in-app purchases.",
   bullets: [
     "Stripe checkout",
     "Apple Pay & PayPal",
@@ -108,7 +137,8 @@ const paymentsSkill = {
   ],
 };
 
-const extraTech = [{
+const extraTech = [
+  {
     name: "Next.js",
     highlight: true,
   },
@@ -183,11 +213,11 @@ const experiences = [
       "Design pixel-perfect, mobile-responsive web applications optimized for Android and iOS, ensuring cross-browser compatibility across Firefox, Safari, and other major browsers.",
       "Develop real-time chat functionality using Firebase and PubNub, enabling instant messaging, live updates, image sharing, and emoji support.",
       "Implement authentication (Google, Apple, phone number) using Firebase, and integrate payment gateways (Apple Pay, PayPal) through Stripe.",
-      "Collaborate with backend developers to integrate REST APIs using Next.js SSR, CSR, ISR, and RTK Query."
+      "Collaborate with backend developers to integrate REST APIs using Next.js SSR, CSR, ISR, and RTK Query.",
     ],
     link: "https://optymyzetech.com/",
   },
-  
+
   {
     title: "Mern Stack Developer",
     company_name: "Sysreforms International",
@@ -201,7 +231,6 @@ const experiences = [
       "Implemented Git-based version control workflows (feature branching, pull requests, code reviews) using GitHub, enabling smooth team collaboration.",
     ],
     link: "https://www.sysreforms.com/",
-
   },
   {
     title: "WEB Designer & SEO",
@@ -215,24 +244,26 @@ const experiences = [
       "Worked on different niche websites such as e-commerce, blogs, education, corporate sites, and real estate.",
       "Complete hands-on knowledge of On-Page SEO (keyword research), Technical SEO (mobile responsiveness), and Off-Page SEO (backlinks).",
     ],
-    link: "https://golddetectorprice.pk/"
+    link: "https://golddetectorprice.pk/",
   },
-
-
 ];
 
-const testimonials = [{
-    testimonial: "I thought it was impossible to make a website as beautiful as our product, but Adnan proved me wrong.",
+const testimonials = [
+  {
+    testimonial:
+      "I thought it was impossible to make a website as beautiful as our product, but Adnan proved me wrong.",
     name: "Sara Lee",
     image: "https://randomuser.me/api/portraits/women/4.jpg",
   },
   {
-    testimonial: "I've never met a web developer who truly cares about their clients' success like Adnan does.",
+    testimonial:
+      "I've never met a web developer who truly cares about their clients' success like Adnan does.",
     name: "Chris Brown",
     image: "https://randomuser.me/api/portraits/men/5.jpg",
   },
   {
-    testimonial: "After Adnan optimized our website, our traffic increased by 50%. We can't thank them enough!",
+    testimonial:
+      "After Adnan optimized our website, our traffic increased by 50%. We can't thank them enough!",
     name: "Lisa Wang",
     image: "https://randomuser.me/api/portraits/women/6.jpg",
   },
@@ -241,9 +272,11 @@ const testimonials = [{
 const projects = [
   {
     name: "Psychic Txt",
-    description: "PsychicTxt is an online platform offering live psychic chat and text-based readings, connecting clients with professional psychics for real-time guidance on relationships, personal growth, and future insights.",
+    description:
+      "PsychicTxt is an online platform offering live psychic chat and text-based readings, connecting clients with professional psychics for real-time guidance on relationships, personal growth, and future insights.",
 
-    tags: [{
+    tags: [
+      {
         name: "next",
         color: "blue-text-gradient",
       },
@@ -269,9 +302,11 @@ const projects = [
   },
   {
     name: "Wello Move",
-    description: "Wello is a wellness platform that connects users with health experts and resources to improve their overall well-being. It offers personalized wellness plans, expert consultations, and community support.",
+    description:
+      "Wello is a wellness platform that connects users with health experts and resources to improve their overall well-being. It offers personalized wellness plans, expert consultations, and community support.",
 
-    tags: [{
+    tags: [
+      {
         name: "react",
         color: "blue-text-gradient",
       },
@@ -293,9 +328,11 @@ const projects = [
   },
   {
     name: "Sont (WOAH)",
-    description: "Sont is a web-based tool platform for the WOAH organization to manage animal diseases and their complete history across the world.",
+    description:
+      "Sont is a web-based tool platform for the WOAH organization to manage animal diseases and their complete history across the world.",
 
-    tags: [{
+    tags: [
+      {
         name: "react",
         color: "blue-text-gradient",
       },
@@ -321,9 +358,11 @@ const projects = [
   },
   {
     name: "Techypedia",
-    description: "A UK-based digital solutions company where I designed and developed all web pages using Next.js and Bootstrap. Focused on building responsive and seamless user experience.",
+    description:
+      "A UK-based digital solutions company where I designed and developed all web pages using Next.js and Bootstrap. Focused on building responsive and seamless user experience.",
 
-    tags: [{
+    tags: [
+      {
         name: "react",
         color: "blue-text-gradient",
       },
@@ -350,9 +389,11 @@ const projects = [
 
   {
     name: "MDMC (DRAP Project)",
-    description: "A project for DRAP to streamline medical drug management.Handled end-to-end frontend development including UI/UX design, API integration, and website optimization.",
+    description:
+      "A project for DRAP to streamline medical drug management.Handled end-to-end frontend development including UI/UX design, API integration, and website optimization.",
 
-    tags: [{
+    tags: [
+      {
         name: "react",
         color: "blue-text-gradient",
       },
@@ -374,13 +415,15 @@ const projects = [
       },
     ],
     image: drap,
-    source_code_link: "https://drap.sysreformsint.com/login",
+    source_code_link: "https://e.dra.gov.pk/login",
   },
 
   {
     name: "PVSIS",
-    description: "It is a project of the World Health Organization about their missions to other countries related to the sustainable improvement of national Veterinary and Aquatic Animal Health Services.",
-    tags: [{
+    description:
+      "It is a project of the World Health Organization about their missions to other countries related to the sustainable improvement of national Veterinary and Aquatic Animal Health Services.",
+    tags: [
+      {
         name: "react",
         color: "blue-text-gradient",
       },
@@ -402,9 +445,11 @@ const projects = [
   },
   {
     name: "True Closure",
-    description: "TrueClosure is a modern platform designed to offer meaningful closure and emotional support for individuals navigating loss and healing. With an intuitive interface, it provides users access to guided resource...",
+    description:
+      "TrueClosure is a modern platform designed to offer meaningful closure and emotional support for individuals navigating loss and healing. With an intuitive interface, it provides users access to guided resource...",
 
-    tags: [{
+    tags: [
+      {
         name: "react",
         color: "blue-text-gradient",
       },
@@ -416,7 +461,7 @@ const projects = [
         name: "php",
         color: "green-text-gradient",
       },
-    
+
       {
         name: "mysql",
         color: "blue-text-gradient",
@@ -427,8 +472,10 @@ const projects = [
   },
   {
     name: "Immigra Conslutant",
-    description: "This web application provides student advisory services for education abroad in countries like Canada, the USA, France, and various locations in Europe.",
-    tags: [{
+    description:
+      "This web application provides student advisory services for education abroad in countries like Canada, the USA, France, and various locations in Europe.",
+    tags: [
+      {
         name: "react",
         color: "blue-text-gradient",
       },
@@ -447,8 +494,10 @@ const projects = [
 
   {
     name: "Sysreform's International",
-    description: "Sysrefrom is a leading software company that provides a comprehensive suite of IT and software services worldwide. Our offerings include custom software development, mobile app development, web development and managed IT services.",
-    tags: [{
+    description:
+      "Sysrefrom is a leading software company that provides a comprehensive suite of IT and software services worldwide. Our offerings include custom software development, mobile app development, web development and managed IT services.",
+    tags: [
+      {
         name: "react",
         color: "blue-text-gradient",
       },
@@ -466,8 +515,10 @@ const projects = [
   },
   {
     name: "UNDP",
-    description: "It is a United Nations project focusing on home energy efficiency. By empowering homeowners with energy-efficient solutions, the project aims to construct residences that harmonize with the environment while maximizing energy savings. It comprises three modules: CMS, LMS, and Energy Module.",
-    tags: [{
+    description:
+      "It is a United Nations project focusing on home energy efficiency. By empowering homeowners with energy-efficient solutions, the project aims to construct residences that harmonize with the environment while maximizing energy savings. It comprises three modules: CMS, LMS, and Energy Module.",
+    tags: [
+      {
         name: "react",
         color: "blue-text-gradient",
       },
@@ -481,7 +532,7 @@ const projects = [
       },
     ],
     image: undp,
-    source_code_link: "https://drcundp.sysreformsint.com/",
+    source_code_link: "https://www.undp.org/",
   },
 ];
 
@@ -493,5 +544,5 @@ export {
   extraTech,
   experiences,
   testimonials,
-  projects
+  projects,
 };
