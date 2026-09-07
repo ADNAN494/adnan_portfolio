@@ -1,0 +1,178 @@
+# TODO — Adnan Yousaf Portfolio
+
+Living backlog. Newest work at the top; see
+[ARCHITECTURE.md](./ARCHITECTURE.md) for how the pieces fit together.
+
+Legend: `[x]` done · `[ ]` open · **P1** blocking/user-visible · **P2** should
+fix · **P3** polish.
+
+---
+
+## Done — 2026-09-07
+
+### [x] Browserslist / caniuse-lite out of date — **P2**
+
+Every build printed:
+
+```
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+```
+
+Autoprefixer uses `caniuse-lite` to decide which vendor prefixes to emit, so a
+stale copy means prefixes for browsers nobody runs and, worse, missing prefixes
+for ones people do.
+
+**Fix:** ran `npx update-browserslist-db@latest` — `1.0.30001642` → `1.0.30001810`.
+Only `package-lock.json` changed; no target-browser changes, so the CSS output is
+identical. Re-run it every few months (or whenever the warning returns); it is a
+lockfile refresh, not a dependency upgrade.
+
+### [x] `CONTEXT_LOST_WEBGL` / "Error creating WebGL context" crash — **P1**
+
+Symptoms in the console:
+
+```
+WebGL: CONTEXT_LOST_WEBGL: loseContext: context lost
+THREE.WebGLRenderer: Context Lost.
+The above error occurred in the <ForwardRef(Canvas)> component ...
+Consider adding an error boundary to your tree ...
+Uncaught Error: Error creating WebGL context.
+```
+
+**Root cause: `@react-three/fiber` 8.11.5 does not survive React 18 `StrictMode`.**
+`CanvasImpl` keeps the renderer root in a ref, and `unmountComponentAtNode` runs
+`forceContextLoss()` from inside a `setTimeout(…, 500)`. StrictMode's simulated
+unmount queues that teardown, the simulated remount then reuses the *same live
+renderer* (the ref survived), and half a second later the queued teardown kills
+the context of a canvas that is actively rendering. Full walkthrough with line
+numbers in [ARCHITECTURE.md §3.1](./ARCHITECTURE.md#31-why-the-context-was-being-lost-the-root-cause).
+
+**Fix:**
+
+1. `main.jsx` — dropped `<React.StrictMode>`, with a comment explaining why.
+   It is a dev-only wrapper, so production output is unchanged.
+2. `src/components/ErrorBoundary.jsx` — the boundary React kept asking for.
+   Catches renderer-construction throws *and* model-load failures (r3f's inner
+   boundary rethrows those outside `<Canvas>`), instead of unmounting `<App>`.
+3. `src/components/canvas/SafeCanvas.jsx` — the only `<Canvas>` the app uses.
+   Handles `webglcontextlost` (with `preventDefault()`, without which the browser
+   never fires `webglcontextrestored`), rebuilds on restore, auto-retries twice,
+   then shows a fallback. Defaults `preserveDrawingBuffer: false` and
+   `failIfMajorPerformanceCaveat: false`.
+4. `src/utils/webgl.js` — `isWebGLAvailable()` probe only.
+5. `Stars.jsx` unmounts itself 1.5 s after leaving the viewport (debounced), so
+   in practice only one starfield holds a context.
+
+> **Correction worth recording:** the first pass at this added a
+> `releaseRenderer()` (`forceContextLoss()` + `dispose()`) to `SafeCanvas`'s
+> unmount cleanup, on the theory that contexts were leaking. That made things
+> strictly worse — it force-lost the context on a canvas element StrictMode was
+> about to reuse, and a canvas whose context was explicitly lost keeps handing
+> back that same dead context from `getContext()`. Every mount then failed with
+> `Error creating WebGL context`. r3f already owns teardown; don't duplicate it.
+
+### [x] Graceful handling when the 3D model fails to load — **P2**
+
+A 404 on `/planet/scene.gltf`, a corrupt file or a dropped connection makes
+`useGLTF` reject. r3f catches that on its inner boundary and rethrows it outside
+`<Canvas>`, so it now lands on `SafeCanvas`'s boundary like any other failure.
+
+`SafeCanvas` distinguishes three reasons — `unsupported` (no WebGL at all),
+`lost` (context gone for good) and `error` (anything thrown out of the canvas
+tree, including a failed model) — and `fallback` may be a function
+`({ reason, retry }) => node`. `Earth.jsx` uses it to show a styled disc with a
+reason-specific message plus a "try again" link, hidden for `unsupported` where
+retrying cannot help. Its `onRetry` calls `useGLTF.clear(MODEL_PATH)`, because
+drei caches the **rejected** promise — without clearing it, a retry fails
+instantly with the same error instead of refetching.
+
+**Verify:** rename `public/planet/scene.gltf`, reload the contact section, and
+the disc should read "The 3D model couldn't be loaded."; rename it back and
+"try again" should bring the globe in without a page reload.
+
+---
+
+## Open — P1
+
+### [ ] Contact form reports success when EmailJS fails
+
+[`Contact.jsx`](../src/components/Contact.jsx) sets
+`status: { type: "success" }` in **both** the `try` and the `catch`. A visitor
+whose message never sent is told "Message sent — thank you!" and the form is
+cleared, so the message is gone with no way to recover it. Show a real failure
+state with a mailto fallback, and keep the field values so nothing is lost.
+
+### [ ] Stray credential-shaped comment in `Contact.jsx`
+
+Line ~12 carries a bare `// 7lWL2GUOhoPuvPumyTuPQ`. If that is an EmailJS
+private key or any other secret, rotate it and delete the line. Even if it is
+inert, it should not sit in a public repo.
+
+### [ ] Move EmailJS IDs to env vars
+
+`service_9f24tvg`, `template_28wreop` and the public key are inline in
+`Contact.jsx`. The public key is public by design, but env vars
+(`import.meta.env.VITE_EMAILJS_*`, `.env` is already gitignored) make rotating
+and swapping between prod/test templates a config change rather than a code edit.
+
+---
+
+## Open — P2
+
+### [ ] Placeholder testimonials
+
+`testimonials` in `constants/index.js` uses invented names (Sara Lee, Chris
+Brown, Lisa Wang) with `randomuser.me` stock photos. Real quotes from the
+Sysreforms / Optymyze / freelance work would carry far more weight — and stock
+faces on a testimonial card read as fake to anyone who has seen randomuser.me.
+
+### [ ] Earth may not actually auto-rotate
+
+`Earth.jsx` combines `frameloop='demand'` with drei's `<OrbitControls autoRotate>`.
+Under `demand`, frames render only when something calls `invalidate()`, and
+`autoRotate` has nothing to trigger it — so the globe may sit still until the
+user drags it. Either switch that canvas to `frameloop='always'` (it already
+unmounts/idles when off screen) or drive `invalidate()` from a `useFrame` tick.
+
+### [ ] Typos in public-facing content
+
+In `constants/index.js`: `"Immigra Conslutant"` → *Immigra Consultants*,
+`"boostrap"` → *bootstrap* (appears ~8 times as a tech tag),
+`"Sysreform's International"` → *Sysreforms International*. These render on the
+project cards where visitors read them.
+
+### [ ] Three.js chunk is 740 kB (202 kB gzip)
+
+The build warns about it. It is already lazy — nothing downloads until a canvas
+is needed — so this is not an LCP problem, but a `manualChunks` split of
+three / fiber / drei would let the starfield load without pulling in everything
+the Earth model needs.
+
+---
+
+## Open — P3
+
+- [ ] `<Navbar>` has no active-link highlight tied to scroll position beyond the
+      click handler; an IntersectionObserver-driven version would track properly.
+- [ ] No `prefers-reduced-motion` handling. The hero letter-stagger, timeline
+      reveals and rotating starfield all animate regardless. A media-query guard
+      that drops to `initial={false}` would be a real accessibility win.
+- [ ] Add `og:image` / Twitter card meta to `index.html` so shared links preview.
+- [ ] `dist/` exists in the working tree; it is gitignored and untracked, so it is
+      only local clutter — safe to delete between builds.
+- [ ] Revisit `<React.StrictMode>` after upgrading to `@react-three/fiber` 9 +
+      React 19, which fixes the remount handling that forced us to drop it (§3.1).
+- [ ] No test setup at all. Even a smoke test that renders `<App />` with WebGL
+      stubbed would catch the class of crash fixed above.
+
+---
+
+## Routine maintenance
+
+| Cadence | Task |
+|---|---|
+| Every few months | `npx update-browserslist-db@latest` when the build warns |
+| Per new project | Add to `projects` in `constants/index.js`, screenshot in `src/assets/`, export from `src/assets/index.js`, then update §5.2 of ARCHITECTURE.md |
+| Per new role | Add to `experiences`; keep dates absolute |
+| Before deploy | `npm run build && npm run preview`, then check the console for WebGL / hydration warnings |

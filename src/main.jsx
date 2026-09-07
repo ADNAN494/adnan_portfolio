@@ -8,11 +8,19 @@ let mounted = false;
 const mount = () => {
   if (mounted) return;
   mounted = true;
-  ReactDOM.createRoot(document.getElementById("root")).render(
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  );
+  // NOTE: deliberately not wrapped in <React.StrictMode>.
+  //
+  // @react-three/fiber 8.x is not compatible with React 18's StrictMode
+  // double-mount. Its <Canvas> keeps the renderer root in a ref, so the
+  // simulated remount reuses the live renderer — but the simulated unmount has
+  // already queued unmountComponentAtNode(), which calls forceContextLoss()
+  // from inside a setTimeout(..., 500). Half a second after load that teardown
+  // kills the context of a canvas that is actively rendering:
+  //   WebGL: CONTEXT_LOST_WEBGL: loseContext: context lost
+  //   THREE.WebGLRenderer: Context Lost.
+  // StrictMode is dev-only, so this costs nothing in production. Revisit if we
+  // ever move to r3f 9 / React 19, which fixes the remount handling.
+  ReactDOM.createRoot(document.getElementById("root")).render(<App />);
 };
 
 // Give the browser one frame to paint the static shell in index.html before

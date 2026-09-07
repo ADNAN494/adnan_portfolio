@@ -1,7 +1,14 @@
 import { useState, useRef, useEffect, Suspense } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { useFrame } from "@react-three/fiber";
 import { Points, PointMaterial, Preload } from "@react-three/drei";
 import * as random from "maath/random/dist/maath-random.esm";
+
+import SafeCanvas from "./SafeCanvas";
+
+// Once the starfield has been off screen this long, tear the canvas down and
+// give its WebGL context back to the browser. Debounced so scrolling past the
+// boundary doesn't thrash contexts.
+const UNMOUNT_DELAY_MS = 1500;
 
 const Stars = (props) => {
   const ref = useRef();
@@ -42,35 +49,49 @@ const Stars = (props) => {
 
 const StarsCanvas = ({ className = "w-full h-full absolute inset-0" }) => {
   const containerRef = useRef(null);
-  // Only animate while the canvas is on screen. Two starfields (Hero + Contact)
-  // are never visible at once on a tall page, so the off-screen one stays idle.
-  const [active, setActive] = useState(true);
+  // Two starfields (Hero + Contact) live on the page but are never both in view
+  // on a tall screen. Keeping only the visible one mounted means one WebGL
+  // context instead of two, which keeps us well clear of the browser's cap.
+  const [visible, setVisible] = useState(true);
+  const [mounted, setMounted] = useState(true);
 
   useEffect(() => {
     const node = containerRef.current;
     if (!node || typeof IntersectionObserver === "undefined") return;
 
     const observer = new IntersectionObserver(
-      ([entry]) => setActive(entry.isIntersecting),
-      { rootMargin: "0px" }
+      ([entry]) => setVisible(entry.isIntersecting),
+      // A little margin so the canvas is already built by the time it scrolls in.
+      { rootMargin: "200px" }
     );
     observer.observe(node);
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    if (visible) {
+      setMounted(true);
+      return;
+    }
+    const id = setTimeout(() => setMounted(false), UNMOUNT_DELAY_MS);
+    return () => clearTimeout(id);
+  }, [visible]);
+
   return (
     <div ref={containerRef} className={className}>
-      <Canvas
-        frameloop={active ? "always" : "never"}
-        camera={{ position: [0, 0, 1] }}
-        dpr={[1, 1.5]}
-      >
-        <Suspense fallback={null}>
-          <Stars />
-        </Suspense>
+      {mounted && (
+        <SafeCanvas
+          frameloop={visible ? "always" : "never"}
+          camera={{ position: [0, 0, 1] }}
+          dpr={[1, 1.5]}
+        >
+          <Suspense fallback={null}>
+            <Stars />
+          </Suspense>
 
-        <Preload all />
-      </Canvas>
+          <Preload all />
+        </SafeCanvas>
+      )}
     </div>
   );
 };
