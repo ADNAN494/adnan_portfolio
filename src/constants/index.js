@@ -318,26 +318,63 @@ const experiences = [
   },
 ];
 
-const testimonials = [
+// Replaces the old `testimonials` array, which put invented names (Sara Lee,
+// Chris Brown, Lisa Wang) over randomuser.me stock photos. Anyone who has seen
+// randomuser.me recognises those faces, and one card read as fake discounts
+// every other claim on the page — the exact opposite of what a testimonial
+// section is for.
+//
+// These are organisations whose systems I actually worked on. Every row is
+// checkable: against the Experience timeline above, the Projects grid below,
+// and the live link on the card itself. No quotes are attributed to anyone who
+// did not say them, and no faces are borrowed. If real client quotes arrive
+// later, they belong here as a separate array — not as a replacement for this
+// one, which stands on its own.
+const clients = [
   {
-    testimonial:
-      "I thought it was impossible to make a website as beautiful as our product, but Adnan proved me wrong.",
-    name: "Sara Lee",
-    image: "https://randomuser.me/api/portraits/women/4.jpg",
+    org: "WOAH",
+    full: "World Organisation for Animal Health",
+    kind: "intergovernmental",
+    work: "Sont — animal-disease tracking and case history across member countries. Screens carrying multi-step forms, approval workflows and thousands of records at a time.",
+    link: "https://sont-uat.woah.org/",
   },
   {
-    testimonial:
-      "I've never met a web developer who truly cares about their clients' success like Adnan does.",
-    name: "Chris Brown",
-    image: "https://randomuser.me/api/portraits/men/5.jpg",
+    org: "WHO",
+    full: "World Health Organization",
+    kind: "intergovernmental",
+    work: "PVSIS — reporting for veterinary and aquatic animal health missions, built with WOAH to support national services improvement programmes.",
+    link: "https://pvs-preprod.woah.org/",
   },
   {
-    testimonial:
-      "After Adnan optimized our website, our traffic increased by 50%. We can't thank them enough!",
-    name: "Lisa Wang",
-    image: "https://randomuser.me/api/portraits/women/6.jpg",
+    org: "UNDP",
+    full: "United Nations Development Programme",
+    kind: "united nations",
+    work: "Home energy-efficiency platform across three modules — a CMS, an LMS and an energy calculator — for homeowners planning efficient builds.",
+    link: "https://www.undp.org/",
+  },
+  {
+    org: "DRAP",
+    full: "Drug Regulatory Authority of Pakistan",
+    kind: "national regulator",
+    work: "MDMC — the drug-management platform, where I owned frontend end to end: interface, API integration and page-speed work on a regulator-facing system.",
+    link: "https://e.dra.gov.pk/login",
+  },
+  {
+    org: "Psychic Txt",
+    full: "Live advisor platform, four brands",
+    kind: "consumer product",
+    work: "Next.js frontends for live chat and reading products — advisor discovery, real-time conversations, credit balances and Stripe checkout across Psychic Txt, Psychic Vision and Mi Vidente.",
+    link: "https://www.psychictxt.com/",
+  },
+  {
+    org: "Techypedia",
+    full: "UK digital solutions company",
+    kind: "agency client",
+    work: "Full marketing site in Next.js and Bootstrap — every page designed and built for a responsive, fast experience on a lead-generating site.",
+    link: "https://techypedia.co.uk/",
   },
 ];
+
 
 const projects = [
   {
@@ -351,7 +388,7 @@ const projects = [
         color: "blue-text-gradient",
       },
       {
-        name: "boostrap",
+        name: "bootstrap",
         color: "pink-text-gradient",
       },
       {
@@ -381,7 +418,7 @@ const projects = [
         color: "blue-text-gradient",
       },
       {
-        name: "boostrap",
+        name: "bootstrap",
         color: "pink-text-gradient",
       },
       {
@@ -549,7 +586,7 @@ const projects = [
         color: "blue-text-gradient",
       },
       {
-        name: "boostrap",
+        name: "bootstrap",
         color: "pink-text-gradient",
       },
       {
@@ -579,7 +616,7 @@ const projects = [
         color: "blue-text-gradient",
       },
       {
-        name: "boostrap",
+        name: "bootstrap",
         color: "pink-text-gradient",
       },
       {
@@ -651,16 +688,16 @@ const projects = [
     source_code_link: "https://join.trueclosureapp.com/landing",
   },
   {
-    name: "Sysreform's International",
+    name: "Sysreforms International",
     description:
-      "Sysrefrom is a leading software company that provides a comprehensive suite of IT and software services worldwide. Our offerings include custom software development, mobile app development, web development and managed IT services.",
+      "Sysreforms is a leading software company that provides a comprehensive suite of IT and software services worldwide. Our offerings include custom software development, mobile app development, web development and managed IT services.",
     tags: [
       {
         name: "react",
         color: "blue-text-gradient",
       },
       {
-        name: "boostrap",
+        name: "bootstrap",
         color: "green-text-gradient",
       },
       {
@@ -681,7 +718,7 @@ const projects = [
         color: "blue-text-gradient",
       },
       {
-        name: "boostrap",
+        name: "bootstrap",
         color: "green-text-gradient",
       },
       {
@@ -693,7 +730,7 @@ const projects = [
     source_code_link: "https://www.undp.org/",
   },
   {
-    name: "Immigra Conslutant",
+    name: "Immigra Consultants",
     description:
       "This web application provides student advisory services for education abroad in countries like Canada, the USA, France, and various locations in Europe.",
     tags: [
@@ -706,7 +743,7 @@ const projects = [
         color: "green-text-gradient",
       },
       {
-        name: "boostrap",
+        name: "bootstrap",
         color: "pink-text-gradient",
       },
     ],
@@ -724,6 +761,6 @@ export {
   paymentsSkill,
   extraTech,
   experiences,
-  testimonials,
+  clients,
   projects,
 };

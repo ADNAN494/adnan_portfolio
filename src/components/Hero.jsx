@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useTypewriter, Cursor } from "react-simple-typewriter";
 
 import { styles } from "../styles";
+import useReducedMotion from "../utils/useReducedMotion";
 
 const StarsCanvas = lazy(() => import("./canvas/Stars"));
 
@@ -32,6 +33,35 @@ const AnimatedWord = ({ word, className = "" }) => (
   </span>
 );
 
+// The role line cycles forever, which is exactly the motion a visitor with
+// "reduce motion" set has asked not to see. Isolating the typewriter in its own
+// component means the hook is not even called when it is switched off — no
+// timers left running behind a static string. ROLES[0] renders instead, and it
+// matches the static shell in index.html so nothing swaps on mount.
+const ROLES = [
+  "Full Stack Developer",
+  "AI Chatbot Builder",
+  "E-commerce Expert",
+  "Your Digital Partner",
+];
+
+const TypedRole = () => {
+  const [text] = useTypewriter({
+    words: ROLES,
+    loop: {},
+    typeSpeed: 80,
+    deleteSpeed: 50,
+    delaySpeed: 1800,
+  });
+
+  return (
+    <>
+      {text}
+      <Cursor cursorColor='#e8a76f' />
+    </>
+  );
+};
+
 const CodeWindow = () => (
   <div className='rounded-2xl border border-white/10 bg-black-100 shadow-card overflow-hidden w-full'>
     <div className='flex items-center gap-2 px-5 py-3.5 border-b border-white/10 bg-white/[0.02]'>
@@ -59,18 +89,7 @@ const CodeWindow = () => (
 );
 
 const Hero = () => {
-  const [text] = useTypewriter({
-    words: [
-      "Full Stack Developer",
-      "AI Chatbot Builder",
-      "E-commerce Expert",
-      "Your Digital Partner",
-    ],
-    loop: {},
-    typeSpeed: 80,
-    deleteSpeed: 50,
-    delaySpeed: 1800,
-  });
+  const reduced = useReducedMotion();
 
   // Defer loading the Three.js starfield until the browser is idle so it
   // never blocks the hero's first paint (LCP). It fades in a moment later.
@@ -112,8 +131,7 @@ const Hero = () => {
             className='font-mono text-mint sm:text-[16px] text-[13px] tracking-wide'
           >
             <span className='text-secondary'>{"// "}</span>
-            {text}
-            <Cursor cursorColor='#e8a76f' />
+            {reduced ? ROLES[0] : <TypedRole />}
           </motion.p>
 
           <motion.h1

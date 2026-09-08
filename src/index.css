@@ -152,3 +152,33 @@
       -2.6em 0em 0 0em rgba(255, 255, 255, 0.7), -1.8em -1.8em 0 0em #ffffff;
   }
 }
+
+/* Visitors who have asked their OS to reduce motion.
+ *
+ * Most of this page's animation is framer-motion, which is handled in JS by
+ * <MotionConfig reducedMotion="user"> in App.jsx — that drops transform and
+ * layout animations while keeping opacity fades. The continuous ones it does
+ * not own (hero typewriter, rotating starfield, auto-rotating globe) are
+ * switched off at their own components via utils/useReducedMotion.
+ *
+ * What is left for CSS is the motion the browser itself performs.
+ */
+@media (prefers-reduced-motion: reduce) {
+  /* Jumping straight to an anchor instead of gliding a whole page height. The
+   * `*` selector above sets this globally, so it has to be overridden here. */
+  *,
+  html {
+    scroll-behavior: auto !important;
+  }
+
+  /* Hover lifts on the project and client cards are a response to the pointer
+   * rather than unprompted motion, but they still travel — settle for the
+   * colour change alone. */
+  .hover\:-translate-y-2:hover {
+    transform: none !important;
+  }
+}
+
+/* Note: .canvas-loader keeps spinning even under reduce-motion. It is a
+ * progress indicator — it only exists while the 3D model is downloading, and a
+ * frozen spinner reads as a hung page rather than a considerate one. */

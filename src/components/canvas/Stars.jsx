@@ -1,11 +1,13 @@
-import { useState, useRef, useEffect, Suspense } from "react";
-import { useFrame, useThree } from "@react-three/fiber";
+import { useState, useRef, Suspense } from "react";
+import { useFrame } from "@react-three/fiber";
 import { Points, PointMaterial, Preload } from "@react-three/drei";
 import * as random from "maath/random/dist/maath-random.esm";
 
 import SafeCanvas from "./SafeCanvas";
+import { ResumeOnVisible, useNearViewport } from "./visibility";
+import useReducedMotion from "../../utils/useReducedMotion";
 
-const Stars = (props) => {
+const Stars = ({ animate = true, ...props }) => {
   const ref = useRef();
   const [sphere] = useState(() => {
     // Length must be a multiple of 3 (x, y, z per point). maath's inSphere can
@@ -19,7 +21,7 @@ const Stars = (props) => {
   });
 
   useFrame((state, delta) => {
-    if (!ref.current) return;
+    if (!ref.current || !animate) return;
     // Clamp delta so resuming after the frameloop was paused (off-screen)
     // doesn't produce a sudden rotation jump.
     const d = Math.min(delta, 0.05);
@@ -42,29 +44,7 @@ const Stars = (props) => {
   );
 };
 
-// Restarts the render loop when the starfield scrolls back into view.
-//
-// r3f's rAF loop is global across every canvas on the page, and it cancels
-// itself the moment no root asks for a frame ("if (repeat === 0) { running =
-// false; cancelAnimationFrame(frame) }"). Flipping the frameloop prop back to
-// "always" only writes to the store — configure() calls setFrameloop(), which
-// never restarts the loop. invalidate() is the only thing that does, and it
-// refuses to run while frameloop is still "never", so it has to happen from
-// inside the canvas after the store has been updated. Without this the stars
-// freeze for good the first time every canvas goes idle at once.
-const ResumeOnVisible = ({ active }) => {
-  const invalidate = useThree((state) => state.invalidate);
-
-  useEffect(() => {
-    if (active) invalidate();
-  }, [active, invalidate]);
-
-  return null;
-};
-
 const StarsCanvas = ({ className = "w-full h-full absolute inset-0" }) => {
-  const containerRef = useRef(null);
-
   // The canvas is built once and kept for the life of the page. When it scrolls
   // out of view we PAUSE the render loop rather than unmounting it.
   //
@@ -80,32 +60,26 @@ const StarsCanvas = ({ className = "w-full h-full absolute inset-0" }) => {
   // frameloop="never" costs nothing while off screen — no rAF, no draw calls,
   // no GPU work — and keeps the context alive, so nothing ever has to be
   // recreated. Cheaper than the old scheme and it can't trip the guard.
-  const [active, setActive] = useState(true);
+  const [containerRef, visible] = useNearViewport();
 
-  useEffect(() => {
-    const node = containerRef.current;
-    if (!node || typeof IntersectionObserver === "undefined") return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => setActive(entry.isIntersecting),
-      // A little margin so the stars are already turning by the time they scroll in.
-      { rootMargin: "200px" }
-    );
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, []);
+  // A slowly rotating starfield behind the whole page is exactly the kind of
+  // continuous background motion "reduce motion" exists to stop. "demand"
+  // paints the field once and then leaves it there — the visual stays, the
+  // movement goes.
+  const reduced = useReducedMotion();
+  const frameloop = reduced ? "demand" : visible ? "always" : "never";
 
   return (
     <div ref={containerRef} className={className}>
       <SafeCanvas
-        frameloop={active ? "always" : "never"}
+        frameloop={frameloop}
         camera={{ position: [0, 0, 1] }}
         dpr={[1, 1.5]}
       >
-        <ResumeOnVisible active={active} />
+        <ResumeOnVisible active={visible} />
 
         <Suspense fallback={null}>
-          <Stars />
+          <Stars animate={!reduced} />
         </Suspense>
 
         <Preload all />

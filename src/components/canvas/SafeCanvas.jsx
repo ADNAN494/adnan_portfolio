@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 
 import ErrorBoundary from "../ErrorBoundary";
-import { isWebGLAvailable } from "../../utils/webgl";
+import { isWebGLAvailable, preventForcedContextLoss } from "../../utils/webgl";
 
 // ---------------------------------------------------------------------------
 // Chrome's "guilty page" guard — the failure this file exists to survive.
@@ -20,13 +20,21 @@ import { isWebGLAvailable } from "../../utils/webgl";
 //
 // Nothing recovers from that except a reload — and every further attempt fails
 // *and* counts against the page again, so a retry loop turns one bad canvas
-// into a page-wide outage. The moment we see it, every canvas on the page stops
-// trying and shows its fallback.
+// into a page-wide outage. Once we see it, canvases still WAITING for a context
+// stop asking; canvases that already have one keep rendering, because the block
+// only refuses new contexts and says nothing about live ones.
 //
-// The real cure is upstream: don't churn canvases. See Stars.jsx — canvases are
-// created once and paused, never unmounted, so forceContextLoss() effectively
-// never runs. This flag is the safety net for the cases we don't control (a
-// GPU driver reset, a laptop switching GPUs, dev-server hot reloads).
+// Two things keep the page away from that threshold, in order of importance:
+//
+//   1. handleCreated() overrides renderer.forceContextLoss() with a no-op, so
+//      unmounting a <Canvas> no longer spends a guilty loss. That covers the
+//      unmounts we do not control — HMR in dev, a StrictMode double-mount, the
+//      rebuild below — which is the leak every previous fix here missed.
+//   2. Canvases are created once and paused, never unmounted on scroll. See
+//      Stars.jsx.
+//
+// This flag is then the last line of defence, for a page that was already
+// blocked before we loaded (a previous navigation, another tab's doing).
 // ---------------------------------------------------------------------------
 let creationBlocked = false;
 const subscribers = new Set();
@@ -51,9 +59,10 @@ if (typeof window !== "undefined") {
   );
 }
 
-// One silent rebuild after the browser drops our context, then we stop. Each
-// rebuild unmounts a canvas, and every unmount costs a forceContextLoss() —
-// retrying harder is how a page gets itself blocked in the first place.
+// One silent rebuild after the browser drops our context, then we stop. The
+// forceContextLoss() override means a rebuild no longer costs a guilty loss,
+// but a canvas that has failed twice is not going to succeed on the third go —
+// it is failing for a reason retrying cannot change.
 const MAX_RETRIES = 1;
 
 // Wait this long after a context loss for the browser to restore it on its own.
@@ -94,6 +103,9 @@ const SafeCanvas = ({
   const [blocked, setBlocked] = useState(creationBlocked);
   const [generation, setGeneration] = useState(0);
   const [failure, setFailure] = useState(supported ? null : "unsupported");
+  // Whether this canvas has ever been handed a working context. Decides whether
+  // a page-wide block applies to us — see `reason` below.
+  const [hasContext, setHasContext] = useState(false);
 
   const retriesRef = useRef(0);
   const restoreTimerRef = useRef(null);
@@ -108,9 +120,9 @@ const SafeCanvas = ({
     return () => subscribers.delete(notify);
   }, []);
 
-  // Automatic, capped rebuild after a context loss. Note we never call
-  // forceContextLoss() ourselves — r3f's unmount path already does, and doing
-  // it early poisons a canvas element that is about to be reused.
+  // Automatic, capped rebuild after a context loss. We never call
+  // forceContextLoss() ourselves — and as of handleCreated(), neither does
+  // r3f's unmount path, so remounting here is free.
   const rebuild = useCallback(() => {
     clearTimeout(restoreTimerRef.current);
     if (creationBlocked || retriesRef.current >= MAX_RETRIES) {
@@ -137,6 +149,19 @@ const SafeCanvas = ({
     (state) => {
       const canvas = state.gl.domElement;
 
+      // THE fix for "Web page caused context loss and was blocked".
+      //
+      // Every <Canvas> unmount used to spend one of Chrome's forced-context-loss
+      // allowance, because that is the last thing r3f's teardown does. It made
+      // the recovery machinery in this file self-defeating: rebuilding after a
+      // lost context unmounted a canvas (one loss), and markBlocked() swapping
+      // every canvas to its fallback unmounted all of them at once (three
+      // more) — spending four of the budget to recover from one hiccup. In dev
+      // every HMR update did it too, which is why this kept coming back after
+      // each fix. Full reasoning in utils/webgl.js.
+      preventForcedContextLoss(state.gl);
+
+
       // preventDefault() is what marks the context as restorable; skip it and
       // the browser never fires webglcontextrestored.
       const onLost = (event) => {
@@ -152,14 +177,23 @@ const SafeCanvas = ({
       canvas.addEventListener("webglcontextlost", onLost);
       canvas.addEventListener("webglcontextrestored", onRestored);
 
+      setHasContext(true);
       onCreated?.(state);
     },
     [onCreated, rebuild]
   );
 
-  // A blocked page can't produce a context no matter what we do, so report it
-  // as "unsupported" — the one reason for which the fallback hides its retry.
-  const reason = blocked ? "unsupported" : failure;
+  // A blocked page can't produce a NEW context no matter what we do, so a
+  // canvas still waiting for one reports "unsupported" — the one reason for
+  // which the fallback hides its retry.
+  //
+  // A canvas that is already rendering is a different case, and used to be
+  // handled wrongly: it was torn down along with the rest, which blanked a
+  // perfectly good visual and (before forceContextLoss was overridden in
+  // handleCreated) spent another guilty loss on the way out, pushing the page
+  // further past the threshold it was reacting to. The block says nothing
+  // about contexts that already exist, so a live canvas simply carries on.
+  const reason = failure ?? (blocked && !hasContext ? "unsupported" : null);
 
   if (reason) {
     return typeof fallback === "function"

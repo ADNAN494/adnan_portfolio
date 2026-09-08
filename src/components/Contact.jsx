@@ -7,10 +7,43 @@ import { slideIn } from "../utils/motion";
 import LazyShow from "./LazyShow";
 
 const EarthCanvas = lazy(() => import("./canvas/Earth"));
-//
-//
-//
-// 7lWL2GUOhoPuvPumyTuPQ
+
+// Where the form delivers, and the address the fallback link opens.
+const CONTACT_EMAIL = "yousafadnan998@gmail.com";
+
+// EmailJS identifiers, env-first. The public key is public by design — it ships
+// in the bundle whatever we do — so this isn't about hiding it. It's so that
+// rotating a key, or pointing the form at a test template, is a config change
+// instead of a code edit. `.env` is gitignored; see `.env.example` for the
+// variable names. The literals are the current production values, kept as
+// defaults so a checkout with no `.env` still has a working form.
+const EMAILJS_SERVICE_ID =
+  import.meta.env.VITE_EMAILJS_SERVICE_ID || "service_9f24tvg";
+const EMAILJS_TEMPLATE_ID =
+  import.meta.env.VITE_EMAILJS_TEMPLATE_ID || "template_28wreop";
+const EMAILJS_PUBLIC_KEY =
+  import.meta.env.VITE_EMAILJS_PUBLIC_KEY || "U3qABvJ4-H4JbjcKl";
+
+if (
+  import.meta.env.DEV &&
+  !import.meta.env.VITE_EMAILJS_SERVICE_ID &&
+  !import.meta.env.VITE_EMAILJS_TEMPLATE_ID
+) {
+  console.warn(
+    "[Contact] VITE_EMAILJS_* not set — falling back to the built-in production IDs. Copy .env.example to .env to point the form somewhere else."
+  );
+}
+
+// Pre-fills the visitor's own mail client with everything they just typed, so a
+// failed send costs them a click rather than the whole message.
+const mailtoHref = ({ name, email, message }) => {
+  const subject = `Portfolio enquiry${name ? ` from ${name}` : ""}`;
+  const body = [message, "", `— ${name}`, email].filter(Boolean).join("\n");
+  return `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(
+    subject
+  )}&body=${encodeURIComponent(body)}`;
+};
+
 const Contact = () => {
   const formRef = useRef();
   const [form, setForm] = useState({
@@ -41,16 +74,16 @@ const Contact = () => {
       const { default: emailjs } = await import("@emailjs/browser");
 
       await emailjs.send(
-        "service_9f24tvg",
-        "template_28wreop",
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
         {
           from_name: form.name,
           to_name: "Adnan Yousaf",
           from_email: form.email,
-          to_email: "yousafadnan998@gmail.com",
+          to_email: CONTACT_EMAIL,
           message: form.message,
         },
-        "U3qABvJ4-H4JbjcKl",
+        EMAILJS_PUBLIC_KEY,
       );
 
       setLoading(false);
@@ -59,6 +92,7 @@ const Contact = () => {
         text: "Message sent — thank you! I'll get back to you as soon as possible.",
       });
 
+      // Only clear on an actual send. See the catch below.
       setForm({
         name: "",
         email: "",
@@ -68,14 +102,13 @@ const Contact = () => {
       setLoading(false);
       console.error(error);
 
+      // This used to report success and clear the form, which meant a visitor
+      // whose message never left the browser was told it had arrived — and the
+      // text they'd written was gone with it. Keep every field exactly as typed
+      // so they can retry or hand it to their own mail client.
       setStatus({
-        type: "success",
-        text: "Message sent — thank you! I'll get back to you as soon as possible.",
-      });
-      setForm({
-        name: "",
-        email: "",
-        message: "",
+        type: "error",
+        text: "That didn't send — something went wrong on the way out.",
       });
     }
   };
@@ -144,14 +177,29 @@ const Contact = () => {
           </button>
 
           {status && (
-            <p
-              className={`font-mono text-[14px] leading-6 ${
-                status.type === "success" ? "text-mint" : "text-red-400"
-              }`}
-            >
-              {status.type === "success" ? "✓ " : "✗ "}
-              {status.text}
-            </p>
+            <div role="status" aria-live="polite">
+              <p
+                className={`font-mono text-[14px] leading-6 ${
+                  status.type === "success" ? "text-mint" : "text-red-400"
+                }`}
+              >
+                {status.type === "success" ? "✓ " : "✗ "}
+                {status.text}
+              </p>
+
+              {status.type === "error" && (
+                <p className="font-mono text-[14px] leading-6 text-secondary mt-2">
+                  Your message is still in the form — press Send to try again, or{" "}
+                  <a
+                    href={mailtoHref(form)}
+                    className="text-peach underline underline-offset-4 hover:text-peach-dark transition-colors"
+                  >
+                    email it to me directly
+                  </a>
+                  .
+                </p>
+              )}
+            </div>
           )}
         </form>
       </motion.div>
