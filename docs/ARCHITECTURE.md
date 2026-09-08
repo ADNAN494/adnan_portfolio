@@ -30,6 +30,8 @@ Fonts: **Archivo Expanded** (display), **Inter** (body), **JetBrains Mono**
 
 ```
 index.html  ── static hero shell, inlined CSS (prod only)
+               ⚠ the hero intro paragraph is duplicated verbatim in Hero.jsx.
+                 Change one, change both, or the copy visibly swaps on mount.
     │
     ├─ vite.config.js › inlineCss()        build: folds the CSS bundle into <style> so
     │                                      first paint needs no blocking stylesheet
@@ -309,18 +311,50 @@ sees first.
 | MERN Stack Developer | Sysreforms International       | Nov 2023 – Jun 2025 |
 | Web Designer & SEO   | Pakistan Detector Technologies | Jan 2022 – Jun 2022 |
 
+Each entry in `experiences` carries `title`, `company_name`, `icon`, `iconBg`,
+`date`, `link`, plus:
+
+- **`summary`** — one line of context under the company name: domain, clients,
+  scope. This is where the credibility lives (WOAH / WHO / UNDP / DRAP for
+  Sysreforms), so it should never be a restatement of the job title.
+- **`points`** — what was actually built and owned. Written for recruiters and
+  hiring managers, so this section is deliberately more technical than About or
+  Skills, which are client-facing. Name the system, the constraint and the
+  decision — not the library. `Experience.jsx` renders both fields optionally,
+  so an entry without them still works.
+- **`tech`** — per-role stack chips, same treatment as the project-card tags, so
+  the stack is scannable without reading every bullet.
+
 ### 5.4 Skills surfaced
 
-MERN core (MongoDB, Express, React, Node) + **AI Integration & Chatbots** and
-**Payments & Online Checkout** feature cards, then chips for Next.js, Stripe,
-Apple Pay, PayPal, AI Chatbots, OpenAI API, Claude API, TypeScript, Bootstrap,
-MUI, MySQL, MSSQL, Firebase, Git & GitHub, Figma.
+Three tiers of cards, then chips — see `Tech.jsx`:
 
----
+| Tier | Source | Renders as |
+| --- | --- | --- |
+| `the core stack:` | `mernSkills` | 4 `SkillCard`s, `lg:grid-cols-4`. The letters spell **MERN** — this row is an acronym, so it takes exactly four entries. |
+| `frontend toolkit:` | `frontendSkills` | 5 `StackCard`s, `lg:grid-cols-5`. Next.js, JavaScript, TypeScript, Tailwind CSS, Material UI. Compact variant: 40 px letter mark, `p-6`, 3 bullets. |
+| featured | `aiSkill`, `paymentsSkill` | 2 `FeatureCard`s, `lg:grid-cols-2`, mint / peach. |
+| `also working with:` | `extraTech` | chips |
+
+`extraTech` chips: Stripe, Apple Pay, PayPal, AI Chatbots, OpenAI API, Claude
+API, Bootstrap, MySQL, MSSQL, Firebase, Git & GitHub, Figma.
+
+> Anything promoted from a chip to a card must be **removed from `extraTech`**,
+> or it renders twice in the same section. Next.js, TypeScript and MUI were
+> moved out when `frontendSkills` was added.
 
 ## 6. Conventions
 
 - **Content changes go in `src/constants/index.js`** — components only map.
+  Exceptions: the Hero and About prose live in their components (and the Hero
+  intro is mirrored in `index.html`).
+- **Two voices, on purpose.** Hero, About and Skills are written for clients and
+  non-technical visitors: plain language, outcomes over tooling, no unexplained
+  acronyms. Experience is written for recruiters and hiring managers: name the
+  system, the constraint and the decision. Don't blur them.
+- **Every number on the page must be checkable.** `stats` in `constants` is read
+  next to a project grid a visitor can count — keep `Projects shipped` equal to
+  `projects.length`, and don't add metrics that can't be defended in an interview.
 - New images: convert to **WebP** first (≤1200 px wide, quality 80), drop in
   `src/assets/`, export from `src/assets/index.js`. Don't commit the source
   PNG/JPG — a raw full-page screenshot is 1–3 MB, the WebP is ~20–45 kB.

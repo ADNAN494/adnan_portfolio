@@ -133,9 +133,13 @@ const Hero = () => {
             transition={{ delay: 0.15, duration: 0.45 }}
             className={`${styles.heroSubText} mt-8 max-w-xl`}
           >
-            I help businesses grow online — fast websites, online stores,
-            dashboards and AI chatbots that turn visitors into customers.
-            Built with modern tech (MERN stack), designed for real people.
+            {/* Duplicated verbatim in index.html's static shell — keep the two
+                in sync or the copy visibly swaps when React mounts. */}
+            Every project starts with two questions: what does the business
+            need, and what do its users actually want? Then I build it —
+            high-performance e-commerce, real-time dashboards, enterprise-grade
+            platforms and AI-powered features — using AI in my own workflow to
+            move faster.
           </motion.p>
 
           <motion.div

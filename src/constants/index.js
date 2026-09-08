@@ -41,23 +41,38 @@ export const navLinks = [
   },
 ];
 
+// Keep these honest — every one of them is checkable against the page itself or
+// a two-minute search, and a visitor who catches one wrong discounts the rest.
+// `Projects shipped` must match the length of `projects` below.
 const stats = [
   {
     value: "3+",
     label: "Years experience",
   },
   {
-    value: "10+",
+    value: "14",
     label: "Projects shipped",
   },
   {
-    value: "12+",
-    label: "Happy clients",
+    value: "4",
+    label: "Gov & UN platforms",
   },
   {
-    value: "99.9%",
-    label: "Uptime maintained",
+    value: "12+",
+    label: "Clients served",
   },
+];
+
+// Plain-language answer to "can you build X?" — rendered next to the About
+// stats. Deliberately outcome-shaped, not tool-shaped: the stack lives in the
+// Skills section, this is for a visitor deciding whether to get in touch.
+const services = [
+  "Custom web apps & dashboards",
+  "E-commerce & online payments",
+  "AI chatbots & assistants",
+  "API & third-party integrations",
+  "Complex frontend architecture",
+  "Performance & speed optimisation",
 ];
 
 const mernSkills = [
@@ -115,15 +130,61 @@ const mernSkills = [
   },
 ];
 
+// The frontend toolkit. Deliberately NOT part of mernSkills: those four letters
+// spell MERN and the grid is built around exactly four cards. These render as a
+// second, more compact row (see Tech.jsx › StackCard). Anything promoted to a
+// card here must come OUT of extraTech below, or it shows up twice.
+const frontendSkills = [
+  {
+    letter: "N",
+    name: "Next.js",
+    description:
+      "Pages that arrive already rendered — quick to load and easy for Google to read, which is what gets you found.",
+    bullets: ["App & Pages Router", "SSR / SSG / ISR", "SEO & metadata"],
+  },
+  {
+    letter: "JS",
+    name: "JavaScript",
+    description:
+      "The language everything here runs on. Modern, clean and written so the next developer can pick it up.",
+    bullets: ["ES2023+", "Async & APIs", "Performance tuning"],
+  },
+  {
+    letter: "TS",
+    name: "TypeScript",
+    description:
+      "Catches whole classes of bug before your visitors ever see them, and keeps a growing codebase safe to change.",
+    bullets: ["Typed API contracts", "Generics & utilities", "Safe refactors"],
+  },
+  {
+    letter: "TW",
+    name: "Tailwind CSS",
+    description:
+      "One consistent design system across every page, so the site looks deliberate on any screen size.",
+    bullets: ["Design tokens", "Responsive layouts", "Dark UI systems"],
+  },
+  {
+    letter: "MUI",
+    name: "Material UI",
+    description:
+      "Battle-tested, accessible components — the fastest route to a polished admin panel or dashboard.",
+    bullets: ["Theming", "Data grids & tables", "Accessible forms"],
+  },
+];
+
 const aiSkill = {
   letter: "AI",
   name: "AI Integration & Chatbots",
   description:
-    "I plug AI into your business: chatbots that answer your customers 24/7 in any language, smart search that understands what people mean, and automation that saves hours of manual work every week.",
+    "I plug AI into your business: chatbots that answer your customers 24/7 in any language, assistants that actually know your products and policies, search that understands what people mean rather than what they typed, and automation that saves hours of manual work every week.",
   bullets: [
     "Customer support chatbots",
     "WhatsApp & web bots",
     "OpenAI / Claude APIs",
+    "Answers from your own docs",
+    "Smart search & recommendations",
+    "Lead capture & qualification",
+    "Summaries & content drafting",
     "Workflow automation",
   ],
 };
@@ -137,15 +198,13 @@ const paymentsSkill = {
     "Stripe checkout",
     "Apple Pay & PayPal",
     "Subscriptions & billing",
+    "Webhooks & refunds",
+    "Multi-currency",
     "Secure transactions",
   ],
 };
 
 const extraTech = [
-  {
-    name: "Next.js",
-    highlight: true,
-  },
   {
     name: "Stripe",
     highlight: true,
@@ -171,15 +230,7 @@ const extraTech = [
     highlight: true,
   },
   {
-    name: "TypeScript",
-    highlight: false,
-  },
-  {
     name: "Bootstrap",
-    highlight: false,
-  },
-  {
-    name: "MUI",
     highlight: false,
   },
   {
@@ -211,43 +262,58 @@ const experiences = [
     icon: opy,
     iconBg: "#141b19",
     date: "July 2025 - Present",
+    summary:
+      "Consumer platforms built on Next.js — live advisor chat, wallet payments and multi-step acquisition funnels across four brands.",
     points: [
-      "Develop frontend web applications by converting Figma designs into Next.js and React projects using Bootstrap and Tailwind CSS.",
-      "Improve workflow efficiency by integrating Figma MCP Server with Claude AI agents in VS Code.",
-      "Design pixel-perfect, mobile-responsive web applications optimized for Android and iOS, ensuring cross-browser compatibility across Firefox, Safari, and other major browsers.",
-      "Develop real-time chat functionality using Firebase and PubNub, enabling instant messaging, live updates, image sharing, and emoji support.",
-      "Implement authentication (Google, Apple, phone number) using Firebase, and integrate payment gateways (Apple Pay, PayPal) through Stripe.",
-      "Collaborate with backend developers to integrate REST APIs using Next.js SSR, CSR, ISR, and RTK Query.",
+      "Build the frontend for live psychic chat products (Psychic Txt, Psychic Vision, Mi Vidente) in Next.js — advisor discovery, real-time conversations, credit balances and checkout — choosing SSR, ISR or client rendering per route depending on whether the content is shared, personalised, or changes by the second.",
+      "Own the real-time layer over PubNub and Firebase: instant messaging, live advisor availability, image sharing and emoji, with connection state and optimistic updates handled so a flaky mobile network doesn't drop a paid conversation.",
+      "Integrate Stripe end to end — Apple Pay and PayPal wallets, one-off credit purchases and recurring subscriptions — reconciling client state against webhook-driven server state so a balance is never stale after a refresh.",
+      "Implement multi-provider authentication on Firebase (Google, Apple and phone/OTP), including the routing and guard logic that decides what an anonymous, half-onboarded or paying user is allowed to reach.",
+      "Design acquisition funnels (try.psychictxt.com, quiz.resethypnosis.com) as data-driven step machines — branching questions, progress state and validation defined as configuration — so marketing can reorder or add steps without a component rewrite.",
+      "Maintain a shared component layer of typed, reusable primitives on Tailwind design tokens, reused across sibling brands so each stays visually distinct without forking the codebase.",
+      "Wire the Figma MCP server to Claude agents in VS Code to generate first-pass component scaffolds straight from design files, then refactor them to the project's conventions — cutting the mechanical part of design-to-code without shipping generated code unreviewed.",
+      "Ship for real mobile traffic: responsive to 320px, cross-browser fixes for Safari's stricter handling of dates, scrolling and payment sheets, verified on iOS and Android rather than in a desktop emulator.",
     ],
+    tech: ["Next.js", "React", "TypeScript", "Tailwind", "RTK Query", "Firebase", "PubNub", "Stripe", "Node.js"],
     link: "https://optymyzetech.com/",
   },
 
   {
-    title: "Mern Stack Developer",
+    title: "MERN Stack Developer",
     company_name: "Sysreforms International",
     icon: sys,
     iconBg: "#141b19",
     date: "Nov 2023 - June 2025",
+    summary:
+      "Enterprise and public-sector systems for the World Organisation for Animal Health, WHO, UNDP and Pakistan's drug regulator (DRAP).",
     points: [
-      "Design responsive UIs using Material UI, Tailwind CSS, and Bootstrap 5, ensuring cross-browser compatibility.",
-      "Developed and optimized high-performance web applications using Next.js and React.js, leveraging SSR, SSG, hooks, code splitting, lazy loading, and React virtualization.",
-      "Develop RESTful APIs using Node.js and Express.js; integrated data flows in the frontend with Axios, Redux, and Formik/Yup for schema-based form validation.",
-      "Implemented Git-based version control workflows (feature branching, pull requests, code reviews) using GitHub, enabling smooth team collaboration.",
+      "Built data-heavy operational systems for international bodies — WOAH's animal-disease tracking (Sont), WHO/WOAH veterinary mission reporting (PVSIS) and DRAP's drug-management platform — where one screen can carry multi-step forms, approval workflows and thousands of records.",
+      "Architected the frontend around schema-driven components: form, table and filter primitives configured by data instead of copied per screen, so adding a module to a system with dozens of near-identical CRUD views became a config change rather than a new component tree.",
+      "Kept those screens responsive under real data volumes with code splitting, lazy loading, memoisation and list virtualisation, so render cost stayed flat as record counts grew instead of degrading with the dataset.",
+      "Modelled application state deliberately — Redux for what genuinely crosses modules (permissions, lookups, in-progress submissions), local state for the rest — with Formik and Yup schemas keeping validation rules in one place and matched to the API contract.",
+      "Wrote the Node and Express REST APIs behind several of these modules against MSSQL, so I owned both sides of the contract and could shape endpoints and payloads around how the UI actually consumes them, rather than reshaping data in the browser.",
+      "Built to the role-based access rules these systems require: what a user may view, edit or approve differs by role, enforced consistently across routing, component rendering and API calls.",
+      "Delivered the UNDP home energy-efficiency platform across three distinct modules (CMS, LMS and an energy calculator), plus the public-facing Techypedia and Immigra Consultants sites.",
+      "Worked the team's Git flow day to day — feature branches, pull requests and review — on a codebase several developers touched at once.",
     ],
+    tech: ["React", "Redux", "Node.js", "Express", "MSSQL", "Material UI", "Bootstrap", "Formik / Yup"],
     link: "https://www.sysreforms.com/",
   },
   {
-    title: "WEB Designer & SEO",
+    title: "Web Designer & SEO",
     company_name: "Pakistan Detector Technologies",
     icon: pak_det,
     iconBg: "#141b19",
     date: "Jan 2022 - Jun 2022",
+    summary:
+      "First professional role — building and ranking client sites across e-commerce, education, real estate and corporate niches.",
     points: [
-      "Designed and developed user-interactive pages using Bootstrap and JavaScript.",
-      "Gained hands-on experience on how websites operate within the Google search engine.",
-      "Worked on different niche websites such as e-commerce, blogs, education, corporate sites, and real estate.",
-      "Complete hands-on knowledge of On-Page SEO (keyword research), Technical SEO (mobile responsiveness), and Off-Page SEO (backlinks).",
+      "Built and shipped responsive marketing and e-commerce sites in JavaScript and Bootstrap for clients across several niches, from product catalogues to lead-capture and content sites.",
+      "Owned technical SEO on those builds — semantic markup, crawlable structure, mobile responsiveness and page-speed work — which meant treating HTML structure and load time as build requirements, not post-launch cleanup.",
+      "Ran on-page work end to end (keyword research, metadata, internal linking and content structure) and measured it in Google Search Console, iterating on what actually moved positions rather than what was supposed to.",
+      "This is where performance and markup stopped being an afterthought for me: I still pick rendering strategy, image formats and component structure with crawlability and load time in mind.",
     ],
+    tech: ["JavaScript", "Bootstrap", "HTML / CSS", "Technical SEO", "Search Console"],
     link: "https://golddetectorprice.pk/",
   },
 ];
@@ -651,7 +717,9 @@ const projects = [
 
 export {
   stats,
+  services,
   mernSkills,
+  frontendSkills,
   aiSkill,
   paymentsSkill,
   extraTech,

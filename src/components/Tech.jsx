@@ -2,7 +2,13 @@ import React from "react";
 import { motion } from "framer-motion";
 
 import { styles } from "../styles";
-import { mernSkills, aiSkill, paymentsSkill, extraTech } from "../constants";
+import {
+  mernSkills,
+  frontendSkills,
+  aiSkill,
+  paymentsSkill,
+  extraTech,
+} from "../constants";
 import { SectionWrapper } from "../hoc";
 import { fadeIn, textVariant } from "../utils/motion";
 
@@ -28,12 +34,56 @@ const SkillCard = ({ letter, name, description, bullets, highlight, index }) => 
     <p className='mt-3 text-secondary text-[14px] leading-6'>{description}</p>
     <ul className='mt-5 space-y-2'>
       {bullets.map((bullet) => (
-        <li key={bullet} className='font-mono text-[13px] text-secondary'>
-          <span className='text-mint'>▸</span> {bullet}
+        <li
+          key={bullet}
+          className='font-mono text-[13px] text-secondary flex gap-1.5'
+        >
+          <span className='text-mint shrink-0'>▸</span>
+          <span>{bullet}</span>
         </li>
       ))}
     </ul>
   </motion.div>
+);
+
+// Compact sibling of SkillCard for the frontend row. Five across at lg (vs the
+// MERN row's four), so the letter mark, padding and copy all step down a size —
+// at max-w-7xl each card is ~210px wide and a 64px letter would swamp it.
+const StackCard = ({ letter, name, description, bullets, index }) => (
+  <motion.div
+    variants={fadeIn("up", "spring", index * 0.12, 0.6)}
+    className='group rounded-2xl border border-white/10 p-6 bg-black-100 cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:border-peach/60 hover:shadow-glow'
+  >
+    <span className='font-heading font-extrabold text-[40px] leading-none text-white/10 group-hover:text-peach/50 transition-colors duration-300'>
+      {letter}
+    </span>
+    <h3 className='font-heading text-white font-bold text-[18px] mt-5'>
+      {name}
+    </h3>
+    <p className='mt-2 text-secondary text-[13px] leading-6'>{description}</p>
+    <ul className='mt-4 space-y-1.5'>
+      {bullets.map((bullet) => (
+        <li
+          key={bullet}
+          className='font-mono text-[12px] text-secondary flex gap-1.5'
+        >
+          <span className='text-mint shrink-0'>▸</span>
+          <span>{bullet}</span>
+        </li>
+      ))}
+    </ul>
+  </motion.div>
+);
+
+// Small monospace caption that names each band of cards, matching the
+// "also working with:" label already used above the chips.
+const RowLabel = ({ children }) => (
+  <motion.p
+    variants={fadeIn("", "", 0.1, 0.8)}
+    className='font-mono text-[13px] text-secondary'
+  >
+    {children}
+  </motion.p>
 );
 
 const FeatureCard = ({ skill, accent, index }) => {
@@ -73,9 +123,14 @@ const FeatureCard = ({ skill, accent, index }) => {
 
       <ul className='mt-5 grid sm:grid-cols-2 grid-cols-1 gap-2'>
         {skill.bullets.map((bullet) => (
-          <li key={bullet} className='font-mono text-[13px] text-secondary'>
-            <span className={isMint ? "text-mint" : "text-peach"}>▸</span>{" "}
-            {bullet}
+          <li
+            key={bullet}
+            className='font-mono text-[13px] text-secondary flex gap-1.5'
+          >
+            <span className={`shrink-0 ${isMint ? "text-mint" : "text-peach"}`}>
+              ▸
+            </span>
+            <span>{bullet}</span>
           </li>
         ))}
       </ul>
@@ -95,13 +150,25 @@ const Tech = () => {
         </h2>
       </motion.div>
 
-      <div className='mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>
-        {mernSkills.map((skill, index) => (
-          <SkillCard key={skill.name} index={index} {...skill} />
-        ))}
+      <div className='mt-14'>
+        <RowLabel>the core stack:</RowLabel>
+        <div className='mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>
+          {mernSkills.map((skill, index) => (
+            <SkillCard key={skill.name} index={index} {...skill} />
+          ))}
+        </div>
       </div>
 
-      <div className='mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6'>
+      <div className='mt-10'>
+        <RowLabel>frontend toolkit:</RowLabel>
+        <div className='mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6'>
+          {frontendSkills.map((skill, index) => (
+            <StackCard key={skill.name} index={index} {...skill} />
+          ))}
+        </div>
+      </div>
+
+      <div className='mt-10 grid grid-cols-1 lg:grid-cols-2 gap-6'>
         <FeatureCard skill={aiSkill} accent='mint' index={0} />
         <FeatureCard skill={paymentsSkill} accent='peach' index={1} />
       </div>

@@ -60,16 +60,39 @@ const ExperienceCard = ({ experience }) => {
         </p>
       </div>
 
-      <ul className='mt-5 list-disc ml-5 space-y-2'>
+      {experience.summary && (
+        <p className='mt-3 text-secondary text-[14px] leading-6'>
+          {experience.summary}
+        </p>
+      )}
+
+      {/* tracking-wider was fine for one-line bullets; these run to three or
+          four lines, where extra letter-spacing costs more than it adds. */}
+      <ul className='mt-5 list-disc ml-5 space-y-3'>
         {experience.points.map((point, index) => (
           <li
             key={`experience-point-${index}`}
-            className='text-white-100 text-[14px] pl-1 tracking-wider'
+            className='text-white-100 text-[14px] leading-[24px] pl-1'
           >
             {point}
           </li>
         ))}
       </ul>
+
+      {/* Scannable stack per role — same chip treatment as the project cards,
+          so a recruiter can read the tech without parsing eight bullets. */}
+      {experience.tech && (
+        <div className='mt-6 flex flex-wrap gap-2'>
+          {experience.tech.map((item) => (
+            <span
+              key={item}
+              className='font-mono text-[12px] text-secondary border border-white/10 rounded-full px-3 py-1'
+            >
+              {item}
+            </span>
+          ))}
+        </div>
+      )}
     </VerticalTimelineElement>
   );
 };
