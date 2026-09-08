@@ -8,6 +8,55 @@ fix · **P3** polish.
 
 ---
 
+## Done — 2026-09-08
+
+### [x] `Web page caused context loss and was blocked` — WebGL dead after scrolling — **P1**
+
+```
+THREE.WebGLRenderer: A WebGL context could not be created.
+Reason:  Web page caused context loss and was blocked      ×9
+THREE.WebGLRenderer: Error creating WebGL context.
+```
+
+**Root cause: the app was deliberately forcing context loss, and Chrome blocks a
+page that does that too often.** Chrome counts every call to the
+`WEBGL_lose_context` extension and, past a threshold, refuses the page any
+further context until a reload. Two places did it:
+
+1. `utils/webgl.js` — the capability probe called `loseContext()` on itself.
+2. `Stars.jsx` — unmounted its canvas 1.5 s after it scrolled off screen, and
+   r3f's unmount path runs `forceContextLoss()`. One guilty loss per scroll past
+   the hero or contact section.
+
+Both were guarding against Chrome's ~16 *live-context* cap, which a page with
+three canvases never approaches — trading a limit that didn't apply for the one
+that can't be recovered from. `SafeCanvas`'s rebuild-on-failure loop then made
+it terminal, since each rebuild unmounts a canvas and spends another loss.
+
+**Fix:** canvases are created once and never unmounted; off screen they set
+`frameloop="never"`. `ResumeOnVisible` calls `invalidate()` on the way back in,
+because r3f's global rAF loop cancels itself when no root wants a frame and
+`setFrameloop()` does not restart it. The probe no longer calls `loseContext()`.
+`SafeCanvas` detects `webglcontextcreationerror` in the capture phase and makes
+every canvas on the page stand down instead of retrying into the block. Full
+walkthrough in [ARCHITECTURE.md §3.2](./ARCHITECTURE.md#32-why-contexts-were-being-blocked-the-second-worse-root-cause).
+
+**Measured** on the built site, 8 scroll cycles (Playwright, instrumented
+`loseContext`): before **10 forced losses / 12 contexts created**; after
+**0 / 4**, starfield still animating.
+
+**Verify:** scroll hero → contact → hero half a dozen times with the console
+open. No `Context Lost` lines, no `blocked` lines, stars still rotating.
+
+### [x] Project screenshots converted to WebP — **P2**
+
+Four new projects (Psychic Vision, Mi Vidente, Psychic Txt Advisor Funnel, Reset
+Hypnosis) came in as full-page PNGs totalling 6.0 MB. Converted the whole project
+set to WebP (q80, ≤1200 px wide): **6.68 MB → 0.42 MB**, and deleted the
+originals. New screenshots must be converted before they go in `src/assets/`.
+
+---
+
 ## Done — 2026-09-07
 
 ### [x] Browserslist / caniuse-lite out of date — **P2**
@@ -63,6 +112,11 @@ numbers in [ARCHITECTURE.md §3.1](./ARCHITECTURE.md#31-why-the-context-was-bein
 4. `src/utils/webgl.js` — `isWebGLAvailable()` probe only.
 5. `Stars.jsx` unmounts itself 1.5 s after leaving the viewport (debounced), so
    in practice only one starfield holds a context.
+
+> **Superseded 2026-09-08.** Point 5 was wrong and caused the block described in
+> the 2026-09-08 entry above: every one of those unmounts spends a forced context
+> loss. Canvases are now kept mounted and paused. The retry count in point 3 is
+> also down from two to one.
 
 > **Correction worth recording:** the first pass at this added a
 > `releaseRenderer()` (`forceContextLoss()` + `dispose()`) to `SafeCanvas`'s

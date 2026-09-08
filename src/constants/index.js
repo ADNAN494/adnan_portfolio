@@ -11,6 +11,10 @@ import {
   psy,
   wello,
   trueClosure,
+  psyTry,
+  psychicVision,
+  resetHypnosis,
+  miVidente,
   opy,
 } from "../assets";
 
@@ -301,6 +305,148 @@ const projects = [
     source_code_link: "https://www.psychictxt.com/",
   },
   {
+    name: "MDMC (DRAP Project)",
+    description:
+      "A project for DRAP to streamline medical drug management.Handled end-to-end frontend development including UI/UX design, API integration, and website optimization.",
+
+    tags: [
+      {
+        name: "react",
+        color: "blue-text-gradient",
+      },
+      {
+        name: "boostrap",
+        color: "pink-text-gradient",
+      },
+      {
+        name: "node",
+        color: "green-text-gradient",
+      },
+      {
+        name: "mui",
+        color: "pink-text-gradient",
+      },
+      {
+        name: "mssql",
+        color: "blue-text-gradient",
+      },
+    ],
+    image: drap,
+    source_code_link: "https://e.dra.gov.pk/login",
+  },
+  {
+    name: "Psychic Txt — Advisor Match Funnel",
+    description:
+      "A guided onboarding funnel for PsychicTxt that matches visitors to the right advisor. Step-by-step topic intake with a live progress bar, a real-time advisor rail showing ratings and online status, and a hand-off straight into live chat or a scheduled session.",
+
+    tags: [
+      {
+        name: "next",
+        color: "blue-text-gradient",
+      },
+      {
+        name: "tailwind",
+        color: "pink-text-gradient",
+      },
+      {
+        name: "node",
+        color: "green-text-gradient",
+      },
+      {
+        name: "mssql",
+        color: "blue-text-gradient",
+      },
+    ],
+    image: psyTry,
+    source_code_link: "https://try.psychictxt.com/",
+  },
+  {
+    name: "Psychic Vision",
+    description:
+      "Marketing and acquisition site for a live psychic reading app, built to turn visitors into paying users. Advisor discovery, live chat and video reading flows, a credit-purchase checkout and app-store download funnels, all in a fully responsive layout.",
+
+    tags: [
+      {
+        name: "next",
+        color: "blue-text-gradient",
+      },
+      {
+        name: "tailwind",
+        color: "pink-text-gradient",
+      },
+      {
+        name: "node",
+        color: "green-text-gradient",
+      },
+      {
+        name: "stripe",
+        color: "pink-text-gradient",
+      },
+      {
+        name: "mssql",
+        color: "blue-text-gradient",
+      },
+    ],
+    image: psychicVision,
+    source_code_link: "https://www.psychicvisionapp.com/",
+  },
+  {
+    name: "Mi Vidente",
+    description:
+      "Spanish-language platform connecting users with verified tarot readers, astrologers and psychics. I built the marketing site and mobile-app landing experience — expert profiles, testimonials, a blog, an expert sign-up flow and App Store / Google Play conversion paths.",
+
+    tags: [
+      {
+        name: "next",
+        color: "blue-text-gradient",
+      },
+      {
+        name: "bootstrap",
+        color: "pink-text-gradient",
+      },
+      {
+        name: "node",
+        color: "green-text-gradient",
+      },
+      {
+        name: "stripe",
+        color: "pink-text-gradient",
+      },
+      {
+        name: "mssql",
+        color: "blue-text-gradient",
+      },
+    ],
+    image: miVidente,
+    source_code_link: "https://mividenteapp.com/",
+  },
+  {
+    name: "Reset Hypnosis",
+    description:
+      "A quit-vaping quiz funnel for a guided hypnosis programme. Visitors answer a short branching questionnaire that profiles their craving triggers and builds a personalised plan, ending in a tailored programme recommendation and sign-up.",
+
+    tags: [
+      {
+        name: "react",
+        color: "blue-text-gradient",
+      },
+      {
+        name: "tailwind",
+        color: "pink-text-gradient",
+      },
+      {
+        name: "node",
+        color: "green-text-gradient",
+      },
+      {
+        name: "mysql",
+        color: "blue-text-gradient",
+      },
+    ],
+    image: resetHypnosis,
+    source_code_link: "https://quiz.resethypnosis.com/welcome",
+  },
+  {
     name: "Wello Move",
     description:
       "Wello is a wellness platform that connects users with health experts and resources to improve their overall well-being. It offers personalized wellness plans, expert consultations, and community support.",
@@ -386,38 +532,6 @@ const projects = [
     image: tech_pedia,
     source_code_link: "https://techypedia.co.uk/",
   },
-
-  {
-    name: "MDMC (DRAP Project)",
-    description:
-      "A project for DRAP to streamline medical drug management.Handled end-to-end frontend development including UI/UX design, API integration, and website optimization.",
-
-    tags: [
-      {
-        name: "react",
-        color: "blue-text-gradient",
-      },
-      {
-        name: "boostrap",
-        color: "pink-text-gradient",
-      },
-      {
-        name: "node",
-        color: "green-text-gradient",
-      },
-      {
-        name: "mui",
-        color: "pink-text-gradient",
-      },
-      {
-        name: "mssql",
-        color: "blue-text-gradient",
-      },
-    ],
-    image: drap,
-    source_code_link: "https://e.dra.gov.pk/login",
-  },
-
   {
     name: "PVSIS",
     description:
@@ -471,28 +585,6 @@ const projects = [
     source_code_link: "https://join.trueclosureapp.com/landing",
   },
   {
-    name: "Immigra Conslutant",
-    description:
-      "This web application provides student advisory services for education abroad in countries like Canada, the USA, France, and various locations in Europe.",
-    tags: [
-      {
-        name: "react",
-        color: "blue-text-gradient",
-      },
-      {
-        name: "redux",
-        color: "green-text-gradient",
-      },
-      {
-        name: "boostrap",
-        color: "pink-text-gradient",
-      },
-    ],
-    image: immi,
-    source_code_link: "https://www.immigraconsultants.com/",
-  },
-
-  {
     name: "Sysreform's International",
     description:
       "Sysrefrom is a leading software company that provides a comprehensive suite of IT and software services worldwide. Our offerings include custom software development, mobile app development, web development and managed IT services.",
@@ -533,6 +625,27 @@ const projects = [
     ],
     image: undp,
     source_code_link: "https://www.undp.org/",
+  },
+  {
+    name: "Immigra Conslutant",
+    description:
+      "This web application provides student advisory services for education abroad in countries like Canada, the USA, France, and various locations in Europe.",
+    tags: [
+      {
+        name: "react",
+        color: "blue-text-gradient",
+      },
+      {
+        name: "redux",
+        color: "green-text-gradient",
+      },
+      {
+        name: "boostrap",
+        color: "pink-text-gradient",
+      },
+    ],
+    image: immi,
+    source_code_link: "https://www.immigraconsultants.com/",
   },
 ];
 

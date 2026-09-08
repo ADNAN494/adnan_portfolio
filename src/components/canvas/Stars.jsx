@@ -1,14 +1,9 @@
 import { useState, useRef, useEffect, Suspense } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { Points, PointMaterial, Preload } from "@react-three/drei";
 import * as random from "maath/random/dist/maath-random.esm";
 
 import SafeCanvas from "./SafeCanvas";
-
-// Once the starfield has been off screen this long, tear the canvas down and
-// give its WebGL context back to the browser. Debounced so scrolling past the
-// boundary doesn't thrash contexts.
-const UNMOUNT_DELAY_MS = 1500;
 
 const Stars = (props) => {
   const ref = useRef();
@@ -47,51 +42,74 @@ const Stars = (props) => {
   );
 };
 
+// Restarts the render loop when the starfield scrolls back into view.
+//
+// r3f's rAF loop is global across every canvas on the page, and it cancels
+// itself the moment no root asks for a frame ("if (repeat === 0) { running =
+// false; cancelAnimationFrame(frame) }"). Flipping the frameloop prop back to
+// "always" only writes to the store — configure() calls setFrameloop(), which
+// never restarts the loop. invalidate() is the only thing that does, and it
+// refuses to run while frameloop is still "never", so it has to happen from
+// inside the canvas after the store has been updated. Without this the stars
+// freeze for good the first time every canvas goes idle at once.
+const ResumeOnVisible = ({ active }) => {
+  const invalidate = useThree((state) => state.invalidate);
+
+  useEffect(() => {
+    if (active) invalidate();
+  }, [active, invalidate]);
+
+  return null;
+};
+
 const StarsCanvas = ({ className = "w-full h-full absolute inset-0" }) => {
   const containerRef = useRef(null);
-  // Two starfields (Hero + Contact) live on the page but are never both in view
-  // on a tall screen. Keeping only the visible one mounted means one WebGL
-  // context instead of two, which keeps us well clear of the browser's cap.
-  const [visible, setVisible] = useState(true);
-  const [mounted, setMounted] = useState(true);
+
+  // The canvas is built once and kept for the life of the page. When it scrolls
+  // out of view we PAUSE the render loop rather than unmounting it.
+  //
+  // This used to unmount after 1.5 s off screen, to hand the WebGL context back
+  // and stay under Chrome's ~16 live-context cap. That was the wrong trade. Two
+  // idle contexts were never close to the cap, but every unmount makes r3f call
+  // forceContextLoss() — and Chrome counts a page's forced context losses and
+  // permanently blocks it from creating any more once the count gets high
+  // ("Web page caused context loss and was blocked"; see SafeCanvas). Scrolling
+  // the hero and contact sections in and out a handful of times was enough to
+  // burn through the budget and kill every canvas on the page until a reload.
+  //
+  // frameloop="never" costs nothing while off screen — no rAF, no draw calls,
+  // no GPU work — and keeps the context alive, so nothing ever has to be
+  // recreated. Cheaper than the old scheme and it can't trip the guard.
+  const [active, setActive] = useState(true);
 
   useEffect(() => {
     const node = containerRef.current;
     if (!node || typeof IntersectionObserver === "undefined") return;
 
     const observer = new IntersectionObserver(
-      ([entry]) => setVisible(entry.isIntersecting),
-      // A little margin so the canvas is already built by the time it scrolls in.
+      ([entry]) => setActive(entry.isIntersecting),
+      // A little margin so the stars are already turning by the time they scroll in.
       { rootMargin: "200px" }
     );
     observer.observe(node);
     return () => observer.disconnect();
   }, []);
 
-  useEffect(() => {
-    if (visible) {
-      setMounted(true);
-      return;
-    }
-    const id = setTimeout(() => setMounted(false), UNMOUNT_DELAY_MS);
-    return () => clearTimeout(id);
-  }, [visible]);
-
   return (
     <div ref={containerRef} className={className}>
-      {mounted && (
-        <SafeCanvas
-          frameloop={visible ? "always" : "never"}
-          camera={{ position: [0, 0, 1] }}
-          dpr={[1, 1.5]}
-        >
-          <Suspense fallback={null}>
-            <Stars />
-          </Suspense>
+      <SafeCanvas
+        frameloop={active ? "always" : "never"}
+        camera={{ position: [0, 0, 1] }}
+        dpr={[1, 1.5]}
+      >
+        <ResumeOnVisible active={active} />
 
-          <Preload all />
-        </SafeCanvas>
-      )}
+        <Suspense fallback={null}>
+          <Stars />
+        </Suspense>
+
+        <Preload all />
+      </SafeCanvas>
     </div>
   );
 };
