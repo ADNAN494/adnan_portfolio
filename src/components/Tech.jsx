@@ -15,7 +15,7 @@ import { fadeIn, textVariant } from "../utils/motion";
 const SkillCard = ({ letter, name, description, bullets, highlight, index }) => (
   <motion.div
     variants={fadeIn("up", "spring", index * 0.2, 0.6)}
-    className={`group rounded-2xl border p-7 bg-black-100 cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-glow ${
+    className={`group rounded-2xl border sm:p-7 p-6 bg-black-100 cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-glow ${
       highlight
         ? "border-mint/60 hover:border-mint"
         : "border-white/10 hover:border-peach/60"
@@ -92,14 +92,14 @@ const FeatureCard = ({ skill, accent, index }) => {
   return (
     <motion.div
       variants={fadeIn("up", "spring", 0.3 + index * 0.2, 0.7)}
-      className={`group rounded-2xl border bg-black-100 p-8 cursor-pointer transition-all duration-300 hover:-translate-y-2 relative overflow-hidden ${
+      className={`group rounded-2xl border bg-black-100 sm:p-8 p-6 cursor-pointer transition-all duration-300 hover:-translate-y-2 relative overflow-hidden ${
         isMint
           ? "border-mint/50 hover:border-mint hover:shadow-glow-mint"
           : "border-peach/50 hover:border-peach hover:shadow-glow"
       }`}
     >
       <span
-        className={`absolute top-6 right-7 font-mono text-[12px] rounded-full px-3 py-1 border ${
+        className={`absolute sm:top-6 top-5 sm:right-7 right-5 font-mono text-[12px] rounded-full px-3 py-1 border ${
           isMint ? "text-mint border-mint/50" : "text-peach border-peach/50"
         }`}
       >

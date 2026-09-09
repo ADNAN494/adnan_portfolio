@@ -72,7 +72,7 @@ const CodeWindow = () => (
         db.developers.findOne()
       </span>
     </div>
-    <pre className='p-6 font-mono sm:text-[15px] text-[12px] leading-7 overflow-x-auto text-secondary'>
+    <pre className='sm:p-6 p-4 font-mono sm:text-[15px] text-[12px] leading-7 overflow-x-auto text-secondary'>
       <code>
         {`{\n`}
         {`  `}<span className='text-white-100'>"_id"</span>{`: `}<span className='text-peach'>"dev_adnan"</span>{`,\n`}
@@ -168,13 +168,13 @@ const Hero = () => {
           >
             <a
               href='#project'
-              className='bg-peach text-primary font-semibold py-3.5 px-8 rounded-full hover:bg-peach-dark transition-colors'
+              className='bg-peach text-primary font-semibold py-3.5 sm:px-8 px-6 rounded-full hover:bg-peach-dark transition-colors'
             >
               View my work
             </a>
             <a
               href='#contact'
-              className='border border-white/20 text-white font-medium py-3.5 px-8 rounded-full hover:border-peach hover:text-peach transition-colors'
+              className='border border-white/20 text-white font-medium py-3.5 sm:px-8 px-6 rounded-full hover:border-peach hover:text-peach transition-colors'
             >
               Get in touch
             </a>

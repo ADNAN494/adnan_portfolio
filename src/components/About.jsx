@@ -10,7 +10,7 @@ import SocialIcons from "./SocialIcons";
 const StatCard = ({ value, label, index }) => (
   <motion.div
     variants={fadeIn("up", "spring", index * 0.2, 0.6)}
-    className='rounded-2xl border border-white/10 bg-black-100 p-7 hover:border-peach/50 transition-colors'
+    className='rounded-2xl border border-white/10 bg-black-100 sm:p-7 p-5 hover:border-peach/50 transition-colors'
   >
     <p className='font-heading text-peach font-extrabold sm:text-[40px] text-[32px] leading-none'>
       {value}
@@ -88,7 +88,7 @@ const About = () => {
               won't read the prose. */}
           <motion.div
             variants={fadeIn("up", "spring", 0.4, 0.7)}
-            className='mt-5 rounded-2xl border border-white/10 bg-black-100 p-7 hover:border-peach/50 transition-colors'
+            className='mt-5 rounded-2xl border border-white/10 bg-black-100 sm:p-7 p-6 hover:border-peach/50 transition-colors'
           >
             <p className='font-mono text-[13px] text-secondary'>what I build:</p>
             <ul className='mt-4 grid sm:grid-cols-2 grid-cols-1 gap-x-5 gap-y-2.5'>

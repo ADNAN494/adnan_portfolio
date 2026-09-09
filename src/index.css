@@ -44,9 +44,85 @@
   background: #e8a76f;
 }
 
+/* Nothing on this page scrolls sideways, and on a phone a moment of horizontal
+ * overflow is not a moment: the browser widens the layout viewport to fit it
+ * and never narrows it again. Every section then renders at screen width
+ * inside a wider page — content pinned to the left, a dead strip down the
+ * right, on every section at once. The timeline reveal below was doing exactly
+ * that (measured: a 390px viewport laying out a 457px page), so clip at the
+ * root rather than trust that no future entry animation ever crosses the edge.
+ *
+ * `clip` in preference to `hidden`: `hidden` turns the root into a scroll
+ * container, which breaks `position: sticky` descendants. `hidden` is left in
+ * front of it as the fallback for browsers without `overflow: clip`.
+ * Declaring only overflow-x is safe here — when the other axis is `visible`,
+ * neither value is forced to `auto`, so the page still scrolls vertically. */
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
 /* timeline center line + library overrides */
 .vertical-timeline::before {
   background: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* react-vertical-timeline-component reveals each card with `cd-bounce-2-inverse`,
+ * and its own `@media (max-width: 1169px)` rule routes EVERY mobile viewport
+ * through that keyframe — which starts the card at `translateX(100px)`. A
+ * hundred pixels past the right edge of a 390px screen is what widened the
+ * layout viewport site-wide (see the clip above). Swapping the keyframe for a
+ * vertical one fixes the cause rather than only hiding it, and matches how the
+ * rest of the page arrives (framer-motion's `fadeIn("up")`).
+ *
+ * Overriding `animation-name` alone keeps the library's own duration and
+ * timing, so only the direction of travel changes. */
+@media only screen and (max-width: 1169px) {
+  .vertical-timeline--animate .vertical-timeline-element-content.bounce-in {
+    animation-name: cd-bounce-2-up;
+  }
+}
+
+@keyframes cd-bounce-2-up {
+  0% {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* The library's mobile layout spends 60px of left margin on the rail plus 5%
+ * of the width on nothing, which on a 320px screen left the bullets about
+ * 146px of text — three or four words a line. The rail is worth keeping, so
+ * this shrinks it instead: a 32px icon (40px including its 4px ring) centred
+ * on a line moved to left:14px, and the freed ~26px handed back to the
+ * reading column along with the 5%. Capped at 767px rather than the library's
+ * own 1169px breakpoint: a tablet has width to spare, so it keeps the full-size
+ * rail, and the two-column desktop layout is untouched either way. */
+@media only screen and (max-width: 767px) {
+  .vertical-timeline {
+    width: 100%;
+    padding: 1em 0;
+  }
+
+  .vertical-timeline::before {
+    left: 14px;
+  }
+
+  .vertical-timeline-element-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .vertical-timeline-element-content {
+    margin-left: 48px;
+    padding: 1.25em 1.15em;
+  }
 }
 
 .vertical-timeline-element-date {
@@ -176,6 +252,14 @@
    * colour change alone. */
   .hover\:-translate-y-2:hover {
     transform: none !important;
+  }
+
+  /* The timeline's card reveal is the library's own CSS animation, so
+   * <MotionConfig reducedMotion="user"> never sees it. Drop the travel and
+   * leave the card where it lands. */
+  .vertical-timeline--animate .vertical-timeline-element-content.bounce-in,
+  .vertical-timeline--animate .vertical-timeline-element-icon.bounce-in {
+    animation: none !important;
   }
 }
 

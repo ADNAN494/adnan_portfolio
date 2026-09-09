@@ -371,6 +371,23 @@ API, Bootstrap, MySQL, MSSQL, Firebase, Git & GitHub, Figma.
   don't call `forceContextLoss()` from component cleanup.
 - Motion variants come from `src/utils/motion.js`; don't inline new ones unless
   they're single-use (as in the hero letter stagger).
+- **Nothing may translate content past the right edge.** A phone browser widens
+  its layout viewport to fit horizontal overflow and never narrows it again, so
+  a 0.6 s entry animation that overshoots leaves every section on the page
+  rendered at screen width inside a wider document — content pinned left, dead
+  strip right — until the visitor reloads. `html, body` now carry
+  `overflow-x: clip` as the backstop (`hidden` first, as the fallback), but the
+  backstop is not the licence: prefer `y` to `x` for entry variants, or clip at
+  the section, as `Contact.jsx` does around its two `slideIn`s.
+- **Nothing may set a min-content width wider than the narrowest phone.**
+  `whitespace-nowrap` next to display type in a row that cannot wrap is the
+  usual culprit — see the `flex-wrap` on the `Clients.jsx` card header. Test at
+  320 px, not at 390.
+- **`react-vertical-timeline-component` styles are overridden in `index.css`,
+  not forked.** Its mobile reveal (`cd-bounce-2-inverse`, which its own
+  `max-width: 1169px` rule applies to every phone and tablet) starts the card
+  100 px to the right; `index.css` swaps `animation-name` only, so the library
+  keeps its timing. The rail compaction below it is scoped to ≤767 px.
 
 ## 7. Commands
 

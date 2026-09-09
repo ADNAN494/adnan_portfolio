@@ -17,10 +17,17 @@ const ClientCard = ({ index, org, full, kind, work, link }) => (
     target='_blank'
     rel='noopener noreferrer'
     variants={fadeIn("up", "spring", index * 0.15, 0.6)}
-    className='group rounded-2xl border border-white/10 bg-black-100 p-8 flex flex-col hover:border-peach/50 hover:-translate-y-2 hover:shadow-glow transition-all duration-300'
+    className='group rounded-2xl border border-white/10 bg-black-100 sm:p-8 p-6 flex flex-col hover:border-peach/50 hover:-translate-y-2 hover:shadow-glow transition-all duration-300'
   >
-    <div className='flex items-start justify-between gap-4'>
-      <span className='font-heading text-peach font-extrabold text-[28px] leading-none'>
+    {/* `flex-wrap` is doing real work, not tidying. The kind chip is
+        `whitespace-nowrap` — it has to be, or "intergovernmental" breaks across
+        two lines inside a pill — and next to an org name set in 28px expanded
+        Archivo that gave the row a min-content width no phone under ~380px
+        could satisfy. The row could not shrink, so it pushed the whole page
+        wider than the screen. Wrapping lets the chip drop under the name
+        instead, which is also where it reads better on one column. */}
+    <div className='flex items-start justify-between gap-x-4 gap-y-2 flex-wrap'>
+      <span className='font-heading text-peach font-extrabold sm:text-[28px] text-[26px] leading-none'>
         {org}
       </span>
       <span className='font-mono text-[11px] text-secondary border border-white/10 rounded-full px-3 py-1 whitespace-nowrap'>

@@ -68,7 +68,7 @@ const ExperienceCard = ({ experience }) => {
 
       {/* tracking-wider was fine for one-line bullets; these run to three or
           four lines, where extra letter-spacing costs more than it adds. */}
-      <ul className='mt-5 list-disc ml-5 space-y-3'>
+      <ul className='mt-5 list-disc sm:ml-5 ml-4 space-y-3'>
         {experience.points.map((point, index) => (
           <li
             key={`experience-point-${index}`}

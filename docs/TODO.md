@@ -8,6 +8,60 @@ fix · **P3** polish.
 
 ---
 
+## Done — 2026-09-09
+
+### [x] Whole site rendered to the left with a dead strip down the right, on mobile — **P1**
+
+Every section, on every phone width: content laid out at screen width inside a
+wider page, a band of empty background on the right, and the navbar's hamburger
+pushed into it.
+
+**Root cause: `react-vertical-timeline-component` reveals each card from
+`translateX(100px)`.** Its `cd-bounce-2-inverse` keyframe starts a hundred
+pixels right of where the card lands, and the library's own
+`@media (max-width: 1169px)` rule routes *every* mobile viewport through it. A
+phone browser widens the layout viewport to fit horizontal overflow and does
+not narrow it again, so one card reveal in the Experience section resizes the
+page for the rest of the visit — which is why a timeline bug looked like a
+site-wide layout bug.
+
+Measured on the built site, 390px viewport, sampling `scrollWidth` through a
+full scroll: **457px** as shipped (67px of overflow, first seen at the
+timeline), **390px** with that one keyframe disabled — zero overflow anywhere
+else on the page.
+
+Two smaller offenders sat underneath it, both biting below ~380px:
+
+1. `Clients.jsx` — the card header put a `whitespace-nowrap` kind chip beside an
+   org name in 28px expanded Archivo, in a row that could not wrap. That gave
+   the page a hard 380px minimum width: at 320px the chip ran out of the card.
+2. Card padding (`p-8`/`p-7`) left the contact fields 208px of width at 320px.
+
+**Fix:**
+
+1. `index.css` — `overflow-x: clip` (with `hidden` as the fallback) on
+   `html, body`, so no entry animation can widen the layout viewport again.
+2. `index.css` — the timeline's mobile reveal keyframe swapped for a vertical
+   one (`cd-bounce-2-up`), overriding `animation-name` only so the library keeps
+   its own timing. Also switched off under `prefers-reduced-motion`, which
+   `<MotionConfig reducedMotion="user">` cannot reach because it is library CSS.
+3. `Clients.jsx` — the header row wraps, so the chip drops under the org name
+   instead of forcing a minimum width.
+4. Mobile padding step-downs on the client, contact, stat, skill and feature
+   cards, and on the hero code window (which no longer scrolls sideways inside
+   itself at 320px).
+5. `index.css` — the timeline rail on phones: `width: 100%` instead of 95%, a
+   32px icon on a line at `left: 14px`, and 48px of content margin instead of
+   60px. At 320px that took the bullet column from ~146px of text to ~175px.
+   Scoped to ≤767px so tablets and the two-column desktop layout are untouched.
+
+**Verify:** load the built site at 320/360/375/390/412/430 and scroll to the
+bottom with `document.documentElement.scrollWidth` logged — it should never
+exceed the viewport width. The Experience cards should fade up, not slide in
+from the right.
+
+---
+
 ## Done — 2026-09-08
 
 ### [x] `Web page caused context loss and was blocked` — WebGL dead after scrolling — **P1**
