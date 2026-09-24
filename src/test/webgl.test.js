@@ -1,58 +1,67 @@
-import { describe, expect, it, vi } from "vitest";
-
-import { preventForcedContextLoss } from "../utils/webgl";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // Regression guard for "Web page caused context loss and was blocked".
 //
-// @react-three/fiber ends its teardown with state.gl.forceContextLoss(), which
-// is WEBGL_lose_context.loseContext() — the call Chrome counts and eventually
-// blocks the page for. Every canvas unmount used to spend one: HMR updates,
-// StrictMode double-mounts, retries after a lost context, and the fallback swap
-// that fired on all three canvases at once. If this override is ever dropped,
-// the page starts burning that budget again and the failure is unrecoverable
-// without a reload, so it is worth a test of its own.
-describe("preventForcedContextLoss", () => {
-  it("replaces forceContextLoss so an unmount costs nothing", () => {
+// Chrome's block is per host and expires after two minutes (see utils/webgl.js).
+// The probe used to answer a plain yes/no and cache it, so a page that happened
+// to load during a block decided "no WebGL" and never rendered a canvas again
+// for the rest of the visit. It must tell "blocked" apart from "unsupported",
+// and must not cache the temporary answer.
+
+const loadProbe = async () => {
+  vi.resetModules();
+  return (await import("../utils/webgl")).probeWebGL;
+};
+
+const stubGetContext = (impl) => {
+  HTMLCanvasElement.prototype.getContext = vi.fn(impl);
+};
+
+describe("probeWebGL", () => {
+  let original;
+  beforeEach(() => {
+    original = HTMLCanvasElement.prototype.getContext;
+  });
+  afterEach(() => {
+    HTMLCanvasElement.prototype.getContext = original;
+  });
+
+  it("reports ok, and releases the probe context straight away", async () => {
     const loseContext = vi.fn();
-    const renderer = {
-      forceContextLoss: () => loseContext(),
-    };
+    stubGetContext(() => ({
+      getExtension: (name) =>
+        name === "WEBGL_lose_context" ? { loseContext } : null,
+    }));
+    const probeWebGL = await loadProbe();
 
-    preventForcedContextLoss(renderer);
-    renderer.forceContextLoss();
-
-    expect(loseContext).not.toHaveBeenCalled();
+    expect(probeWebGL()).toBe("ok");
+    expect(loseContext).toHaveBeenCalledOnce();
   });
 
-  it("leaves a callable method behind, since r3f invokes it unconditionally", () => {
-    const renderer = { forceContextLoss: () => {} };
+  it("reports blocked when Chrome refuses the host, and does not cache it", async () => {
+    let blocked = true;
+    stubGetContext(function () {
+      if (!blocked) return { getExtension: () => null };
+      const event = new Event("webglcontextcreationerror");
+      event.statusMessage = "Web page caused context loss and was blocked";
+      this.dispatchEvent(event);
+      return null;
+    });
+    const probeWebGL = await loadProbe();
 
-    preventForcedContextLoss(renderer);
+    expect(probeWebGL()).toBe("blocked");
 
-    expect(typeof renderer.forceContextLoss).toBe("function");
-    expect(() => renderer.forceContextLoss()).not.toThrow();
+    // Two minutes later Chrome lifts the block; the next probe must see that.
+    blocked = false;
+    expect(probeWebGL()).toBe("ok");
   });
 
-  it("tolerates a renderer that never had the method", () => {
-    expect(() => preventForcedContextLoss({})).not.toThrow();
-    expect(() => preventForcedContextLoss(null)).not.toThrow();
-    expect(() => preventForcedContextLoss(undefined)).not.toThrow();
-  });
+  it("reports unsupported when there is no WebGL at all, and caches it", async () => {
+    stubGetContext(() => null);
+    const probeWebGL = await loadProbe();
 
-  it("does not disturb the rest of the renderer", () => {
-    const dispose = vi.fn();
-    const renderer = {
-      forceContextLoss: () => {},
-      renderLists: { dispose },
-      domElement: "canvas",
-    };
-
-    preventForcedContextLoss(renderer);
-    renderer.renderLists.dispose();
-
-    // Everything three actually frees still gets freed — the override only
-    // removes the context kill, which is the last step and the only guilty one.
-    expect(dispose).toHaveBeenCalledOnce();
-    expect(renderer.domElement).toBe("canvas");
+    expect(probeWebGL()).toBe("unsupported");
+    expect(probeWebGL()).toBe("unsupported");
+    expect(HTMLCanvasElement.prototype.getContext).toHaveBeenCalledTimes(3);
   });
 });

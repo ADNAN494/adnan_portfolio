@@ -18,6 +18,7 @@ const Earth = () => {
 
 const MESSAGES = {
   unsupported: "This browser can't render 3D graphics.",
+  blocked: "3D is paused while the graphics driver recovers.",
   lost: "The 3D view lost its graphics context.",
   error: "The 3D model couldn't be loaded.",
 };
@@ -25,15 +26,15 @@ const MESSAGES = {
 // Shown when the globe can't render — no WebGL, a context that never came back,
 // or a model that failed to download. The contact section still has to look
 // finished next to the form, so this is a styled placeholder rather than a gap.
-// Retrying only helps the last two cases; a browser without WebGL won't change
-// its mind.
+// Retrying only helps "lost" and "error": a browser without WebGL won't change
+// its mind, and "blocked" comes back on its own when Chrome lifts the block.
 const EarthFallback = ({ reason, retry }) => (
   <div className='w-full h-full flex items-center justify-center'>
     <div className='w-56 h-56 rounded-full border border-white/10 bg-black-100 flex flex-col items-center justify-center gap-3 px-8 text-center'>
       <span className='font-mono text-[12px] text-secondary leading-5'>
         {MESSAGES[reason] ?? MESSAGES.error}
       </span>
-      {reason !== "unsupported" && (
+      {reason !== "unsupported" && reason !== "blocked" && (
         <button
           type='button'
           onClick={retry}
@@ -53,10 +54,8 @@ const EarthCanvas = () => {
   // does. The globe sat perfectly still until a visitor happened to drag it.
   //
   // "always" while it is on screen makes it turn. Off screen it pauses to
-  // "never" — the same deal Stars.jsx strikes, and for the same reason: pausing
-  // costs nothing and keeps the context, whereas unmounting spends one of
-  // Chrome's forced-context-loss allowance and eventually blocks the page
-  // outright (ARCHITECTURE §3.2).
+  // "never" — the same deal Stars.jsx strikes: no frames, no GPU work, and no
+  // context to rebuild when it scrolls back.
   const [containerRef, visible] = useNearViewport();
 
   // A globe spinning on its own is unprompted continuous motion, so under
@@ -67,10 +66,13 @@ const EarthCanvas = () => {
 
   return (
     <div ref={containerRef} className='w-full h-full'>
+      {/* No `shadows`: the model is KHR_materials_unlit with no lights, so a
+          shadow map would be GPU memory spent on nothing. dpr is capped at 1.5
+          — past that a 1024px texture gains nothing visible, and the drawing
+          buffer grows with the square of it. */}
       <SafeCanvas
-        shadows
         frameloop={frameloop}
-        dpr={[1, 2]}
+        dpr={[1, 1.5]}
         fallback={EarthFallback}
         // drei caches the rejected promise, so without clearing it a retry would
         // fail instantly with the same error instead of refetching the model.

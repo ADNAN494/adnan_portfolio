@@ -56,8 +56,8 @@ export class MockResizeObserver {
   disconnect() {}
 }
 
-// The default for every test: a browser with no WebGL at all. isWebGLAvailable()
-// returns false, so SafeCanvas renders its fallback and never constructs a
+// The default for every test: a browser with no WebGL at all. probeWebGL()
+// returns "unsupported", so SafeCanvas renders its fallback and never constructs a
 // THREE.WebGLRenderer — which is the only way three.js can run under jsdom, and
 // also the exact path a real visitor on a blocked or unsupported browser takes.
 export const stubWebGLUnavailable = () => {

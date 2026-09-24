@@ -18,6 +18,7 @@ import psyTry from "./try-psychic-txt.webp";
 import psychicVision from "./psychic-vision.webp";
 import resetHypnosis from "./reset-hypnosis.webp";
 import miVidente from "./mi-vidente.webp";
+import mukafi from "./mukafi.webp";
 import opy from "./ot-logo.png";
 
 export {
@@ -39,5 +40,6 @@ export {
   psychicVision,
   resetHypnosis,
   miVidente,
+  mukafi,
   opy
 };

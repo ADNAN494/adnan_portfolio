@@ -2,47 +2,55 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 
 import ErrorBoundary from "../ErrorBoundary";
-import { isWebGLAvailable, preventForcedContextLoss } from "../../utils/webgl";
+import { BLOCK_EXPIRY_MS, isBlockedMessage, probeWebGL } from "../../utils/webgl";
 
 // ---------------------------------------------------------------------------
-// Chrome's "guilty page" guard — the failure this file exists to survive.
-//
-// Chrome counts how many times a page forcibly loses a WebGL context (any call
-// to the WEBGL_lose_context extension — which is exactly what three.js's
-// renderer.forceContextLoss() does, and what @react-three/fiber runs on EVERY
-// canvas unmount). Past the threshold the GPU process stops handing the page
-// contexts entirely, for the rest of the page's life:
+// Chrome's domain block — the failure this file has to ride out.
 //
 //   THREE.WebGLRenderer: A WebGL context could not be created.
 //   Reason: Web page caused context loss and was blocked
-//   ...
-//   THREE.WebGLRenderer: Error creating WebGL context.
 //
-// Nothing recovers from that except a reload — and every further attempt fails
-// *and* counts against the page again, so a retry loop turns one bad canvas
-// into a page-wide outage. Once we see it, canvases still WAITING for a context
-// stop asking; canvases that already have one keep rendering, because the block
-// only refuses new contexts and says nothing about live ones.
+// Chrome raises it after two REAL GPU context losses from one host inside two
+// minutes (driver reset, GPU process crash, out of GPU memory, a dual-GPU Mac
+// switching GPUs). It refuses new contexts to that host — across tabs and
+// reloads — until the two minutes are up. Page-initiated loseContext() calls do
+// not count. Full reasoning, with the Chromium source, in utils/webgl.js and
+// ARCHITECTURE §3.2.
 //
-// Two things keep the page away from that threshold, in order of importance:
+// So there are two jobs here:
 //
-//   1. handleCreated() overrides renderer.forceContextLoss() with a no-op, so
-//      unmounting a <Canvas> no longer spends a guilty loss. That covers the
-//      unmounts we do not control — HMR in dev, a StrictMode double-mount, the
-//      rebuild below — which is the leak every previous fix here missed.
-//   2. Canvases are created once and paused, never unmounted on scroll. See
-//      Stars.jsx.
-//
-// This flag is then the last line of defence, for a page that was already
-// blocked before we loaded (a previous navigation, another tab's doing).
+//   1. Don't cause real losses. DEFAULT_GL asks for as little of the GPU as a
+//      decorative background needs; each canvas trims further (Stars.jsx turns
+//      off MSAA, Earth.jsx caps its dpr).
+//   2. When the block happens anyway, wait it out. A blocked attempt fails
+//      without costing anything, but it can't succeed either, so canvases still
+//      waiting for a context stand down until BLOCK_EXPIRY_MS has passed and
+//      then try once more. Canvases that already have a context keep it — the
+//      block only refuses new ones.
 // ---------------------------------------------------------------------------
 let creationBlocked = false;
+let blockWaits = 0;
 const subscribers = new Set();
+
+// After this many blocks in one visit the GPU is clearly unhappy; stop asking.
+const MAX_BLOCK_WAITS = 3;
+
+const notifyAll = () =>
+  // Deferred: markBlocked() can run during a render (from the probe), and
+  // setting another component's state mid-render is an error.
+  queueMicrotask(() => subscribers.forEach((notify) => notify()));
 
 const markBlocked = () => {
   if (creationBlocked) return;
   creationBlocked = true;
-  subscribers.forEach((notify) => notify());
+  notifyAll();
+
+  blockWaits += 1;
+  if (blockWaits > MAX_BLOCK_WAITS) return;
+  setTimeout(() => {
+    creationBlocked = false;
+    notifyAll();
+  }, BLOCK_EXPIRY_MS);
 };
 
 if (typeof window !== "undefined") {
@@ -53,16 +61,14 @@ if (typeof window !== "undefined") {
   window.addEventListener(
     "webglcontextcreationerror",
     (event) => {
-      if (/blocked|context loss/i.test(event.statusMessage || "")) markBlocked();
+      if (isBlockedMessage(event.statusMessage)) markBlocked();
     },
     true
   );
 }
 
-// One silent rebuild after the browser drops our context, then we stop. The
-// forceContextLoss() override means a rebuild no longer costs a guilty loss,
-// but a canvas that has failed twice is not going to succeed on the third go —
-// it is failing for a reason retrying cannot change.
+// One silent rebuild after the browser drops our context, then we stop — a
+// canvas that has failed twice is failing for a reason retrying won't change.
 const MAX_RETRIES = 1;
 
 // Wait this long after a context loss for the browser to restore it on its own.
@@ -73,6 +79,10 @@ const RESTORE_GRACE_MS = 1500;
 const DEFAULT_GL = {
   antialias: true,
   alpha: true,
+  // r3f defaults to "high-performance", which on a dual-GPU Mac powers up the
+  // discrete GPU — and switching GPUs is itself a real context loss. A
+  // decorative background has no business asking for the big GPU.
+  powerPreference: "low-power",
   // Never keep a second copy of the framebuffer around — it doubles GPU memory
   // per canvas and is only needed for canvas.toDataURL() screenshots.
   preserveDrawingBuffer: false,
@@ -81,9 +91,11 @@ const DEFAULT_GL = {
   failIfMajorPerformanceCaveat: false,
 };
 
-// A drop-in <Canvas> that degrades instead of crashing. Three failure modes:
+// A drop-in <Canvas> that degrades instead of crashing. Failure reasons:
 //
-//   "unsupported" — the browser has no WebGL at all, or has blocked this page.
+//   "unsupported" — the browser has no WebGL at all.
+//   "blocked"     — Chrome is refusing this host new contexts for now. Clears
+//                   itself when the block expires; no manual retry needed.
 //   "lost"        — the GPU context was dropped mid-session and didn't come back.
 //   "error"       — anything thrown out of the canvas tree: renderer construction,
 //                   or a model that failed to load (r3f rethrows those outward).
@@ -99,12 +111,16 @@ const SafeCanvas = ({
   onCreated,
   ...props
 }) => {
-  const [supported] = useState(isWebGLAvailable);
+  const [supported] = useState(() => {
+    const result = probeWebGL();
+    if (result === "blocked") markBlocked();
+    return result !== "unsupported";
+  });
   const [blocked, setBlocked] = useState(creationBlocked);
   const [generation, setGeneration] = useState(0);
   const [failure, setFailure] = useState(supported ? null : "unsupported");
-  // Whether this canvas has ever been handed a working context. Decides whether
-  // a page-wide block applies to us — see `reason` below.
+  // Whether the CURRENT canvas has been handed a working context. Decides
+  // whether a block applies to us — see `reason` below.
   const [hasContext, setHasContext] = useState(false);
 
   const retriesRef = useRef(0);
@@ -112,55 +128,49 @@ const SafeCanvas = ({
 
   useEffect(() => () => clearTimeout(restoreTimerRef.current), []);
 
-  // Another canvas on the page hit the block — stand down too, rather than
-  // spending our own attempts discovering the same thing.
+  // Follow the page-wide block in both directions: stand down when another
+  // canvas hits it, and come back when it expires.
   useEffect(() => {
-    const notify = () => setBlocked(true);
+    const notify = () => setBlocked(creationBlocked);
     subscribers.add(notify);
+    // It may have changed between our first render and this subscription.
+    notify();
     return () => subscribers.delete(notify);
   }, []);
 
-  // Automatic, capped rebuild after a context loss. We never call
-  // forceContextLoss() ourselves — and as of handleCreated(), neither does
-  // r3f's unmount path, so remounting here is free.
+  // Automatic, capped rebuild after a context loss.
   const rebuild = useCallback(() => {
     clearTimeout(restoreTimerRef.current);
-    if (creationBlocked || retriesRef.current >= MAX_RETRIES) {
+    // Blocked: the new canvas can't get a context yet. Drop back to waiting;
+    // the block's expiry brings us back.
+    if (creationBlocked) {
+      setHasContext(false);
+      setGeneration((g) => g + 1);
+      return;
+    }
+    if (retriesRef.current >= MAX_RETRIES) {
       setFailure("lost");
       return;
     }
     retriesRef.current += 1;
+    setHasContext(false);
     setGeneration((g) => g + 1);
   }, []);
 
   // Manual retry from the fallback UI. Resets the budget, because a person
-  // clicking "try again" is a fresh signal — maybe they reconnected. Pointless
-  // once the page is blocked, so the fallback hides the link in that case.
+  // clicking "try again" is a fresh signal — maybe they reconnected.
   const retry = useCallback(() => {
-    if (creationBlocked) return;
     clearTimeout(restoreTimerRef.current);
     retriesRef.current = 0;
     onRetry?.();
     setFailure(null);
+    setHasContext(false);
     setGeneration((g) => g + 1);
   }, [onRetry]);
 
   const handleCreated = useCallback(
     (state) => {
       const canvas = state.gl.domElement;
-
-      // THE fix for "Web page caused context loss and was blocked".
-      //
-      // Every <Canvas> unmount used to spend one of Chrome's forced-context-loss
-      // allowance, because that is the last thing r3f's teardown does. It made
-      // the recovery machinery in this file self-defeating: rebuilding after a
-      // lost context unmounted a canvas (one loss), and markBlocked() swapping
-      // every canvas to its fallback unmounted all of them at once (three
-      // more) — spending four of the budget to recover from one hiccup. In dev
-      // every HMR update did it too, which is why this kept coming back after
-      // each fix. Full reasoning in utils/webgl.js.
-      preventForcedContextLoss(state.gl);
-
 
       // preventDefault() is what marks the context as restorable; skip it and
       // the browser never fires webglcontextrestored.
@@ -183,17 +193,9 @@ const SafeCanvas = ({
     [onCreated, rebuild]
   );
 
-  // A blocked page can't produce a NEW context no matter what we do, so a
-  // canvas still waiting for one reports "unsupported" — the one reason for
-  // which the fallback hides its retry.
-  //
-  // A canvas that is already rendering is a different case, and used to be
-  // handled wrongly: it was torn down along with the rest, which blanked a
-  // perfectly good visual and (before forceContextLoss was overridden in
-  // handleCreated) spent another guilty loss on the way out, pushing the page
-  // further past the threshold it was reacting to. The block says nothing
-  // about contexts that already exist, so a live canvas simply carries on.
-  const reason = failure ?? (blocked && !hasContext ? "unsupported" : null);
+  // A live canvas carries on through a block — it says nothing about contexts
+  // that already exist. Only a canvas still waiting for one stands down.
+  const reason = failure ?? (blocked && !hasContext ? "blocked" : null);
 
   if (reason) {
     return typeof fallback === "function"
@@ -206,9 +208,14 @@ const SafeCanvas = ({
       key={generation}
       fallback={null}
       onError={(error) => {
-        // Belt and braces: if the creation-error event didn't reach us, the
-        // thrown message still identifies a construction failure.
-        if (/creating webgl context/i.test(error?.message ?? "")) markBlocked();
+        // A failed creation is treated as a block: markBlocked() parks this
+        // canvas on "blocked" (the boundary shows nothing meanwhile) and the
+        // expiry mounts it afresh. Don't remount here — that would just spend
+        // attempts before the block state lands. Anything else is a real error.
+        if (/creating webgl context/i.test(error?.message ?? "")) {
+          markBlocked();
+          return;
+        }
         setFailure("error");
       }}
     >

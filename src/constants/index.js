@@ -15,6 +15,7 @@ import {
   psychicVision,
   resetHypnosis,
   miVidente,
+  mukafi,
   opy,
 } from "../assets";
 
@@ -50,7 +51,7 @@ const stats = [
     label: "Years experience",
   },
   {
-    value: "14",
+    value: "15",
     label: "Projects shipped",
   },
   {
@@ -377,6 +378,28 @@ const clients = [
 
 
 const projects = [
+  {
+    name: "Mukafi",
+    description:
+      "A free, bilingual end-of-service gratuity calculator covering all six GCC countries. Every formula is tied to the exact labour-law article, the whole site works in English and Arabic (right-to-left included), and salary figures are calculated in the browser so nothing is ever sent to a server.",
+
+    tags: [
+      {
+        name: "next",
+        color: "blue-text-gradient",
+      },
+      {
+        name: "tailwind",
+        color: "pink-text-gradient",
+      },
+      {
+        name: "i18n",
+        color: "green-text-gradient",
+      },
+    ],
+    image: mukafi,
+    source_code_link: "https://mukafi.com/en",
+  },
   {
     name: "Psychic Txt",
     description:

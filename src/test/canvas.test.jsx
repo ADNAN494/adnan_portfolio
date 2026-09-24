@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 
 import EarthCanvas from "../components/canvas/Earth";
@@ -29,5 +29,28 @@ describe("canvases without WebGL", () => {
 
     expect(container.querySelector("canvas")).toBeNull();
     expect(container.firstChild).toBeInTheDocument();
+  });
+});
+
+// Chrome's "caused context loss and was blocked" is temporary — two minutes per
+// host. A canvas that loads during it must say so and wait, not declare the
+// browser WebGL-less for the rest of the visit.
+describe("canvases while Chrome is blocking WebGL", () => {
+  it("shows the paused message with no retry link", async () => {
+    HTMLCanvasElement.prototype.getContext = vi.fn(function () {
+      const event = new Event("webglcontextcreationerror");
+      event.statusMessage = "Web page caused context loss and was blocked";
+      this.dispatchEvent(event);
+      return null;
+    });
+    vi.resetModules();
+    const { default: FreshEarth } = await import("../components/canvas/Earth");
+
+    render(<FreshEarth />);
+
+    expect(
+      await screen.findByText("3D is paused while the graphics driver recovers.")
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /try again/i })).toBeNull();
   });
 });

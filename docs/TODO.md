@@ -8,6 +8,60 @@ fix · **P3** polish.
 
 ---
 
+## Done — 2026-09-24
+
+### [x] `Web page caused context loss and was blocked` — back again, real cause found — **P1**
+
+Came back in dev on `localhost:5173` despite both earlier fixes, with a
+`WebGL: CONTEXT_LOST_WEBGL: loseContext: context lost` in the log.
+
+**Root cause: real GPU context losses, not our `loseContext()` calls.** Read
+against the Chromium source:
+
+- The message is Blink's (`webgl_rendering_context_base.cc`), raised when the
+  browser process has the page's **host** on its 3D block list.
+- `gpu_data_manager_impl_private.cc` adds a host only on a *real* loss (driver
+  reset, GPU process crash, GPU OOM, a GPU switch). 2+ in **2 minutes** blocks
+  the host — all tabs, **across reloads** — until they expire.
+- `WEBGL_lose_context.loseContext()` is a synthetic loss that never reaches the
+  browser process. Blink prints the `CONTEXT_LOST_WEBGL: loseContext` line only
+  for real losses, so that log line was the GPU dropping us.
+
+So the 2026-09-08 diagnosis was wrong, and the `forceContextLoss()` no-op
+added after it made things worse. Every discarded context kept its buffers
+until GC, and in dev every HMR remount left another behind. On this machine
+(Intel Iris Plus 650, 1.5 GB shared) that is the GPU memory pressure that
+causes real resets.
+
+**Fix:**
+
+1. `utils/webgl.js` — removed `preventForcedContextLoss()`; r3f tears down
+   normally again. The probe is now `probeWebGL()` → `"ok" | "blocked" |
+   "unsupported"`, and never caches `"blocked"`.
+2. `SafeCanvas.jsx` — `powerPreference: "low-power"` (r3f defaulted to
+   high-performance, which switches GPUs on dual-GPU Macs). New reason
+   `"blocked"`: waiting canvases stand down and remount after 125 s (Chrome's
+   2 min + margin), at most 3 times per visit. A failed creation no longer
+   latches the canvas into `"error"` for good.
+3. `Stars.jsx` — `antialias: false`. Full-viewport 4× MSAA was ~90 MB per
+   starfield at 1.5 dpr, twice over.
+4. `Earth.jsx` — dropped `shadows` (unlit model, no lights), dpr capped at 1.5,
+   "3D is paused while the graphics driver recovers." for `"blocked"`.
+5. Tests: `webgl.test.js` now covers the probe's three answers;
+   `canvas.test.jsx` covers the blocked fallback.
+
+Full write-up in [ARCHITECTURE.md §3.2](./ARCHITECTURE.md#32-web-page-caused-context-loss-and-was-blocked).
+
+**If it's blocked right now:** wait 2 minutes or restart Chrome — a page
+reload alone won't clear it. `chrome://gpu` lists recent GPU resets.
+
+**Verify:** `npm run dev`, save `Stars.jsx` a dozen times to force HMR
+remounts, scroll hero → contact → hero. No `loseContext: context lost`, no
+`blocked` lines. If a block does happen, the globe shows the paused message
+and comes back on its own about two minutes later.
+
+---
+
 ## Done — 2026-09-09
 
 ### [x] Whole site rendered to the left with a dead strip down the right, on mobile — **P1**
@@ -65,6 +119,10 @@ from the right.
 ## Done — 2026-09-08
 
 ### [x] `Web page caused context loss and was blocked` — WebGL dead after scrolling — **P1**
+
+> **Superseded 2026-09-24.** The cause below is wrong. Chrome only counts
+> *real* GPU losses toward this block, not page-initiated `loseContext()`. See
+> the 2026-09-24 entry.
 
 ```
 THREE.WebGLRenderer: A WebGL context could not be created.

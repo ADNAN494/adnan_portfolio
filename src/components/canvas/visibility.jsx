@@ -3,12 +3,9 @@ import { useThree } from "@react-three/fiber";
 
 // Shared frameloop plumbing for every canvas on the page.
 //
-// The rule this file exists to enforce: NEVER unmount a <Canvas> to free its
-// WebGL context. @react-three/fiber's unmount path calls forceContextLoss(),
-// Chrome counts those, and past a threshold it refuses the page any further
-// context for the rest of its life (see SafeCanvas.jsx and ARCHITECTURE §3.2).
-// A canvas that is off screen costs nothing as long as its render loop is
-// stopped, so pause instead: keep the context, drop the frames.
+// Canvases are created once and paused off screen rather than unmounted: a
+// stopped render loop costs nothing, and rebuilding a context (and re-uploading
+// the Earth model) on every scroll pass costs quite a lot.
 
 // Tracks whether the element is anywhere near the viewport. Unlike LazyShow
 // this observer is never disconnected — it has to keep reporting, because the

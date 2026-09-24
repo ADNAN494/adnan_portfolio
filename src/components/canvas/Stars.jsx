@@ -46,20 +46,9 @@ const Stars = ({ animate = true, ...props }) => {
 
 const StarsCanvas = ({ className = "w-full h-full absolute inset-0" }) => {
   // The canvas is built once and kept for the life of the page. When it scrolls
-  // out of view we PAUSE the render loop rather than unmounting it.
-  //
-  // This used to unmount after 1.5 s off screen, to hand the WebGL context back
-  // and stay under Chrome's ~16 live-context cap. That was the wrong trade. Two
-  // idle contexts were never close to the cap, but every unmount makes r3f call
-  // forceContextLoss() — and Chrome counts a page's forced context losses and
-  // permanently blocks it from creating any more once the count gets high
-  // ("Web page caused context loss and was blocked"; see SafeCanvas). Scrolling
-  // the hero and contact sections in and out a handful of times was enough to
-  // burn through the budget and kill every canvas on the page until a reload.
-  //
+  // out of view we PAUSE the render loop rather than unmounting it:
   // frameloop="never" costs nothing while off screen — no rAF, no draw calls,
-  // no GPU work — and keeps the context alive, so nothing ever has to be
-  // recreated. Cheaper than the old scheme and it can't trip the guard.
+  // no GPU work — and there is no context to rebuild when it comes back.
   const [containerRef, visible] = useNearViewport();
 
   // A slowly rotating starfield behind the whole page is exactly the kind of
@@ -71,10 +60,16 @@ const StarsCanvas = ({ className = "w-full h-full absolute inset-0" }) => {
 
   return (
     <div ref={containerRef} className={className}>
+      {/* antialias off: this canvas is full-viewport, and 4x MSAA multiplies
+          its drawing buffer — ~90 MB at 1.5 dpr on a laptop screen, twice
+          over with the contact backdrop. PointMaterial already draws soft
+          round points, so MSAA bought nothing visible. On a small integrated
+          GPU that memory pressure is what triggers real context losses. */}
       <SafeCanvas
         frameloop={frameloop}
         camera={{ position: [0, 0, 1] }}
         dpr={[1, 1.5]}
+        gl={{ antialias: false }}
       >
         <ResumeOnVisible active={visible} />
 

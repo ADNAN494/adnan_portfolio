@@ -119,111 +119,115 @@ Revisit if the project moves to r3f 9 / React 19, which fixes remount handling.
 > context was explicitly lost keeps returning that same dead context from
 > `getContext()` until it is restored — so if anything reuses the element, the
 > next renderer fails outright with `Error creating WebGL context`. r3f already
-> owns teardown. This is why `utils/webgl.js` has no `releaseRenderer()` — and
-> see §3.2 for the far worse failure that calling it too often causes.
+> owns teardown. This is why `utils/webgl.js` has no `releaseRenderer()`. (A
+> *fresh* throwaway canvas, like the capability probe, is safe to release this
+> way — nothing reuses it.)
 
-### 3.2 Why contexts were being *blocked* (the second, worse root cause)
-
-Fixing StrictMode (§3.1) stopped the dev-only teardown race, but the app kept
-hitting a different wall in normal browsing:
+### 3.2 "Web page caused context loss and was blocked"
 
 ```
 THREE.WebGLRenderer: A WebGL context could not be created.
-Reason:  Web page caused context loss and was blocked      ×9
+Reason:  Web page caused context loss and was blocked      ×40
 THREE.WebGLRenderer: Error creating WebGL context.
+WebGL: CONTEXT_LOST_WEBGL: loseContext: context lost
 ```
 
-That reason string is Chrome's, forwarded verbatim by three.js
-(`three.module.js:27586` logs `event.statusMessage` from
-`webglcontextcreationerror`). **Chrome counts how many times a page forcibly
-loses a WebGL context** — any call to the `WEBGL_lose_context` extension — and
-once the count gets high the GPU process refuses to give that page another
-context *for the rest of the page's life*. It is a DoS guard on the GPU process,
-and only a reload clears it.
+That reason string comes from Blink
+(`webgl_rendering_context_base.cc`, `CreateWebGraphicsContext3DProvider`),
+dispatched when the browser process says the page's host is blocked from 3D
+APIs. The rules live in `content/browser/gpu/gpu_data_manager_impl_private.cc`:
 
-The app was calling that extension on two paths, both on purpose:
+| Rule | Value |
+| --- | --- |
+| What gets recorded | A **real** GPU context loss — driver reset/TDR, GPU process crash, GPU out of memory, a dual-GPU Mac switching GPUs — logged against the page's **host** (`localhost` in dev) |
+| Block one host | 2+ recorded losses for that host inside the window |
+| Block every host | 3+ separate reset events inside the window |
+| Window / expiry | `kBlockedDomainExpirationPeriod` = **2 minutes** |
+| Scope | Browser-wide: every tab on that host, **and reloads**, until it expires |
 
-1. `utils/webgl.js` — the capability probe explicitly called `loseContext()`
-   to "release" itself. One guilty loss on every page load.
-2. **`Stars.jsx` unmounted its canvas 1.5 s after scrolling off screen.**
-   r3f's `unmountComponentAtNode` runs `state.gl.forceContextLoss()`
-   (`index-*.esm.js:1947`), which *is* `WEBGL_lose_context.loseContext()`. So
-   every scroll past the hero or the contact section spent one guilty loss.
+**Page-initiated losses don't count.** `WEBGL_lose_context.loseContext()`
+(which is all three's `forceContextLoss()` does) is a *synthetic* loss in
+Blink; it never reaches the browser process. The console tells the two apart:
+Blink prints `WebGL: CONTEXT_LOST_WEBGL: loseContext: context lost` only for a
+real loss (`kRealLostContext` → `kDisplayInConsole`). If that line is in the
+log, the GPU dropped us.
 
-Both were written to stay under Chrome's ~16 *live-context* cap — a cap the page
-was never remotely near, with at most three canvases. They traded a limit that
-did not apply for the one guard that is unrecoverable. Measured on the built
-site, eight scroll cycles produced **10 forced losses and 12 context creations**;
-that is a blocked page inside a minute of ordinary scrolling. `SafeCanvas`'s
-retry loop then made it terminal — each rebuild unmounts a canvas, which costs
-another forced loss, which fails again.
+> **Correction, 2026-09-24.** The 2026-09-08 write-up of this error blamed our
+> own `loseContext()` calls, and a later "fix" replaced
+> `renderer.forceContextLoss()` with a no-op. Neither survives a read of the
+> Chromium source above. The no-op actively hurt: discarded contexts kept
+> their drawing buffers until GC, and every HMR remount in dev left another
+> one behind — GPU memory pressure on exactly the kind of machine that resets
+> under it (dev box: Intel Iris Plus 650, 1.5 GB shared). It's gone.
 
-**Fix — don't churn canvases.** This is also what the r3f maintainers advise:
-keep one canvas and swap its contents, never mount/unmount per view.
+**Fix — ask the GPU for less, and wait the block out:**
 
-- `Stars.jsx` creates its canvas once and keeps it. Off screen it sets
-  `frameloop="never"` instead of unmounting: no rAF, no draw calls, no GPU work,
-  and the context survives. Two idle contexts cost far less than one block.
-- `Stars.jsx › ResumeOnVisible` calls `invalidate()` from inside the canvas when
-  it scrolls back in. **This is load-bearing.** r3f's rAF loop is global across
-  all roots and cancels itself when no root wants a frame (`if (repeat === 0)
-  { running = false; cancelAnimationFrame(frame) }`). Flipping `frameloop` back
-  to `"always"` only writes to the store — `configure()` calls `setFrameloop()`,
-  which never restarts the loop, and `invalidate()` refuses to run while
-  frameloop is still `"never"`. Without this the stars freeze permanently the
-  first time every canvas idles at once.
-- `utils/webgl.js` probes without calling `loseContext()`. The throwaway canvas
-  is unreachable when the function returns; the browser reclaims it on GC.
-- `SafeCanvas` watches for `webglcontextcreationerror` in the capture phase
-  (the event does not bubble) and, on a blocked/context-loss status message,
-  sets a module-wide flag that makes *every* canvas on the page fall back
-  immediately. Retrying a blocked page cannot succeed and adds to the count.
-  `MAX_RETRIES` is down to 1 for the same reason.
+- `SafeCanvas` `DEFAULT_GL.powerPreference = "low-power"`. r3f defaults to
+  `"high-performance"`, which wakes the discrete GPU on dual-GPU Macs; the
+  switch is itself a real context loss.
+- `Stars.jsx` passes `antialias: false`. Each starfield is full-viewport, so
+  4× MSAA made its buffers ~90 MB at 1.5 dpr on a 1440×900 screen — twice
+  over, with the contact backdrop. `PointMaterial` already draws soft points.
+- `Earth.jsx` drops `shadows` (the model is `KHR_materials_unlit` with no
+  lights) and caps `dpr` at 1.5.
+- r3f's own teardown runs untouched again, so an unmounted canvas frees its
+  context immediately.
+- **Recovery.** `probeWebGL()` returns `"ok" | "blocked" | "unsupported"` and
+  never caches `"blocked"`. `SafeCanvas` parks canvases waiting for a context on
+  reason `"blocked"`, then remounts them after `BLOCK_EXPIRY_MS` (125 s), up to
+  three times per visit. Canvases already rendering keep their contexts
+  throughout — the block refuses only *new* ones. `Earth.jsx` shows
+  "3D is paused while the graphics driver recovers." with no retry link.
 
-After the fix the same eight-cycle run produces **0 forced losses and 4 context
-creations**, with the starfield still animating at the end.
+Canvases are still created once and paused off screen (`frameloop="never"`,
+then `ResumeOnVisible` → `invalidate()` on the way back). That is now a
+performance choice, not a block-avoidance rule: rebuilding a context and
+re-uploading the Earth model on every scroll pass is expensive.
+`ResumeOnVisible` is still load-bearing. r3f's rAF loop is global across roots
+and cancels itself when no root wants a frame; flipping `frameloop` back to
+`"always"` doesn't restart it, and `invalidate()` refuses to run while
+frameloop is `"never"`.
 
-> **Rule:** never unmount a `<Canvas>` to "free" a context, and never call
-> `forceContextLoss()` or `WEBGL_lose_context.loseContext()` yourself. Pause the
-> frameloop instead.
+**Unblocking a dev session right now:** wait two minutes, or quit and reopen
+Chrome (the block list is in browser-process memory). `chrome://gpu` shows the
+reset log. For heavy 3D debugging only, Chrome can be launched with
+`--disable-domain-blocking-for-3d-apis`.
 
 ### 3.3 Defence in depth
 
-Even with StrictMode gone, contexts can be lost for reasons outside our control:
-a laptop switching GPUs, a driver reset, a tab backgrounded too long, or simply
-the browser's live-context cap (~16 in Chrome) evicting the oldest.
-
 ```
-utils/webgl.js       isWebGLAvailable()   one-off probe, self-releasing
+utils/webgl.js       probeWebGL()   "ok" | "blocked" | "unsupported"; releases
+                                    its throwaway context immediately
 
-components/ErrorBoundary.jsx              the one class component. Catches both
-                                          renderer-construction throws AND model
-                                          load failures — r3f's inner boundary
-                                          rethrows those outside <Canvas>
+components/ErrorBoundary.jsx        the one class component. Catches both
+                                    renderer-construction throws AND model
+                                    load failures — r3f's inner boundary
+                                    rethrows those outside <Canvas>
 
-canvas/SafeCanvas.jsx                     ErrorBoundary + <Canvas>. Failure modes:
-                                          · "unsupported" no WebGL at all
-                                          · "lost"        context gone for good
-                                          · "error"       anything thrown out of
-                                                          the canvas tree
-                                          On webglcontextlost: preventDefault (or
-                                          webglcontextrestored never fires), wait
-                                          1.5 s for restore, else rebuild; 2 auto
-                                          retries, then hand over to `fallback`.
-                                          gl defaults: preserveDrawingBuffer off,
-                                          failIfMajorPerformanceCaveat off.
-    ├─ canvas/Stars.jsx   unmounts itself 1.5 s after leaving the viewport, so
-    │                     only the visible starfield holds a context
-    └─ canvas/Earth.jsx   GLTF from /public/planet, frameloop="demand"
+canvas/SafeCanvas.jsx               ErrorBoundary + <Canvas>. Failure reasons:
+                                    · "unsupported" no WebGL at all
+                                    · "blocked"     Chrome's host block; clears
+                                                    itself after BLOCK_EXPIRY_MS
+                                    · "lost"        context gone for good
+                                    · "error"       anything thrown out of
+                                                    the canvas tree
+                                    On webglcontextlost: preventDefault (or
+                                    webglcontextrestored never fires), wait
+                                    1.5 s for restore, else rebuild; 1 auto
+                                    retry, then hand over to `fallback`.
+                                    gl defaults: low-power, preserveDrawingBuffer
+                                    off, failIfMajorPerformanceCaveat off.
+    ├─ canvas/Stars.jsx   paused off screen; antialias off
+    └─ canvas/Earth.jsx   GLTF from /public/planet; paused off screen; dpr ≤ 1.5
 ```
 
 `fallback` is a node **or** a function `({ reason, retry }) => node`, so a caller
 can word the message per failure and offer a retry. `Earth.jsx` uses that: it
 shows a styled disc with a reason-specific message and a "try again" link
-(hidden for `unsupported`, where retrying can't help), and passes `onRetry` to
-call `useGLTF.clear(MODEL_PATH)` — drei caches the _rejected_ promise, so
-without clearing it a retry fails instantly with the same error instead of
-refetching the model.
+(hidden for `unsupported` and `blocked`, where retrying can't help), and passes
+`onRetry` to call `useGLTF.clear(MODEL_PATH)` — drei caches the _rejected_
+promise, so without clearing it a retry fails instantly with the same error
+instead of refetching the model.
 
 `Loader.jsx` (drei `useProgress`) is the in-canvas suspense fallback while the
 Earth model downloads.
@@ -243,7 +247,7 @@ src/
 ├── assets/index.js          image barrel (screenshots + company logos)
 ├── hoc/SectionWrapper.jsx   section shell: anchor + stagger + padding
 ├── utils/motion.js          fadeIn / slideIn / textVariant / staggerContainer
-├── utils/webgl.js           WebGL probe + context release
+├── utils/webgl.js           WebGL probe ("ok" / "blocked" / "unsupported")
 └── components/
     ├── Navbar.jsx           scroll-aware nav, mobile drawer
     ├── Hero.jsx             typewriter, letter-stagger name, code-window card
@@ -276,26 +280,27 @@ src/
 | —          | Testimonials         | `testimonials`                                        |
 | `#contact` | Contact form + Earth | inline / EmailJS                                      |
 
-### 5.2 Projects (14, in display order)
+### 5.2 Projects (15, in display order)
 
 | #   | Project                                                                                | Stack                                      | Live                                    |
 | --- | -------------------------------------------------------------------------------------- | ------------------------------------------ | --------------------------------------- |
-| 1   | **Psychic Txt** — live psychic chat & text-reading platform                            | Next.js, Bootstrap, Node, MUI, MSSQL       | https://www.psychictxt.com/             |
-| 2   | **MDMC (DRAP)** — medical drug management for Pakistan's DRAP                          | React, Bootstrap, Node, MUI, MSSQL         | https://e.dra.gov.pk/login              |
-| 3   | **Psychic Txt — Advisor Match Funnel** — guided advisor-matching intake                | Next.js, Tailwind, Node, MSSQL             | https://try.psychictxt.com/             |
-| 4   | **Psychic Vision** — live psychic reading app marketing + credit checkout              | Next.js, Tailwind, Node, Stripe, MSSQL     | https://www.psychicvisionapp.com/       |
-| 5   | **Mi Vidente** — Spanish-language tarot / psychic app platform                         | Next.js, Bootstrap, Node, Stripe, MSSQL    | https://mividenteapp.com/               |
-| 6   | **Reset Hypnosis** — quit-vaping quiz funnel for a guided hypnosis programme           | React, Tailwind, Node, MySQL               | https://quiz.resethypnosis.com/welcome  |
-| 7   | **Wello Move** — wellness platform, plans + expert consults                            | React, Node, Tailwind, MySQL               | https://quiz.joinwello.com/landing      |
-| 8   | **Sont (WOAH)** — animal-disease tracking for the World Organisation for Animal Health | React, Bootstrap, Node, MUI, MSSQL         | https://sont-uat.woah.org/              |
-| 9   | **Techypedia** — UK digital-solutions company site                                     | React/Next.js, Bootstrap, Node, MUI, MSSQL | https://techypedia.co.uk/               |
-| 10  | **PVSIS** — WHO/WOAH veterinary & aquatic animal health services                       | React, Node, MUI, MSSQL                    | https://pvs-preprod.woah.org/           |
-| 11  | **True Closure** — grief support & guided resources                                    | React, Tailwind CSS, PHP, MySQL            | https://join.trueclosureapp.com/landing |
-| 12  | **Sysreforms International** — software house corporate site                           | React, Bootstrap, Redux                    | https://www.sysreforms.com/             |
-| 13  | **UNDP** — UN home energy-efficiency programme (CMS, LMS, Energy modules)              | React, Bootstrap, Redux                    | https://www.undp.org/                   |
-| 14  | **Immigra Consultants** — study-abroad student advisory                                | React, Redux, Bootstrap                    | https://www.immigraconsultants.com/     |
+| 1   | **Mukafi** — bilingual (EN/AR, RTL) GCC end-of-service gratuity calculator            | Next.js, Tailwind, i18n                    | https://mukafi.com/en                   |
+| 2   | **Psychic Txt** — live psychic chat & text-reading platform                            | Next.js, Bootstrap, Node, MUI, MSSQL       | https://www.psychictxt.com/             |
+| 3   | **MDMC (DRAP)** — medical drug management for Pakistan's DRAP                          | React, Bootstrap, Node, MUI, MSSQL         | https://e.dra.gov.pk/login              |
+| 4   | **Psychic Txt — Advisor Match Funnel** — guided advisor-matching intake                | Next.js, Tailwind, Node, MSSQL             | https://try.psychictxt.com/             |
+| 5   | **Psychic Vision** — live psychic reading app marketing + credit checkout              | Next.js, Tailwind, Node, Stripe, MSSQL     | https://www.psychicvisionapp.com/       |
+| 6   | **Mi Vidente** — Spanish-language tarot / psychic app platform                         | Next.js, Bootstrap, Node, Stripe, MSSQL    | https://mividenteapp.com/               |
+| 7   | **Reset Hypnosis** — quit-vaping quiz funnel for a guided hypnosis programme           | React, Tailwind, Node, MySQL               | https://quiz.resethypnosis.com/welcome  |
+| 8   | **Wello Move** — wellness platform, plans + expert consults                            | React, Node, Tailwind, MySQL               | https://quiz.joinwello.com/landing      |
+| 9   | **Sont (WOAH)** — animal-disease tracking for the World Organisation for Animal Health | React, Bootstrap, Node, MUI, MSSQL         | https://sont-uat.woah.org/              |
+| 10  | **Techypedia** — UK digital-solutions company site                                     | React/Next.js, Bootstrap, Node, MUI, MSSQL | https://techypedia.co.uk/               |
+| 11  | **PVSIS** — WHO/WOAH veterinary & aquatic animal health services                       | React, Node, MUI, MSSQL                    | https://pvs-preprod.woah.org/           |
+| 12  | **True Closure** — grief support & guided resources                                    | React, Tailwind CSS, PHP, MySQL            | https://join.trueclosureapp.com/landing |
+| 13  | **Sysreforms International** — software house corporate site                           | React, Bootstrap, Redux                    | https://www.sysreforms.com/             |
+| 14  | **UNDP** — UN home energy-efficiency programme (CMS, LMS, Energy modules)              | React, Bootstrap, Redux                    | https://www.undp.org/                   |
+| 15  | **Immigra Consultants** — study-abroad student advisory                                | React, Redux, Bootstrap                    | https://www.immigraconsultants.com/     |
 
-Screenshots live in `src/assets/` as **WebP** (`psychicVision`, `miVidente`,
+Screenshots live in `src/assets/` as **WebP** (`mukafi`, `psychicVision`, `miVidente`,
 `psyTry`, `resetHypnosis`, `psy`, `wello`, `sont`, `tech_pedia`, `drap`, `pvs`,
 `trueClosure`, `immi`, `sys1`, `undp`) and are exported through
 `src/assets/index.js`. Every project screenshot is WebP, capped at 1200 px wide,
@@ -362,13 +367,14 @@ API, Bootstrap, MySQL, MSSQL, Firebase, Git & GitHub, Figma.
   add to `src/components/index.js`, render in `App.jsx`, add to `navLinks`.
 - Anything that creates a WebGL context goes through `SafeCanvas`, never `<Canvas>`
   directly — otherwise a lost context or a failed model takes down the React tree.
-- **Never unmount a canvas to free its context, and never call
-  `forceContextLoss()` / `WEBGL_lose_context.loseContext()`.** Chrome blocks a
-  page that forces context loss too often, permanently (§3.2). Pause with
-  `frameloop="never"` instead, and call `invalidate()` from inside the canvas
-  when resuming.
+- **Keep canvases cheap on the GPU.** Real context losses — not our own
+  `loseContext()` calls — are what get a host blocked for two minutes (§3.2).
+  Don't turn on `antialias`, `shadows` or a dpr above 1.5 without a visible
+  reason, and never set `powerPreference: "high-performance"`.
+- Pause off-screen canvases with `frameloop="never"` rather than unmounting
+  them, and call `invalidate()` from inside the canvas when resuming.
 - Don't re-add `<React.StrictMode>` while the project is on r3f 8 (§3.1), and
-  don't call `forceContextLoss()` from component cleanup.
+  don't call `forceContextLoss()` from component cleanup — r3f owns teardown.
 - Motion variants come from `src/utils/motion.js`; don't inline new ones unless
   they're single-use (as in the hero letter stagger).
 - **Nothing may translate content past the right edge.** A phone browser widens
