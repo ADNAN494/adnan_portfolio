@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 
@@ -53,5 +55,43 @@ describe("ThemeToggle", () => {
     scrollTo(400);
 
     expect(await screen.findByRole("switch")).toHaveAttribute("aria-checked", "true");
+  });
+});
+
+// The default theme is decided in index.html, before any of the app loads, so
+// it's tested there: the markup itself, and the inline script run against it.
+describe("default theme (index.html)", () => {
+  const html = readFileSync(resolve(__dirname, "../../index.html"), "utf8");
+  const script = html.match(/<script>([\s\S]*?localStorage[\s\S]*?)<\/script>/)[1];
+
+  const firstPaint = (stored) => {
+    document.documentElement.dataset.theme = "dark"; // as shipped in the markup
+    document.head.innerHTML = '<meta name="theme-color" content="#0c1110" />';
+    localStorage.clear();
+    if (stored) localStorage.setItem("theme", stored);
+    new Function(script)();
+    return document.documentElement.dataset.theme;
+  };
+
+  afterEach(() => {
+    localStorage.clear();
+    delete document.documentElement.dataset.theme;
+  });
+
+  it("ships dark in the markup, so it holds even with JavaScript off", () => {
+    expect(html).toMatch(/<html[^>]*data-theme="dark"/);
+    expect(html).toContain('<meta name="theme-color" content="#0c1110" />');
+  });
+
+  it("stays dark for a first-time visitor and for one who chose dark", () => {
+    expect(firstPaint(null)).toBe("dark");
+    expect(firstPaint("dark")).toBe("dark");
+  });
+
+  it("switches to light before first paint for a visitor who chose light", () => {
+    expect(firstPaint("light")).toBeUndefined();
+    expect(
+      document.querySelector('meta[name="theme-color"]').getAttribute("content")
+    ).toBe("#f7f5f0");
   });
 });

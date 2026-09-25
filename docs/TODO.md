@@ -10,6 +10,35 @@ fix · **P3** polish.
 
 ## Done 2026-09-25
 
+### [x] Ember glow on the social links (P3)
+
+- **What glows:** the "Find me on" caption, the icons and the rail's hairline,
+  on the left rail and on the phone tiles in About. At rest they are ember with
+  a soft glow instead of muted grey. The hairline fades from ember at the icons
+  to nothing at the bottom edge.
+- **Hover / keyboard focus:** the glow flares to a brighter core and a wider
+  halo.
+- **Implementation:** utilities in `index.css` (`glow-ember`,
+  `glow-ember-strong`, `text-glow-ember`, `box-glow-ember*`). The icon glows use
+  drop-shadow filters, so the glow follows the glyph's shape. The name label
+  sits outside the glowing element and doesn't pick it up.
+- **Strength is per theme** (`--glow-a`, `--glow-a-soft`): strong on dark,
+  about half on light, where a heavy orange haze looks like a smudge.
+
+### [x] Dark theme is the default (P2)
+
+- **New visitors land on dark.** `index.html` now ships
+  `<html data-theme="dark">` (and a dark `theme-color`) in the markup itself,
+  so the first frame is dark even before, or without, JavaScript. The inline
+  script flips it to light only for a visitor whose saved choice is `light`.
+- **Returning visitors keep what they chose.** Both choices are still saved
+  under `localStorage.theme`, so anyone who picked light stays light. Before
+  this, a visitor with nothing saved got light.
+- **Verified** on the built site: first visit is `rgb(12, 17, 16)` at
+  DOMContentLoaded. After picking light, a reload is light from
+  DOMContentLoaded (no dark flash). With JS disabled the page renders dark.
+  Tests: 28/28. The three new ones run `index.html`'s inline script directly.
+
 ### [x] Social links → fixed left rail **P3**
 
 Facebook / WhatsApp / LinkedIn moved out of About onto a fixed left-edge rail

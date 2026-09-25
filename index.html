@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -53,20 +53,22 @@
       name="twitter:image"
       content="https://ay-3d-portfolio.netlify.app/og.png"
     />
-    <meta name="theme-color" content="#f7f5f0" />
+    <meta name="theme-color" content="#0c1110" />
     <!--
-      Theme, before first paint. A visitor who picked the dark theme (the
-      switch on the right edge, see ThemeToggle.jsx) gets data-theme="dark" on
-      <html> here, synchronously, so the page never flashes light while the CSS
-      and React load. Key and values must match src/utils/theme.js. Light is the
-      default; the OS dark-mode preference is deliberately not followed.
+      Theme, before first paint. Dark is the default, and it is set in the
+      markup itself (data-theme="dark" on <html> above), so the page is dark
+      from the first frame even with JavaScript off. A visitor who switched to
+      light (the switch on the right edge, see ThemeToggle.jsx) has that undone
+      here, synchronously, so the page never flashes dark before going light.
+      Key and values must match src/utils/theme.js. The OS dark-mode preference
+      is deliberately not followed.
     -->
     <script>
       try {
-        if (localStorage.getItem("theme") === "dark") {
-          document.documentElement.dataset.theme = "dark";
+        if (localStorage.getItem("theme") === "light") {
+          delete document.documentElement.dataset.theme;
           document.querySelector('meta[name="theme-color"]').content =
-            "#0c1110";
+            "#f7f5f0";
         }
       } catch (e) {}
     </script>

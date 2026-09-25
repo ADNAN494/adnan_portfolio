@@ -25,13 +25,14 @@ const GLYPHS = {
   ),
 };
 
-export const SocialGlyph = ({ id, size = 24 }) => (
+export const SocialGlyph = ({ id, size = 24, className = "" }) => (
   <svg
     width={size}
     height={size}
     viewBox="0 0 72 72"
     fill="currentColor"
     aria-hidden="true"
+    className={className}
   >
     {GLYPHS[id]}
   </svg>
@@ -43,7 +44,7 @@ export const SocialGlyph = ({ id, size = 24 }) => (
 // match the rail's look rather than the old coloured circles.
 const SocialIcons = () => (
   <div className="md:hidden">
-    <p className="text-[12px] font-bold uppercase tracking-[0.12em] text-ink-muted">
+    <p className="text-[12px] font-bold uppercase tracking-[0.12em] text-ember text-glow-ember">
       Find me on
     </p>
     <ul className="mt-3 flex gap-3">
@@ -54,9 +55,9 @@ const SocialIcons = () => (
             target="_blank"
             rel="noopener noreferrer"
             aria-label={social.name}
-            className="w-11 h-11 rounded-xl border border-line bg-surface shadow-card text-ink-body flex items-center justify-center transition-colors hover:text-ember hover:border-ember/40"
+            className="w-11 h-11 rounded-xl border border-ember/40 bg-surface text-ember box-glow-ember flex items-center justify-center transition-all duration-200 hover:border-ember/70 hover:box-glow-ember-strong"
           >
-            <SocialGlyph id={social.id} size={26} />
+            <SocialGlyph id={social.id} size={26} className="glow-ember" />
           </a>
         </li>
       ))}

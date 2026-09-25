@@ -56,7 +56,7 @@ const SocialRail = () => (
     <motion.p
       variants={rise}
       aria-hidden="true"
-      className="mb-3 font-mono text-[11px] font-medium uppercase tracking-[0.25em] text-ink-muted [writing-mode:vertical-rl]"
+      className="mb-3 font-mono text-[11px] font-medium uppercase tracking-[0.25em] text-ember text-glow-ember [writing-mode:vertical-rl]"
     >
       {/* Rotated on an inner span: framer-motion owns the outer transform. */}
       <span className="inline-block rotate-180">Find me on</span>
@@ -72,9 +72,17 @@ const SocialRail = () => (
           target="_blank"
           rel="noopener noreferrer"
           aria-label={social.name}
-          className="group relative w-10 h-10 flex items-center justify-center rounded-lg text-ink-muted transition-all duration-200 hover:-translate-y-1 hover:text-ember focus-visible:text-ember"
+          className="group relative w-10 h-10 flex items-center justify-center rounded-lg text-ember transition-all duration-200 hover:-translate-y-1"
         >
-          <SocialGlyph id={social.id} size={26} />
+          {/* Ember with a soft glow at rest, so the rail reads at a glance;
+              the glow flares on hover or keyboard focus. The glow sits on the
+              glyph, not the link, so the name label below doesn't pick it
+              up. */}
+          <SocialGlyph
+            id={social.id}
+            size={26}
+            className="glow-ember transition-[filter] duration-200 group-hover:glow-ember-strong group-focus-visible:glow-ember-strong"
+          />
 
           {/* Name, sliding out to the right on hover or keyboard focus. */}
           <span className="pointer-events-none absolute left-full ml-2 top-1/2 -translate-y-1/2 -translate-x-1 whitespace-nowrap rounded-full bg-ink text-canvas text-[12px] font-bold px-3 py-1.5 opacity-0 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0 group-focus-visible:opacity-100 group-focus-visible:translate-x-0">
@@ -87,7 +95,9 @@ const SocialRail = () => (
     <motion.span
       variants={draw}
       aria-hidden="true"
-      className="mt-3 block w-px h-24 origin-bottom bg-ink-muted/40"
+      // Ember at the icons, fading out toward the bottom edge; the glow is a
+      // drop-shadow, so it fades with the line.
+      className="mt-3 block w-px h-24 origin-bottom bg-gradient-to-b from-ember to-transparent glow-ember"
     />
   </motion.nav>
 );

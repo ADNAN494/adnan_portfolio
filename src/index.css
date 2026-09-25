@@ -49,6 +49,12 @@
   --wash-ember: rgba(176, 74, 20, 0.08);
   --wash-pine: rgba(11, 113, 82, 0.07);
   --scroll-thumb: 207 200 186;
+
+  /* Strength of the ember glow (glow-* utilities below): the core halo and
+   * the wide soft one. Lower on light, where a strong orange haze on a pale
+   * ground reads as a smudge rather than light. */
+  --glow-a: 0.3;
+  --glow-a-soft: 0.12;
 }
 
 /* The pre-2026-09-25 palette: charcoal, peach, mint. Body text is a step
@@ -80,6 +86,9 @@
   --wash-ember: rgba(232, 167, 111, 0.06);
   --wash-pine: rgba(110, 231, 183, 0.05);
   --scroll-thumb: 36 48 41;
+
+  --glow-a: 0.45;
+  --glow-a-soft: 0.2;
 }
 
 /* 450, not 400: Jakarta's regular is on the light side for long paragraphs on
@@ -98,6 +107,41 @@ body {
   /* In `base` so a `tracking-*` utility on the element still wins. */
   .font-heading {
     letter-spacing: -0.02em;
+  }
+}
+
+/* Ember glow, used on the social links (rail and the phone row in About) to
+ * lift them off the page. In `utilities` so hover:/group-hover: variants work.
+ *
+ * `glow-ember*` is a drop-shadow filter, so it follows the element's actual
+ * shape and alpha: a glyph glows as a glyph, and a line that fades out takes
+ * its glow with it. `text-glow-ember` is for text, `box-glow-ember` for boxes. */
+@layer utilities {
+  .glow-ember {
+    filter: drop-shadow(0 0 3px rgb(var(--ember) / var(--glow-a)))
+      drop-shadow(0 0 10px rgb(var(--ember) / var(--glow-a-soft)));
+  }
+
+  /* Hover / focus: a tighter, fully opaque core plus a much wider halo, so the
+   * flare reads as a clear step up from the resting glow. */
+  .glow-ember-strong {
+    filter: drop-shadow(0 0 3px rgb(var(--ember) / 0.7))
+      drop-shadow(0 0 12px rgb(var(--ember) / 0.35));
+  }
+
+  .text-glow-ember {
+    text-shadow: 0 0 8px rgb(var(--ember) / var(--glow-a)),
+      0 0 20px rgb(var(--ember) / var(--glow-a-soft));
+  }
+
+  .box-glow-ember {
+    box-shadow: 0 0 10px -2px rgb(var(--ember) / var(--glow-a)),
+      0 0 24px -4px rgb(var(--ember) / var(--glow-a-soft));
+  }
+
+  .box-glow-ember-strong {
+    box-shadow: 0 0 12px -2px rgb(var(--ember) / 0.45),
+      0 0 24px -4px rgb(var(--ember) / 0.2);
   }
 }
 

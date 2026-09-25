@@ -36,8 +36,8 @@ raw hex for text or surfaces. Each token is an `R G B` CSS variable
 `tailwind.config.cjs` covers both themes and is the source of truth. Re-check it
 whenever a value changes.
 
-**Two themes.** Light is the default. The dark theme is the original
-pre-2026-09-25 palette (charcoal `#0c1110`, peach `#e8a76f`, mint `#6ee7b7`),
+**Two themes.** Dark is the default (since 2026-09-25, same day the light
+theme was added). The dark theme is the original pre-2026-09-25 palette (charcoal `#0c1110`, peach `#e8a76f`, mint `#6ee7b7`),
 with body text one step brighter (`#b3bdb9`). The hex values below are the
 light theme's.
 
@@ -51,10 +51,13 @@ light theme's.
   attribute is the source of truth, the choice is saved in `localStorage.theme`,
   and components subscribe via `useTheme()`, which works inside r3f canvases
   too. The starfield uses it to switch pine ↔ mint.
-- **No flash on reload.** An inline script in `index.html` applies a saved
-  `dark` before first paint, and the critical `<style>` there carries both
-  canvas colours. The storage key and hex values are duplicated there, so keep
-  them in sync with `theme.js` and `index.css`.
+- **Default and no flash on reload.** `index.html` ships
+  `<html data-theme="dark">` in its markup, so dark holds even with
+  JavaScript off. An inline script there removes the attribute before first
+  paint only when `localStorage.theme === "light"`. The critical `<style>` there
+  carries both canvas colours. The storage key and hex values are duplicated
+  there, so keep them in sync with `theme.js` and `index.css`. The "default
+  theme" tests in `ThemeToggle.test.jsx` run that inline script directly.
 
 | Token                            | Hex                               | Used for                                                                                        |
 | -------------------------------- | --------------------------------- | ----------------------------------------------------------------------------------------------- |

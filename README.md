@@ -1,6 +1,6 @@
 # Adnan Yousaf Developer Portfolio
 
-A terminal/IDE-themed portfolio built with **React + Vite**: a warm light theme with burnt-orange (`ember`) and deep-green (`pine`) accents (plus the original dark theme, one click away on the floating switch), monospace section labels, a dark code-window hero, browser-mockup project cards, and a Three.js Earth in the contact section.
+A terminal/IDE-themed portfolio built with **React + Vite**: a dark charcoal theme with peach and mint accents by default, plus a warm light theme (burnt-orange and deep-green accents) one click away on the floating switch, monospace section labels, a dark code-window hero, browser-mockup project cards, and a Three.js Earth in the contact section.
 
 ---
 
