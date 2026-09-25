@@ -6,6 +6,8 @@ import Experience from "./Experience";
 import Works from "./Works";
 import Clients from "./Clients";
 import Contact from "./Contact";
+import ThemeToggle from "./ThemeToggle";
+import SocialRail from "./SocialRail";
 
 export {
   Hero,
@@ -16,4 +18,6 @@ export {
   Works,
   Clients,
   Contact,
+  ThemeToggle,
+  SocialRail,
 };

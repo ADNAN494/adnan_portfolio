@@ -41,7 +41,7 @@ export class MockIntersectionObserver {
 
   static triggerAll(isIntersecting = true) {
     MockIntersectionObserver.instances.forEach((observer) =>
-      observer.trigger(isIntersecting)
+      observer.trigger(isIntersecting),
     );
   }
 
@@ -58,7 +58,7 @@ export class MockResizeObserver {
 
 // The default for every test: a browser with no WebGL at all. probeWebGL()
 // returns "unsupported", so SafeCanvas renders its fallback and never constructs a
-// THREE.WebGLRenderer — which is the only way three.js can run under jsdom, and
+// THREE.WebGLRenderer  which is the only way three.js can run under jsdom, and
 // also the exact path a real visitor on a blocked or unsupported browser takes.
 export const stubWebGLUnavailable = () => {
   const original = HTMLCanvasElement.prototype.getContext;

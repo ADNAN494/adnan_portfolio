@@ -28,7 +28,7 @@ describe("Contact form", () => {
 
   // The P1 regression. This used to set status "success" in the catch block as
   // well as the try, so a visitor whose message never left the browser was
-  // told it had arrived — and the form was cleared, taking the text with it.
+  // told it had arrived  and the form was cleared, taking the text with it.
   it("reports a real failure when the send throws, and keeps what was typed", async () => {
     emailjs.send.mockRejectedValue(new Error("network down"));
     vi.spyOn(console, "error").mockImplementation(() => {});
@@ -44,13 +44,13 @@ describe("Contact form", () => {
 
     // Nothing the visitor wrote may be discarded.
     expect(screen.getByPlaceholderText("What's your good name?")).toHaveValue(
-      "Jamie Rivers"
+      "Jamie Rivers",
     );
     expect(screen.getByPlaceholderText("What's your web address?")).toHaveValue(
-      "jamie@example.com"
+      "jamie@example.com",
     );
     expect(screen.getByPlaceholderText("What you want to say?")).toHaveValue(
-      "Can you build us a booking system?"
+      "Can you build us a booking system?",
     );
   });
 
@@ -79,7 +79,11 @@ describe("Contact form", () => {
       expect(screen.getByRole("status")).toHaveTextContent(/Message sent/i);
     });
 
-    expect(screen.getByPlaceholderText("What's your good name?")).toHaveValue("");
-    expect(screen.getByPlaceholderText("What you want to say?")).toHaveValue("");
+    expect(screen.getByPlaceholderText("What's your good name?")).toHaveValue(
+      "",
+    );
+    expect(screen.getByPlaceholderText("What you want to say?")).toHaveValue(
+      "",
+    );
   });
 });

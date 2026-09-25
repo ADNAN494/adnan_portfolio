@@ -11,8 +11,8 @@ const EarthCanvas = lazy(() => import("./canvas/Earth"));
 // Where the form delivers, and the address the fallback link opens.
 const CONTACT_EMAIL = "yousafadnan998@gmail.com";
 
-// EmailJS identifiers, env-first. The public key is public by design — it ships
-// in the bundle whatever we do — so this isn't about hiding it. It's so that
+// EmailJS identifiers, env-first. The public key is public by design  it ships
+// in the bundle whatever we do  so this isn't about hiding it. It's so that
 // rotating a key, or pointing the form at a test template, is a config change
 // instead of a code edit. `.env` is gitignored; see `.env.example` for the
 // variable names. The literals are the current production values, kept as
@@ -30,7 +30,7 @@ if (
   !import.meta.env.VITE_EMAILJS_TEMPLATE_ID
 ) {
   console.warn(
-    "[Contact] VITE_EMAILJS_* not set — falling back to the built-in production IDs. Copy .env.example to .env to point the form somewhere else."
+    "[Contact] VITE_EMAILJS_* not set  falling back to the built-in production IDs. Copy .env.example to .env to point the form somewhere else.",
   );
 }
 
@@ -38,11 +38,20 @@ if (
 // failed send costs them a click rather than the whole message.
 const mailtoHref = ({ name, email, message }) => {
   const subject = `Portfolio enquiry${name ? ` from ${name}` : ""}`;
-  const body = [message, "", `— ${name}`, email].filter(Boolean).join("\n");
+  const body = [message, "", ` ${name}`, email].filter(Boolean).join("\n");
   return `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(
-    subject
+    subject,
   )}&body=${encodeURIComponent(body)}`;
 };
+
+// Shared by all three fields. The border is `line.strong` (3.2:1 or better) so
+// the field reads as a field, not as a gap in the card. 16px text keeps iOS
+// Safari from zooming the page when a field takes focus. Focus draws its own
+// ring here, so the global :focus-visible outline is switched off for inputs.
+const fieldClass =
+  "w-full bg-surface border border-line-strong rounded-xl py-3.5 px-4 text-ink text-[16px] placeholder:text-ink-muted/80 transition-shadow focus:outline-none focus:border-ember focus:ring-4 focus:ring-ember/20";
+
+const labelClass = "font-heading text-ink text-[15px] font-semibold mb-2.5";
 
 const Contact = () => {
   const formRef = useRef();
@@ -89,7 +98,7 @@ const Contact = () => {
       setLoading(false);
       setStatus({
         type: "success",
-        text: "Message sent — thank you! I'll get back to you as soon as possible.",
+        text: "Message sent  thank you! I'll get back to you as soon as possible.",
       });
 
       // Only clear on an actual send. See the catch below.
@@ -103,12 +112,12 @@ const Contact = () => {
       console.error(error);
 
       // This used to report success and clear the form, which meant a visitor
-      // whose message never left the browser was told it had arrived — and the
+      // whose message never left the browser was told it had arrived  and the
       // text they'd written was gone with it. Keep every field exactly as typed
       // so they can retry or hand it to their own mail client.
       setStatus({
         type: "error",
-        text: "That didn't send — something went wrong on the way out.",
+        text: "That didn't send  something went wrong on the way out.",
       });
     }
   };
@@ -119,20 +128,20 @@ const Contact = () => {
     >
       <motion.div
         variants={slideIn("left", "tween", 0.2, 1)}
-        className="flex-[0.75] bg-black-100 sm:p-8 p-6 rounded-2xl"
+        className="flex-[0.75] bg-surface border border-line shadow-lift sm:p-10 p-6 rounded-3xl"
       >
         <p className={styles.sectionSubText}>
-          <span className="text-secondary">{"// "}</span>contact
+          <span className="text-ink-muted">{"// "}</span>contact
         </p>
         <h3 className={`${styles.sectionHeadText} mt-2`}>Get in touch</h3>
 
         <form
           ref={formRef}
           onSubmit={handleSubmit}
-          className="mt-12 flex flex-col gap-8"
+          className="mt-10 flex flex-col gap-6"
         >
           <label className="flex flex-col">
-            <span className="text-white font-medium mb-4">Your Name</span>
+            <span className={labelClass}>Your name</span>
             <input
               type="text"
               name="name"
@@ -140,11 +149,11 @@ const Contact = () => {
               value={form.name}
               onChange={handleChange}
               placeholder="What's your good name?"
-              className="bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium"
+              className={fieldClass}
             />
           </label>
           <label className="flex flex-col">
-            <span className="text-white font-medium mb-4">Your email</span>
+            <span className={labelClass}>Your email</span>
             <input
               type="email"
               name="email"
@@ -152,11 +161,11 @@ const Contact = () => {
               value={form.email}
               onChange={handleChange}
               placeholder="What's your web address?"
-              className="bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium"
+              className={fieldClass}
             />
           </label>
           <label className="flex flex-col">
-            <span className="text-white font-medium mb-4">Your Message</span>
+            <span className={labelClass}>Your message</span>
             <textarea
               rows={7}
               name="message"
@@ -164,14 +173,14 @@ const Contact = () => {
               onChange={handleChange}
               required
               placeholder="What you want to say?"
-              className="bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium"
+              className={fieldClass}
             />
           </label>
 
           <button
             type="submit"
             disabled={loading}
-            className="bg-peach py-3 px-10 rounded-full outline-none w-fit text-primary font-semibold hover:bg-peach-dark transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+            className="font-heading bg-ember py-3.5 px-10 rounded-full w-fit text-canvas text-[15px] font-bold shadow-[0_8px_20px_-8px_rgba(176,74,20,0.6)] hover:bg-ember-dark transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {loading ? "Sending..." : "Send"}
           </button>
@@ -179,8 +188,8 @@ const Contact = () => {
           {status && (
             <div role="status" aria-live="polite">
               <p
-                className={`font-mono text-[14px] leading-6 ${
-                  status.type === "success" ? "text-mint" : "text-red-400"
+                className={`text-[15px] font-semibold leading-6 ${
+                  status.type === "success" ? "text-pine" : "text-red-700"
                 }`}
               >
                 {status.type === "success" ? "✓ " : "✗ "}
@@ -188,11 +197,11 @@ const Contact = () => {
               </p>
 
               {status.type === "error" && (
-                <p className="font-mono text-[14px] leading-6 text-secondary mt-2">
-                  Your message is still in the form — press Send to try again, or{" "}
+                <p className="text-[15px] leading-6 text-ink-muted mt-2">
+                  Your message is still in the form press Send to try again, or{" "}
                   <a
                     href={mailtoHref(form)}
-                    className="text-peach underline underline-offset-4 hover:text-peach-dark transition-colors"
+                    className="text-ember underline underline-offset-4 hover:text-ember-dark transition-colors"
                   >
                     email it to me directly
                   </a>

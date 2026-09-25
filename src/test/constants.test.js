@@ -4,7 +4,7 @@ import { clients, experiences, projects, stats } from "../constants";
 
 // ARCHITECTURE.md §6: "Every number on the page must be checkable." The stats
 // row sits directly above a project grid a visitor can count, so a mismatch is
-// visible to anyone who bothers — which is exactly the sort of thing that gets
+// visible to anyone who bothers  which is exactly the sort of thing that gets
 // noticed in an interview.
 describe("content invariants", () => {
   it("keeps the Projects shipped stat equal to the number of projects", () => {
@@ -40,7 +40,7 @@ describe("content invariants", () => {
   it("spells the recurring tech tags correctly", () => {
     // "boostrap" shipped on eight project cards before anyone noticed.
     const tags = projects.flatMap((project) =>
-      project.tags.map((tag) => tag.name)
+      project.tags.map((tag) => tag.name),
     );
 
     expect(tags).not.toContain("boostrap");

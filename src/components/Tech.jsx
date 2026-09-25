@@ -12,33 +12,47 @@ import {
 import { SectionWrapper } from "../hoc";
 import { fadeIn, textVariant } from "../utils/motion";
 
-const SkillCard = ({ letter, name, description, bullets, highlight, index }) => (
+// None of these cards link anywhere, so none of them take a pointer cursor
+// the hover lift is a response, not an invitation to click.
+const SkillCard = ({
+  letter,
+  name,
+  description,
+  bullets,
+  highlight,
+  index,
+}) => (
   <motion.div
     variants={fadeIn("up", "spring", index * 0.2, 0.6)}
-    className={`group rounded-2xl border sm:p-7 p-6 bg-black-100 cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-glow ${
+    className={`group rounded-2xl border sm:p-7 p-6 bg-surface shadow-card transition-all duration-300 hover:-translate-y-2 hover:shadow-lift ${
       highlight
-        ? "border-mint/60 hover:border-mint"
-        : "border-white/10 hover:border-peach/60"
+        ? "border-ember/50 ring-1 ring-ember/20"
+        : "border-line hover:border-ember/40"
     }`}
   >
     <span
-      className={`font-heading font-extrabold text-[64px] leading-none transition-colors duration-300 ${
-        highlight ? "text-peach" : "text-white/10 group-hover:text-peach/50"
+      aria-hidden="true"
+      className={`font-heading font-extrabold text-[64px] leading-none tracking-[-0.04em] transition-colors duration-300 ${
+        highlight ? "text-ember" : "text-ink/10 group-hover:text-ember/60"
       }`}
     >
       {letter}
     </span>
-    <h3 className='font-heading text-white font-bold text-[24px] mt-8'>
+    <h3 className="font-heading text-ink font-extrabold text-[22px] tracking-[-0.025em] mt-7">
       {name}
     </h3>
-    <p className='mt-3 text-secondary text-[14px] leading-6'>{description}</p>
-    <ul className='mt-5 space-y-2'>
+    <p className="mt-2.5 text-ink-body text-[15px] leading-[1.65]">
+      {description}
+    </p>
+    <ul className="mt-5 space-y-2">
       {bullets.map((bullet) => (
         <li
           key={bullet}
-          className='font-mono text-[13px] text-secondary flex gap-1.5'
+          className="text-[14px] font-medium leading-5 text-ink-muted flex gap-2"
         >
-          <span className='text-mint shrink-0'>▸</span>
+          <span aria-hidden="true" className="text-pine shrink-0">
+            ▸
+          </span>
           <span>{bullet}</span>
         </li>
       ))}
@@ -47,27 +61,32 @@ const SkillCard = ({ letter, name, description, bullets, highlight, index }) => 
 );
 
 // Compact sibling of SkillCard for the frontend row. Five across at lg (vs the
-// MERN row's four), so the letter mark, padding and copy all step down a size —
+// MERN row's four), so the letter mark, padding and copy all step down a size
 // at max-w-7xl each card is ~210px wide and a 64px letter would swamp it.
 const StackCard = ({ letter, name, description, bullets, index }) => (
   <motion.div
     variants={fadeIn("up", "spring", index * 0.12, 0.6)}
-    className='group rounded-2xl border border-white/10 p-6 bg-black-100 cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:border-peach/60 hover:shadow-glow'
+    className="group rounded-2xl border border-line p-6 bg-surface shadow-card transition-all duration-300 hover:-translate-y-2 hover:border-ember/40 hover:shadow-lift"
   >
-    <span className='font-heading font-extrabold text-[40px] leading-none text-white/10 group-hover:text-peach/50 transition-colors duration-300'>
+    <span
+      aria-hidden="true"
+      className="font-heading font-extrabold text-[40px] leading-none tracking-[-0.04em] text-ink/10 group-hover:text-ember/60 transition-colors duration-300"
+    >
       {letter}
     </span>
-    <h3 className='font-heading text-white font-bold text-[18px] mt-5'>
+    <h3 className="font-heading text-ink font-extrabold text-[18px] tracking-[-0.02em] mt-5">
       {name}
     </h3>
-    <p className='mt-2 text-secondary text-[13px] leading-6'>{description}</p>
-    <ul className='mt-4 space-y-1.5'>
+    <p className="mt-2 text-ink-body text-[14px] leading-6">{description}</p>
+    <ul className="mt-4 space-y-1.5">
       {bullets.map((bullet) => (
         <li
           key={bullet}
-          className='font-mono text-[12px] text-secondary flex gap-1.5'
+          className="text-[13px] font-medium leading-5 text-ink-muted flex gap-1.5"
         >
-          <span className='text-mint shrink-0'>▸</span>
+          <span aria-hidden="true" className="text-pine shrink-0">
+            ▸
+          </span>
           <span>{bullet}</span>
         </li>
       ))}
@@ -78,56 +97,57 @@ const StackCard = ({ letter, name, description, bullets, index }) => (
 // Small monospace caption that names each band of cards, matching the
 // "also working with:" label already used above the chips.
 const RowLabel = ({ children }) => (
-  <motion.p
-    variants={fadeIn("", "", 0.1, 0.8)}
-    className='font-mono text-[13px] text-secondary'
-  >
+  <motion.p variants={fadeIn("", "", 0.1, 0.8)} className={styles.label}>
     {children}
   </motion.p>
 );
 
 const FeatureCard = ({ skill, accent, index }) => {
-  const isMint = accent === "mint";
+  const isPine = accent === "pine";
 
   return (
     <motion.div
       variants={fadeIn("up", "spring", 0.3 + index * 0.2, 0.7)}
-      className={`group rounded-2xl border bg-black-100 sm:p-8 p-6 cursor-pointer transition-all duration-300 hover:-translate-y-2 relative overflow-hidden ${
-        isMint
-          ? "border-mint/50 hover:border-mint hover:shadow-glow-mint"
-          : "border-peach/50 hover:border-peach hover:shadow-glow"
+      className={`group rounded-2xl border sm:p-8 p-6 shadow-card transition-all duration-300 hover:-translate-y-2 hover:shadow-lift relative overflow-hidden bg-gradient-to-br to-surface ${
+        isPine
+          ? "from-pine-soft border-pine/30 hover:border-pine/60"
+          : "from-ember-soft border-ember/30 hover:border-ember/60"
       }`}
     >
       <span
-        className={`absolute sm:top-6 top-5 sm:right-7 right-5 font-mono text-[12px] rounded-full px-3 py-1 border ${
-          isMint ? "text-mint border-mint/50" : "text-peach border-peach/50"
+        className={`absolute sm:top-6 top-5 sm:right-7 right-5 text-[11px] font-bold uppercase tracking-[0.1em] rounded-full px-3 py-1 border bg-surface ${
+          isPine ? "text-pine border-pine/30" : "text-ember border-ember/30"
         }`}
       >
         featured
       </span>
 
       <span
-        className={`font-heading font-extrabold sm:text-[72px] text-[52px] leading-none ${
-          isMint ? "text-mint" : "text-peach"
+        aria-hidden="true"
+        className={`font-heading font-extrabold sm:text-[72px] text-[52px] leading-none tracking-[-0.04em] ${
+          isPine ? "text-pine" : "text-ember"
         }`}
       >
         {skill.letter}
       </span>
 
-      <h3 className='font-heading text-white font-bold sm:text-[24px] text-[20px] mt-6'>
+      <h3 className="font-heading text-ink font-extrabold sm:text-[24px] text-[20px] tracking-[-0.025em] mt-6">
         {skill.name}
       </h3>
-      <p className='mt-3 text-secondary text-[15px] leading-7'>
+      <p className="mt-3 text-ink-body text-[16px] leading-[1.7]">
         {skill.description}
       </p>
 
-      <ul className='mt-5 grid sm:grid-cols-2 grid-cols-1 gap-2'>
+      <ul className="mt-5 grid sm:grid-cols-2 grid-cols-1 gap-2">
         {skill.bullets.map((bullet) => (
           <li
             key={bullet}
-            className='font-mono text-[13px] text-secondary flex gap-1.5'
+            className="text-[14px] font-medium leading-5 text-ink-muted flex gap-2"
           >
-            <span className={`shrink-0 ${isMint ? "text-mint" : "text-peach"}`}>
+            <span
+              aria-hidden="true"
+              className={`shrink-0 ${isPine ? "text-pine" : "text-ember"}`}
+            >
               ▸
             </span>
             <span>{bullet}</span>
@@ -143,50 +163,48 @@ const Tech = () => {
     <>
       <motion.div variants={textVariant()}>
         <p className={styles.sectionSubText}>
-          <span className='text-secondary'>{"// "}</span>skills
+          <span className="text-ink-muted">{"// "}</span>skills
         </p>
         <h2 className={`${styles.sectionHeadText} mt-2`}>
           Tech that grows your business
         </h2>
       </motion.div>
 
-      <div className='mt-14'>
-        <RowLabel>the core stack:</RowLabel>
-        <div className='mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>
+      <div className="mt-14">
+        <RowLabel>The core stack</RowLabel>
+        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {mernSkills.map((skill, index) => (
             <SkillCard key={skill.name} index={index} {...skill} />
           ))}
         </div>
       </div>
 
-      <div className='mt-10'>
-        <RowLabel>frontend toolkit:</RowLabel>
-        <div className='mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6'>
+      <div className="mt-10">
+        <RowLabel>Frontend toolkit</RowLabel>
+        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
           {frontendSkills.map((skill, index) => (
             <StackCard key={skill.name} index={index} {...skill} />
           ))}
         </div>
       </div>
 
-      <div className='mt-10 grid grid-cols-1 lg:grid-cols-2 gap-6'>
-        <FeatureCard skill={aiSkill} accent='mint' index={0} />
-        <FeatureCard skill={paymentsSkill} accent='peach' index={1} />
+      <div className="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <FeatureCard skill={aiSkill} accent="pine" index={0} />
+        <FeatureCard skill={paymentsSkill} accent="ember" index={1} />
       </div>
 
       <motion.div
         variants={fadeIn("", "", 0.3, 1)}
-        className='mt-10 flex flex-wrap items-center gap-2'
+        className="mt-10 flex flex-wrap items-center gap-2"
       >
-        <span className='font-mono text-[13px] text-secondary mr-2'>
-          also working with:
-        </span>
+        <span className={`${styles.label} mr-2`}>Also working with</span>
         {extraTech.map((tech) => (
           <span
             key={tech.name}
-            className={`font-mono text-[13px] rounded-full px-4 py-1.5 cursor-pointer transition-colors ${
+            className={`text-[14px] font-semibold rounded-full px-4 py-1.5 border transition-colors ${
               tech.highlight
-                ? "text-mint border border-mint/50 hover:bg-mint/10"
-                : "text-secondary border border-white/10 hover:text-peach hover:border-peach/50"
+                ? "text-pine bg-pine-soft border-pine/25"
+                : "text-ink-body bg-surface border-line hover:border-ember/40 hover:text-ember"
             }`}
           >
             {tech.name}

@@ -1,22 +1,22 @@
-# Adnan Yousaf — Developer Portfolio
+# Adnan Yousaf Developer Portfolio
 
-A terminal/IDE-themed portfolio built with **React + Vite**: dark charcoal design with warm peach + mint accents, monospace section labels, a code-window hero, browser-mockup project cards, and a Three.js Earth in the contact section.
+A terminal/IDE-themed portfolio built with **React + Vite**: a warm light theme with burnt-orange (`ember`) and deep-green (`pine`) accents (plus the original dark theme, one click away on the floating switch), monospace section labels, a dark code-window hero, browser-mockup project cards, and a Three.js Earth in the contact section.
 
 ---
 
 ## Tech Stack
 
-| Category | Libraries / Tools |
-|---|---|
-| Framework | React 18, Vite 4 |
-| 3D Rendering | Three.js, @react-three/fiber, @react-three/drei (Earth model + star particles) |
-| Animation | Framer Motion (scroll reveals, letter-stagger hero), react-simple-typewriter |
-| Styling | Tailwind CSS, PostCSS, Autoprefixer |
-| Contact Form | EmailJS Browser |
-| Timeline | react-vertical-timeline-component |
-| Star Particles | maath (random sphere positions) |
+| Category       | Libraries / Tools                                                              |
+| -------------- | ------------------------------------------------------------------------------ |
+| Framework      | React 18, Vite 4                                                               |
+| 3D Rendering   | Three.js, @react-three/fiber, @react-three/drei (Earth model + star particles) |
+| Animation      | Framer Motion (scroll reveals, letter-stagger hero), react-simple-typewriter   |
+| Styling        | Tailwind CSS, PostCSS, Autoprefixer                                            |
+| Contact Form   | EmailJS Browser                                                                |
+| Timeline       | react-vertical-timeline-component                                              |
+| Star Particles | maath (random sphere positions)                                                |
 
-Fonts: **Archivo Expanded** (display headings), **Inter** (body), **JetBrains Mono** (labels, tags, code).
+Fonts: **Plus Jakarta Sans** for all headings, body text and buttons; **JetBrains Mono** only for the terminal accents (logo, section eyebrows, code window, URLs). Colour tokens and their contrast ratios are documented in [docs/ARCHITECTURE.md §1.1](docs/ARCHITECTURE.md#11-theme-tokens).
 
 ---
 
@@ -25,12 +25,12 @@ Fonts: **Archivo Expanded** (display headings), **Inter** (body), **JetBrains Mo
 ```
 adnan_portfolio/
 ├── public/
-│   ├── planet/              # 3D GLTF model — rotating Earth (Contact section)
+│   ├── planet/              # 3D GLTF model  rotating Earth (Contact section)
 │   └── favicon.svg          # Terminal-style ~/ favicon
 │
 ├── src/
 │   ├── main.jsx             # React entry point
-│   ├── App.jsx              # Root layout — wires all sections together
+│   ├── App.jsx              # Root layout  wires all sections together
 │   ├── index.css            # Fonts, dot-grid bg, scrollbar, timeline overrides
 │   ├── styles.js            # Shared Tailwind class strings (typography)
 │   │
@@ -55,7 +55,7 @@ adnan_portfolio/
 │   │   ├── SocialIcons.jsx   # Facebook / WhatsApp / LinkedIn links
 │   │   └── index.js          # Barrel export
 │   │
-│   ├── components/canvas/    # Lazy-loaded via React.lazy — Three.js is code-split
+│   ├── components/canvas/    # Lazy-loaded via React.lazy  Three.js is code-split
 │   │   ├── Earth.jsx         # Rotating planet GLTF (Contact)
 │   │   └── Stars.jsx         # 5,000 mint particles drifting (Contact background)
 │   │
@@ -67,7 +67,7 @@ adnan_portfolio/
 │
 ├── index.html
 ├── vite.config.js
-├── tailwind.config.cjs      # Palette: primary #0c1110, peach #e8a76f, mint #6ee7b7
+├── tailwind.config.cjs      # Palette: canvas #f7f5f0, ink #14201c, ember #b04a14, pine #0b7152
 └── postcss.config.cjs
 ```
 
@@ -75,17 +75,20 @@ adnan_portfolio/
 
 ## Three.js Scenes
 
-### `EarthCanvas` — Contact Section ([src/components/canvas/Earth.jsx](src/components/canvas/Earth.jsx))
+### `EarthCanvas` Contact Section ([src/components/canvas/Earth.jsx](src/components/canvas/Earth.jsx))
+
 Rotating 3D planet loaded from `public/planet/scene.gltf` via `useGLTF`, auto-rotating with constrained orbit controls. `frameloop='demand'` re-renders only when needed.
 
-### `StarsCanvas` — Contact Background ([src/components/canvas/Stars.jsx](src/components/canvas/Stars.jsx))
-5,000 mint (`#6ee7b7`) particle stars positioned randomly inside a sphere (maath), slowly rotating each frame via `useFrame`.
+### `StarsCanvas` Contact Background ([src/components/canvas/Stars.jsx](src/components/canvas/Stars.jsx))
+
+5,000 pine (`#0b7152`, 55% opacity) particle stars positioned randomly inside a sphere (maath), slowly rotating each frame via `useFrame`.
 
 ---
 
 ## Getting Started
 
 ### Prerequisites
+
 - Node.js >= 16
 
 ### Install
@@ -114,11 +117,12 @@ npm run preview
 ## Editing Content
 
 All portfolio content lives in [src/constants/index.js](src/constants/index.js):
-- `navLinks` — navigation items
-- `stats` — the About-section numbers (years, projects, clients, uptime)
-- `mernSkills`, `aiSkill`, `paymentsSkill`, `extraTech` — skills section
-- `experiences` — work timeline
-- `projects` — project cards (name, description, tags, image, live link)
-- `testimonials` — client quotes
 
-The EmailJS credentials for the contact form are configured in [src/components/Contact.jsx](src/components/Contact.jsx) — no `.env` needed.
+- `navLinks` navigation items
+- `stats` the About-section numbers (years, projects, clients, uptime)
+- `mernSkills`, `aiSkill`, `paymentsSkill`, `extraTech` skills section
+- `experiences` work timeline
+- `projects` project cards (name, description, tags, image, live link)
+- `testimonials` client quotes
+
+The EmailJS credentials for the contact form are configured in [src/components/Contact.jsx](src/components/Contact.jsx) no `.env` needed.

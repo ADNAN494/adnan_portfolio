@@ -42,7 +42,28 @@ export const navLinks = [
   },
 ];
 
-// Keep these honest — every one of them is checkable against the page itself or
+// Rendered by SocialRail (fixed left edge, md and up) and by SocialIcons (the
+// inline row in About, phones only). `id` picks the glyph in SocialIcons.jsx.
+// LinkedIn first: it's the one a hiring manager is looking for.
+export const socials = [
+  {
+    id: "linkedin",
+    name: "LinkedIn",
+    href: "https://www.linkedin.com/in/adnan-yousaf-ab1585255?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
+  },
+  {
+    id: "whatsapp",
+    name: "WhatsApp",
+    href: "https://api.whatsapp.com/send?phone=923408752827",
+  },
+  {
+    id: "facebook",
+    name: "Facebook",
+    href: "https://www.facebook.com/profile.php?id=100015302744231&mibextid=ZbWKwL",
+  },
+];
+
+// Keep these honest  every one of them is checkable against the page itself or
 // a two-minute search, and a visitor who catches one wrong discounts the rest.
 // `Projects shipped` must match the length of `projects` below.
 const stats = [
@@ -64,7 +85,7 @@ const stats = [
   },
 ];
 
-// Plain-language answer to "can you build X?" — rendered next to the About
+// Plain-language answer to "can you build X?"  rendered next to the About
 // stats. Deliberately outcome-shaped, not tool-shaped: the stack lives in the
 // Skills section, this is for a visitor deciding whether to get in touch.
 const services = [
@@ -82,7 +103,7 @@ const mernSkills = [
     name: "MongoDB",
     highlight: false,
     description:
-      "Your business data — customers, orders, content — organised, safe and fast to search, ready to scale as you grow.",
+      "Your business data  customers, orders, content  organised, safe and fast to search, ready to scale as you grow.",
     bullets: [
       "Mongoose ODM",
       "Aggregation",
@@ -95,7 +116,7 @@ const mernSkills = [
     name: "Express",
     highlight: false,
     description:
-      "The engine room — secure connections between your website, payments, logins and data. Nothing leaks, nothing breaks.",
+      "The engine room  secure connections between your website, payments, logins and data. Nothing leaks, nothing breaks.",
     bullets: [
       "JWT / OAuth",
       "Middleware design",
@@ -108,7 +129,7 @@ const mernSkills = [
     name: "React",
     highlight: true,
     description:
-      "The part your customers see — fast, polished pages that feel great on every phone, tablet and desktop.",
+      "The part your customers see  fast, polished pages that feel great on every phone, tablet and desktop.",
     bullets: [
       "Next.js / SSR",
       "Redux Toolkit",
@@ -121,7 +142,7 @@ const mernSkills = [
     name: "Node.js",
     highlight: false,
     description:
-      "Features that feel instant — live chat, notifications, online payments and automation running behind the scenes.",
+      "Features that feel instant  live chat, notifications, online payments and automation running behind the scenes.",
     bullets: [
       "Socket.io / PubNub",
       "Firebase",
@@ -140,7 +161,7 @@ const frontendSkills = [
     letter: "N",
     name: "Next.js",
     description:
-      "Pages that arrive already rendered — quick to load and easy for Google to read, which is what gets you found.",
+      "Pages that arrive already rendered  quick to load and easy for Google to read, which is what gets you found.",
     bullets: ["App & Pages Router", "SSR / SSG / ISR", "SEO & metadata"],
   },
   {
@@ -168,7 +189,7 @@ const frontendSkills = [
     letter: "MUI",
     name: "Material UI",
     description:
-      "Battle-tested, accessible components — the fastest route to a polished admin panel or dashboard.",
+      "Battle-tested, accessible components  the fastest route to a polished admin panel or dashboard.",
     bullets: ["Theming", "Data grids & tables", "Accessible forms"],
   },
 ];
@@ -194,7 +215,7 @@ const paymentsSkill = {
   letter: "$",
   name: "Payments & Online Checkout",
   description:
-    "Get paid online without the headache — secure checkout your customers already trust. I integrate Stripe, Apple Pay and PayPal so money flows in safely, whether it's one-off sales, subscriptions or in-app purchases.",
+    "Get paid online without the headache  secure checkout your customers already trust. I integrate Stripe, Apple Pay and PayPal so money flows in safely, whether it's one-off sales, subscriptions or in-app purchases.",
   bullets: [
     "Stripe checkout",
     "Apple Pay & PayPal",
@@ -261,21 +282,31 @@ const experiences = [
     title: "Frontend Developer",
     company_name: "Optymyze Technologies",
     icon: opy,
-    iconBg: "#141b19",
+    iconBg: "#ffffff",
     date: "July 2025 - Present",
     summary:
-      "Consumer platforms built on Next.js — live advisor chat, wallet payments and multi-step acquisition funnels across four brands.",
+      "Consumer platforms built on Next.js  live advisor chat, wallet payments and multi-step acquisition funnels across four brands.",
     points: [
-      "Build the frontend for live psychic chat products (Psychic Txt, Psychic Vision, Mi Vidente) in Next.js — advisor discovery, real-time conversations, credit balances and checkout — choosing SSR, ISR or client rendering per route depending on whether the content is shared, personalised, or changes by the second.",
+      "Build the frontend for live psychic chat products (Psychic Txt, Psychic Vision, Mi Vidente) in Next.js  advisor discovery, real-time conversations, credit balances and checkout  choosing SSR, ISR or client rendering per route depending on whether the content is shared, personalised, or changes by the second.",
       "Own the real-time layer over PubNub and Firebase: instant messaging, live advisor availability, image sharing and emoji, with connection state and optimistic updates handled so a flaky mobile network doesn't drop a paid conversation.",
-      "Integrate Stripe end to end — Apple Pay and PayPal wallets, one-off credit purchases and recurring subscriptions — reconciling client state against webhook-driven server state so a balance is never stale after a refresh.",
+      "Integrate Stripe end to end  Apple Pay and PayPal wallets, one-off credit purchases and recurring subscriptions  reconciling client state against webhook-driven server state so a balance is never stale after a refresh.",
       "Implement multi-provider authentication on Firebase (Google, Apple and phone/OTP), including the routing and guard logic that decides what an anonymous, half-onboarded or paying user is allowed to reach.",
-      "Design acquisition funnels (try.psychictxt.com, quiz.resethypnosis.com) as data-driven step machines — branching questions, progress state and validation defined as configuration — so marketing can reorder or add steps without a component rewrite.",
+      "Design acquisition funnels (try.psychictxt.com, quiz.resethypnosis.com) as data-driven step machines  branching questions, progress state and validation defined as configuration  so marketing can reorder or add steps without a component rewrite.",
       "Maintain a shared component layer of typed, reusable primitives on Tailwind design tokens, reused across sibling brands so each stays visually distinct without forking the codebase.",
-      "Wire the Figma MCP server to Claude agents in VS Code to generate first-pass component scaffolds straight from design files, then refactor them to the project's conventions — cutting the mechanical part of design-to-code without shipping generated code unreviewed.",
+      "Wire the Figma MCP server to Claude agents in VS Code to generate first-pass component scaffolds straight from design files, then refactor them to the project's conventions  cutting the mechanical part of design-to-code without shipping generated code unreviewed.",
       "Ship for real mobile traffic: responsive to 320px, cross-browser fixes for Safari's stricter handling of dates, scrolling and payment sheets, verified on iOS and Android rather than in a desktop emulator.",
     ],
-    tech: ["Next.js", "React", "TypeScript", "Tailwind", "RTK Query", "Firebase", "PubNub", "Stripe", "Node.js"],
+    tech: [
+      "Next.js",
+      "React",
+      "TypeScript",
+      "Tailwind",
+      "RTK Query",
+      "Firebase",
+      "PubNub",
+      "Stripe",
+      "Node.js",
+    ],
     link: "https://optymyzetech.com/",
   },
 
@@ -283,38 +314,53 @@ const experiences = [
     title: "MERN Stack Developer",
     company_name: "Sysreforms International",
     icon: sys,
-    iconBg: "#141b19",
+    iconBg: "#ffffff",
     date: "Nov 2023 - June 2025",
     summary:
       "Enterprise and public-sector systems for the World Organisation for Animal Health, WHO, UNDP and Pakistan's drug regulator (DRAP).",
     points: [
-      "Built data-heavy operational systems for international bodies — WOAH's animal-disease tracking (Sont), WHO/WOAH veterinary mission reporting (PVSIS) and DRAP's drug-management platform — where one screen can carry multi-step forms, approval workflows and thousands of records.",
+      "Built data-heavy operational systems for international bodies  WOAH's animal-disease tracking (Sont), WHO/WOAH veterinary mission reporting (PVSIS) and DRAP's drug-management platform  where one screen can carry multi-step forms, approval workflows and thousands of records.",
       "Architected the frontend around schema-driven components: form, table and filter primitives configured by data instead of copied per screen, so adding a module to a system with dozens of near-identical CRUD views became a config change rather than a new component tree.",
       "Kept those screens responsive under real data volumes with code splitting, lazy loading, memoisation and list virtualisation, so render cost stayed flat as record counts grew instead of degrading with the dataset.",
-      "Modelled application state deliberately — Redux for what genuinely crosses modules (permissions, lookups, in-progress submissions), local state for the rest — with Formik and Yup schemas keeping validation rules in one place and matched to the API contract.",
+      "Modelled application state deliberately  Redux for what genuinely crosses modules (permissions, lookups, in-progress submissions), local state for the rest  with Formik and Yup schemas keeping validation rules in one place and matched to the API contract.",
       "Wrote the Node and Express REST APIs behind several of these modules against MSSQL, so I owned both sides of the contract and could shape endpoints and payloads around how the UI actually consumes them, rather than reshaping data in the browser.",
       "Built to the role-based access rules these systems require: what a user may view, edit or approve differs by role, enforced consistently across routing, component rendering and API calls.",
       "Delivered the UNDP home energy-efficiency platform across three distinct modules (CMS, LMS and an energy calculator), plus the public-facing Techypedia and Immigra Consultants sites.",
-      "Worked the team's Git flow day to day — feature branches, pull requests and review — on a codebase several developers touched at once.",
+      "Worked the team's Git flow day to day  feature branches, pull requests and review  on a codebase several developers touched at once.",
     ],
-    tech: ["React", "Redux", "Node.js", "Express", "MSSQL", "Material UI", "Bootstrap", "Formik / Yup"],
+    tech: [
+      "React",
+      "Redux",
+      "Node.js",
+      "Express",
+      "MSSQL",
+      "Material UI",
+      "Bootstrap",
+      "Formik / Yup",
+    ],
     link: "https://www.sysreforms.com/",
   },
   {
     title: "Web Designer & SEO",
     company_name: "Pakistan Detector Technologies",
     icon: pak_det,
-    iconBg: "#141b19",
+    iconBg: "#ffffff",
     date: "Jan 2022 - Jun 2022",
     summary:
-      "First professional role — building and ranking client sites across e-commerce, education, real estate and corporate niches.",
+      "First professional role  building and ranking client sites across e-commerce, education, real estate and corporate niches.",
     points: [
       "Built and shipped responsive marketing and e-commerce sites in JavaScript and Bootstrap for clients across several niches, from product catalogues to lead-capture and content sites.",
-      "Owned technical SEO on those builds — semantic markup, crawlable structure, mobile responsiveness and page-speed work — which meant treating HTML structure and load time as build requirements, not post-launch cleanup.",
+      "Owned technical SEO on those builds  semantic markup, crawlable structure, mobile responsiveness and page-speed work  which meant treating HTML structure and load time as build requirements, not post-launch cleanup.",
       "Ran on-page work end to end (keyword research, metadata, internal linking and content structure) and measured it in Google Search Console, iterating on what actually moved positions rather than what was supposed to.",
       "This is where performance and markup stopped being an afterthought for me: I still pick rendering strategy, image formats and component structure with crawlability and load time in mind.",
     ],
-    tech: ["JavaScript", "Bootstrap", "HTML / CSS", "Technical SEO", "Search Console"],
+    tech: [
+      "JavaScript",
+      "Bootstrap",
+      "HTML / CSS",
+      "Technical SEO",
+      "Search Console",
+    ],
     link: "https://golddetectorprice.pk/",
   },
 ];
@@ -322,60 +368,59 @@ const experiences = [
 // Replaces the old `testimonials` array, which put invented names (Sara Lee,
 // Chris Brown, Lisa Wang) over randomuser.me stock photos. Anyone who has seen
 // randomuser.me recognises those faces, and one card read as fake discounts
-// every other claim on the page — the exact opposite of what a testimonial
+// every other claim on the page  the exact opposite of what a testimonial
 // section is for.
 //
 // These are organisations whose systems I actually worked on. Every row is
 // checkable: against the Experience timeline above, the Projects grid below,
 // and the live link on the card itself. No quotes are attributed to anyone who
 // did not say them, and no faces are borrowed. If real client quotes arrive
-// later, they belong here as a separate array — not as a replacement for this
+// later, they belong here as a separate array  not as a replacement for this
 // one, which stands on its own.
 const clients = [
   {
     org: "WOAH",
     full: "World Organisation for Animal Health",
     kind: "intergovernmental",
-    work: "Sont — animal-disease tracking and case history across member countries. Screens carrying multi-step forms, approval workflows and thousands of records at a time.",
+    work: "Sont  animal-disease tracking and case history across member countries. Screens carrying multi-step forms, approval workflows and thousands of records at a time.",
     link: "https://sont-uat.woah.org/",
   },
   {
     org: "WHO",
     full: "World Health Organization",
     kind: "intergovernmental",
-    work: "PVSIS — reporting for veterinary and aquatic animal health missions, built with WOAH to support national services improvement programmes.",
+    work: "PVSIS  reporting for veterinary and aquatic animal health missions, built with WOAH to support national services improvement programmes.",
     link: "https://pvs-preprod.woah.org/",
   },
   {
     org: "UNDP",
     full: "United Nations Development Programme",
     kind: "united nations",
-    work: "Home energy-efficiency platform across three modules — a CMS, an LMS and an energy calculator — for homeowners planning efficient builds.",
+    work: "Home energy-efficiency platform across three modules  a CMS, an LMS and an energy calculator  for homeowners planning efficient builds.",
     link: "https://www.undp.org/",
   },
   {
     org: "DRAP",
     full: "Drug Regulatory Authority of Pakistan",
     kind: "national regulator",
-    work: "MDMC — the drug-management platform, where I owned frontend end to end: interface, API integration and page-speed work on a regulator-facing system.",
+    work: "MDMC  the drug-management platform, where I owned frontend end to end: interface, API integration and page-speed work on a regulator-facing system.",
     link: "https://e.dra.gov.pk/login",
   },
   {
     org: "Psychic Txt",
     full: "Live advisor platform, four brands",
     kind: "consumer product",
-    work: "Next.js frontends for live chat and reading products — advisor discovery, real-time conversations, credit balances and Stripe checkout across Psychic Txt, Psychic Vision and Mi Vidente.",
+    work: "Next.js frontends for live chat and reading products  advisor discovery, real-time conversations, credit balances and Stripe checkout across Psychic Txt, Psychic Vision and Mi Vidente.",
     link: "https://www.psychictxt.com/",
   },
   {
     org: "Techypedia",
     full: "UK digital solutions company",
     kind: "agency client",
-    work: "Full marketing site in Next.js and Bootstrap — every page designed and built for a responsive, fast experience on a lead-generating site.",
+    work: "Full marketing site in Next.js and Bootstrap  every page designed and built for a responsive, fast experience on a lead-generating site.",
     link: "https://techypedia.co.uk/",
   },
 ];
-
 
 const projects = [
   {
@@ -461,7 +506,7 @@ const projects = [
     source_code_link: "https://e.dra.gov.pk/login",
   },
   {
-    name: "Psychic Txt — Advisor Match Funnel",
+    name: "Psychic Txt  Advisor Match Funnel",
     description:
       "A guided onboarding funnel for PsychicTxt that matches visitors to the right advisor. Step-by-step topic intake with a live progress bar, a real-time advisor rail showing ratings and online status, and a hand-off straight into live chat or a scheduled session.",
 
@@ -519,7 +564,7 @@ const projects = [
   {
     name: "Mi Vidente",
     description:
-      "Spanish-language platform connecting users with verified tarot readers, astrologers and psychics. I built the marketing site and mobile-app landing experience — expert profiles, testimonials, a blog, an expert sign-up flow and App Store / Google Play conversion paths.",
+      "Spanish-language platform connecting users with verified tarot readers, astrologers and psychics. I built the marketing site and mobile-app landing experience  expert profiles, testimonials, a blog, an expert sign-up flow and App Store / Google Play conversion paths.",
 
     tags: [
       {

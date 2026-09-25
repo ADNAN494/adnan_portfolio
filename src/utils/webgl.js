@@ -1,19 +1,19 @@
 // WebGL capability helper.
 //
 // "Web page caused context loss and was blocked" is Chrome's domain-level guard
-// against REAL GPU resets — not against pages calling loseContext(). From
+// against REAL GPU resets  not against pages calling loseContext(). From
 // Chromium's source (content/browser/gpu/gpu_data_manager_impl_private.cc):
 //
 //   - every real context loss (driver reset, GPU process crash, out of GPU
 //     memory, a dual-GPU Mac switching GPUs) records the page's HOST;
 //   - two or more within kBlockedDomainExpirationPeriod (2 minutes) blocks that
-//     host — for every tab and every reload — until the entries expire;
+//     host  for every tab and every reload  until the entries expire;
 //   - three separate reset events inside the window block ALL hosts.
 //
 // A page calling WEBGL_lose_context.loseContext() (which is what three's
 // forceContextLoss() does) is a *synthetic* loss: it never reaches the browser
 // process, so it can't contribute to the block. You can tell the two apart in
-// the console, too — Blink only prints
+// the console, too  Blink only prints
 //
 //   WebGL: CONTEXT_LOST_WEBGL: loseContext: context lost
 //
@@ -37,11 +37,11 @@ let supportCache;
 
 // Cheap probe: can this browser hand us a WebGL context?
 //
-//   "ok"          — yes.
-//   "blocked"     — WebGL exists, but Chrome is refusing this host for now.
+//   "ok"           yes.
+//   "blocked"      WebGL exists, but Chrome is refusing this host for now.
 //                   Not cached: the block expires, and the next probe after
 //                   that should say "ok".
-//   "unsupported" — no WebGL at all. Cached; that won't change mid-visit.
+//   "unsupported"  no WebGL at all. Cached; that won't change mid-visit.
 //
 // The probe's context is released straight away. A synthetic loss is free (see
 // above), and holding a context we don't need is not.

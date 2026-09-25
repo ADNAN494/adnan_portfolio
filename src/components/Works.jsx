@@ -24,18 +24,27 @@ const ProjectCard = ({
         href={source_code_link}
         target="_blank"
         rel="noopener noreferrer"
-        className="block rounded-2xl border border-white/10 bg-black-100 overflow-hidden hover:border-peach/60 hover:shadow-glow transition-all duration-300 group h-full"
+        className="flex flex-col rounded-2xl border border-line bg-surface shadow-card overflow-hidden hover:-translate-y-1 hover:border-ember/40 hover:shadow-lift transition-all duration-300 group h-full"
       >
-        <div className="flex items-center gap-1.5 px-4 py-3 border-b border-white/10 bg-white/[0.02]">
-          <span className="w-2.5 h-2.5 rounded-full bg-white/15" />
-          <span className="w-2.5 h-2.5 rounded-full bg-white/15" />
-          <span className="w-2.5 h-2.5 rounded-full bg-white/15" />
-          <span className="ml-3 font-mono text-[12px] text-secondary truncate">
+        <div className="flex items-center gap-1.5 px-4 py-3 border-b border-line bg-surface-muted">
+          <span
+            aria-hidden="true"
+            className="w-2.5 h-2.5 rounded-full bg-line-strong/50"
+          />
+          <span
+            aria-hidden="true"
+            className="w-2.5 h-2.5 rounded-full bg-line-strong/50"
+          />
+          <span
+            aria-hidden="true"
+            className="w-2.5 h-2.5 rounded-full bg-line-strong/50"
+          />
+          <span className="ml-3 min-w-0 font-mono text-[12px] text-ink-muted bg-surface border border-line rounded-md px-2.5 py-0.5 truncate">
             {source_code_link.replace(/^https?:\/\//, "").replace(/\/.*$/, "")}
           </span>
         </div>
 
-        <div className="relative w-full aspect-video sm:aspect-auto sm:h-[220px] overflow-hidden bg-black-200">
+        <div className="relative w-full aspect-video sm:aspect-auto sm:h-[220px] overflow-hidden bg-surface-muted border-b border-line">
           <img
             src={image}
             alt={name}
@@ -45,24 +54,27 @@ const ProjectCard = ({
           />
         </div>
 
-        <div className="p-6">
+        <div className="sm:p-7 p-5 flex flex-col flex-1">
           <div className="flex items-start justify-between gap-3">
-            <h3 className="font-heading text-white font-bold text-[22px]">
+            <h3 className="font-heading text-ink font-extrabold sm:text-[22px] text-[20px] leading-snug tracking-[-0.025em]">
               {name}
             </h3>
-            <span className="text-peach text-[20px] group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform">
+            <span
+              aria-hidden="true"
+              className="shrink-0 w-9 h-9 rounded-full bg-ember-soft text-ember text-[17px] flex items-center justify-center group-hover:bg-ember group-hover:text-canvas transition-colors"
+            >
               ↗
             </span>
           </div>
-          <p className="mt-3 text-secondary text-[14px] leading-6">
+          <p className="mt-3 text-ink-body text-[15px] leading-[1.65] flex-1">
             {description}
           </p>
 
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div className="mt-5 flex flex-wrap gap-2">
             {tags.map((tag) => (
               <span
                 key={`${name}-${tag.name}`}
-                className="font-mono text-[12px] text-secondary border border-white/10 rounded-full px-3 py-1"
+                className="text-[13px] font-semibold text-ink-muted bg-surface-muted border border-line rounded-full px-3 py-1"
               >
                 {tag.name}
               </span>
@@ -85,7 +97,7 @@ const Works = () => {
     <>
       <motion.div variants={textVariant()}>
         <p className={styles.sectionSubText}>
-          <span className="text-secondary">{"// "}</span>projects
+          <span className="text-ink-muted">{"// "}</span>projects
         </p>
         <h2 className={`${styles.sectionHeadText} mt-2`}>Selected work</h2>
       </motion.div>
@@ -93,9 +105,9 @@ const Works = () => {
       <div className="w-full flex">
         <motion.p
           variants={fadeIn("", "", 0.1, 1)}
-          className="mt-3 text-secondary text-[17px] max-w-3xl leading-[30px]"
+          className={`mt-6 max-w-3xl ${styles.bodyText}`}
         >
-          Real products used by real businesses — online stores, wellness
+          Real products used by real businesses online stores, wellness
           platforms, government systems and international organisations. Every
           card links to the live website, so you can click around and see the
           quality for yourself.
@@ -112,9 +124,9 @@ const Works = () => {
         <div className="mt-10 flex justify-center">
           <button
             onClick={loadMoreProjects}
-            className="font-mono text-[14px] border border-peach text-peach px-8 py-3 rounded-full hover:bg-peach hover:text-primary transition-colors"
+            className="font-heading text-[15px] font-bold bg-surface border border-line-strong text-ink px-8 py-3.5 rounded-full hover:border-ember hover:bg-ember hover:text-canvas transition-colors"
           >
-            load_more()
+            Load more projects
           </button>
         </div>
       )}

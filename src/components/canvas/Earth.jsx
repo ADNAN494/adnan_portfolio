@@ -23,22 +23,22 @@ const MESSAGES = {
   error: "The 3D model couldn't be loaded.",
 };
 
-// Shown when the globe can't render — no WebGL, a context that never came back,
+// Shown when the globe can't render  no WebGL, a context that never came back,
 // or a model that failed to download. The contact section still has to look
 // finished next to the form, so this is a styled placeholder rather than a gap.
 // Retrying only helps "lost" and "error": a browser without WebGL won't change
 // its mind, and "blocked" comes back on its own when Chrome lifts the block.
 const EarthFallback = ({ reason, retry }) => (
-  <div className='w-full h-full flex items-center justify-center'>
-    <div className='w-56 h-56 rounded-full border border-white/10 bg-black-100 flex flex-col items-center justify-center gap-3 px-8 text-center'>
-      <span className='font-mono text-[12px] text-secondary leading-5'>
+  <div className="w-full h-full flex items-center justify-center">
+    <div className="w-56 h-56 rounded-full border border-line bg-surface shadow-card flex flex-col items-center justify-center gap-3 px-8 text-center">
+      <span className="text-[13px] font-medium text-ink-muted leading-5">
         {MESSAGES[reason] ?? MESSAGES.error}
       </span>
       {reason !== "unsupported" && reason !== "blocked" && (
         <button
-          type='button'
+          type="button"
           onClick={retry}
-          className='font-mono text-[12px] text-peach hover:text-peach-dark transition-colors underline underline-offset-4'
+          className="text-[13px] font-bold text-ember hover:text-ember-dark transition-colors underline underline-offset-4"
         >
           try again
         </button>
@@ -54,21 +54,21 @@ const EarthCanvas = () => {
   // does. The globe sat perfectly still until a visitor happened to drag it.
   //
   // "always" while it is on screen makes it turn. Off screen it pauses to
-  // "never" — the same deal Stars.jsx strikes: no frames, no GPU work, and no
+  // "never"  the same deal Stars.jsx strikes: no frames, no GPU work, and no
   // context to rebuild when it scrolls back.
   const [containerRef, visible] = useNearViewport();
 
   // A globe spinning on its own is unprompted continuous motion, so under
-  // "reduce motion" it holds still — the visitor can still drag it themselves,
+  // "reduce motion" it holds still  the visitor can still drag it themselves,
   // which is motion they asked for.
   const reduced = useReducedMotion();
   const frameloop = reduced ? "demand" : visible ? "always" : "never";
 
   return (
-    <div ref={containerRef} className='w-full h-full'>
+    <div ref={containerRef} className="w-full h-full">
       {/* No `shadows`: the model is KHR_materials_unlit with no lights, so a
           shadow map would be GPU memory spent on nothing. dpr is capped at 1.5
-          — past that a 1024px texture gains nothing visible, and the drawing
+           past that a 1024px texture gains nothing visible, and the drawing
           buffer grows with the square of it. */}
       <SafeCanvas
         frameloop={frameloop}

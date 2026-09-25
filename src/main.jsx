@@ -12,7 +12,7 @@ const mount = () => {
   //
   // @react-three/fiber 8.x is not compatible with React 18's StrictMode
   // double-mount. Its <Canvas> keeps the renderer root in a ref, so the
-  // simulated remount reuses the live renderer — but the simulated unmount has
+  // simulated remount reuses the live renderer  but the simulated unmount has
   // already queued unmountComponentAtNode(), which calls forceContextLoss()
   // from inside a setTimeout(..., 500). Half a second after load that teardown
   // kills the context of a canvas that is actively rendering:
@@ -24,7 +24,7 @@ const mount = () => {
 };
 
 // Give the browser one frame to paint the static shell in index.html before
-// React replaces it — otherwise first paint waits for the full React render.
+// React replaces it  otherwise first paint waits for the full React render.
 requestAnimationFrame(() => requestAnimationFrame(mount));
 // rAF doesn't fire in hidden/backgrounded tabs; make sure we still mount.
 setTimeout(mount, 300);

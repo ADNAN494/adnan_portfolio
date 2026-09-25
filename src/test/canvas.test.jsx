@@ -5,14 +5,14 @@ import EarthCanvas from "../components/canvas/Earth";
 import StarsCanvas from "../components/canvas/Stars";
 
 // setup.js makes getContext("webgl") return null for every test, so these render
-// the "no WebGL" branch. That is the branch a blocked page ends up on too — the
+// the "no WebGL" branch. That is the branch a blocked page ends up on too  the
 // one that used to throw out of <Canvas> and unmount the entire app.
 describe("canvases without WebGL", () => {
   it("degrades the globe to its fallback disc instead of throwing", () => {
     expect(() => render(<EarthCanvas />)).not.toThrow();
 
     expect(
-      screen.getByText("This browser can't render 3D graphics.")
+      screen.getByText("This browser can't render 3D graphics."),
     ).toBeInTheDocument();
   });
 
@@ -32,7 +32,7 @@ describe("canvases without WebGL", () => {
   });
 });
 
-// Chrome's "caused context loss and was blocked" is temporary — two minutes per
+// Chrome's "caused context loss and was blocked" is temporary  two minutes per
 // host. A canvas that loads during it must say so and wait, not declare the
 // browser WebGL-less for the rest of the visit.
 describe("canvases while Chrome is blocking WebGL", () => {
@@ -49,7 +49,9 @@ describe("canvases while Chrome is blocking WebGL", () => {
     render(<FreshEarth />);
 
     expect(
-      await screen.findByText("3D is paused while the graphics driver recovers.")
+      await screen.findByText(
+        "3D is paused while the graphics driver recovers.",
+      ),
     ).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /try again/i })).toBeNull();
   });

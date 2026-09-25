@@ -8,7 +8,7 @@ import { useThree } from "@react-three/fiber";
 // the Earth model) on every scroll pass costs quite a lot.
 
 // Tracks whether the element is anywhere near the viewport. Unlike LazyShow
-// this observer is never disconnected — it has to keep reporting, because the
+// this observer is never disconnected  it has to keep reporting, because the
 // canvas is paused on the way out as well as resumed on the way in.
 export const useNearViewport = ({ rootMargin = "200px" } = {}) => {
   const ref = useRef(null);
@@ -20,7 +20,7 @@ export const useNearViewport = ({ rootMargin = "200px" } = {}) => {
 
     const observer = new IntersectionObserver(
       ([entry]) => setVisible(entry.isIntersecting),
-      { rootMargin }
+      { rootMargin },
     );
     observer.observe(node);
     return () => observer.disconnect();
@@ -35,7 +35,7 @@ export const useNearViewport = ({ rootMargin = "200px" } = {}) => {
 // global across every root on the page and cancels itself the moment nothing
 // wants a frame ("if (repeat === 0) { running = false; cancelAnimationFrame(
 // frame) }"). Flipping the frameloop prop back to "always" only writes to the
-// store — configure() calls setFrameloop(), which never restarts the loop.
+// store  configure() calls setFrameloop(), which never restarts the loop.
 // invalidate() is the only thing that does, and it refuses to run while
 // frameloop is still "never", so it must fire after the store has updated.
 // Without this every canvas freezes for good the first time they all go idle

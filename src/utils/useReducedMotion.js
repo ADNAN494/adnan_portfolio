@@ -11,7 +11,7 @@ const prefersReduced = () =>
 // they change it mid-session.
 //
 // Framer Motion's own variants are handled globally by <MotionConfig
-// reducedMotion="user"> in App.jsx — it drops transform and layout animations
+// reducedMotion="user"> in App.jsx  it drops transform and layout animations
 // while keeping opacity, which covers every fadeIn/slideIn/textVariant on the
 // page. This hook is for the animation Framer Motion knows nothing about: the
 // hero typewriter, the rotating starfield and the auto-rotating globe. Those
@@ -21,7 +21,10 @@ const useReducedMotion = () => {
   const [reduced, setReduced] = useState(prefersReduced);
 
   useEffect(() => {
-    if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+    if (
+      typeof window === "undefined" ||
+      typeof window.matchMedia !== "function"
+    ) {
       return;
     }
 

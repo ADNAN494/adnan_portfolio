@@ -6,48 +6,190 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Inter", sans-serif;
   scroll-behavior: smooth;
+}
+
+/* The font family is NOT set on `*` any more. It used to be, which meant every
+ * child of a `font-mono` element  the `// ` prefix span in each section label,
+ * for one  quietly dropped back to Inter. Preflight puts fontFamily.sans on
+ * <html> and everything inherits from there. */
+
+/* ── Theme ────────────────────────────────────────────────────────────────────
+ * Every themed colour is an "R G B" triple so Tailwind can add alpha to it
+ * (see tailwind.config.cjs). Light is the default; `data-theme="dark"` on
+ * <html> switches to the original dark palette. That attribute is set before
+ * first paint by the inline script in index.html (from localStorage), and
+ * afterwards by utils/theme.js. The hex equivalents of the canvas colours are
+ * repeated in index.html's critical <style>  change them together. */
+:root {
+  color-scheme: light;
+
+  --canvas: 247 245 240; /* #f7f5f0 */
+  --surface: 255 255 255;
+  --surface-muted: 241 238 231;
+  --line: 227 222 211;
+  --line-strong: 143 136 122;
+  --ink: 20 32 28; /* #14201c */
+  --ink-body: 54 67 62;
+  --ink-muted: 86 98 93;
+  --ember: 176 74 20; /* #b04a14 */
+  --ember-dark: 140 58 16;
+  --ember-soft: 252 236 224;
+  --pine: 11 113 82; /* #0b7152 */
+  --pine-dark: 8 92 67;
+  --pine-soft: 227 242 235;
+
+  --shadow-card:
+    0 1px 2px rgba(20, 32, 28, 0.04), 0 4px 16px -8px rgba(20, 32, 28, 0.08);
+  --shadow-lift:
+    0 2px 4px rgba(20, 32, 28, 0.04), 0 20px 40px -16px rgba(20, 32, 28, 0.18);
+  --shadow-float: 0 30px 60px -24px rgba(20, 32, 28, 0.35);
+
+  --dot: rgba(20, 32, 28, 0.09);
+  --wash-ember: rgba(176, 74, 20, 0.08);
+  --wash-pine: rgba(11, 113, 82, 0.07);
+  --scroll-thumb: 207 200 186;
+}
+
+/* The pre-2026-09-25 palette: charcoal, peach, mint. Body text is a step
+ * brighter than it was (#b3bdb9, was #a3aeab)  the old value measured fine
+ * but read as grey-on-black, which is what started the light redesign. */
+:root[data-theme="dark"] {
   color-scheme: dark;
+
+  --canvas: 12 17 16; /* #0c1110 */
+  --surface: 16 23 21; /* #101715 */
+  --surface-muted: 20 27 25; /* #141b19 */
+  --line: 40 47 45;
+  --line-strong: 91 103 99;
+  --ink: 243 245 244;
+  --ink-body: 179 189 185;
+  --ink-muted: 139 152 147;
+  --ember: 232 167 111; /* #e8a76f  the old peach */
+  --ember-dark: 217 123 63;
+  --ember-soft: 38 35 27;
+  --pine: 110 231 183; /* #6ee7b7  the old mint */
+  --pine-dark: 79 209 160;
+  --pine-soft: 22 38 33;
+
+  --shadow-card: 0 20px 50px -20px rgba(0, 0, 0, 0.6);
+  --shadow-lift: 0 0 35px rgba(232, 167, 111, 0.18);
+  --shadow-float: 0 30px 60px -24px rgba(0, 0, 0, 0.7);
+
+  --dot: rgba(255, 255, 255, 0.05);
+  --wash-ember: rgba(232, 167, 111, 0.06);
+  --wash-pine: rgba(110, 231, 183, 0.05);
+  --scroll-thumb: 36 48 41;
 }
 
-.font-heading {
-  font-family: "Archivo", sans-serif;
-  font-stretch: 125%;
-  letter-spacing: -0.02em;
+/* 450, not 400: Jakarta's regular is on the light side for long paragraphs on
+ * a pale ground, and the variable font (loaded as the 400..800 range) takes
+ * the in-between weight for free. `font-normal` still gives a true 400. */
+body {
+  background-color: rgb(var(--canvas));
+  color: rgb(var(--ink-body));
+  font-weight: 450;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+@layer base {
+  /* In `base` so a `tracking-*` utility on the element still wins. */
+  .font-heading {
+    letter-spacing: -0.02em;
+  }
+}
+
+/* One focus ring for everything a keyboard can reach. `:focus-visible` keeps it
+ * off mouse clicks. Form fields draw their own ring (see Contact.jsx), so they
+ * opt out of the outline rather than getting both. */
+/* No border-radius here: that would reshape the focused element itself (a
+ * rounded-full button went square on Tab). Outlines already follow the
+ * element's own corners. */
+:focus-visible {
+  outline: 2px solid rgb(var(--ember));
+  outline-offset: 3px;
+}
+
+input:focus-visible,
+textarea:focus-visible {
+  outline: none;
+}
+
+/* The hero's ground: a faint dot grid over two soft washes of the accent
+ * colours. All of it is background layers on the wrapper  no positioned blobs 
+ * so nothing here can ever reach past the right edge (see the clip below). */
 .dot-grid {
-  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-  background-size: 28px 28px;
+  background-image:
+    radial-gradient(var(--dot) 1px, transparent 1px),
+    radial-gradient(
+      ellipse 60% 50% at 85% 15%,
+      var(--wash-ember),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 55% 45% at 5% 90%,
+      var(--wash-pine),
+      transparent 70%
+    );
+  background-size:
+    28px 28px,
+    100% 100%,
+    100% 100%;
 }
 
 ::selection {
-  background: rgba(232, 167, 111, 0.4);
-  color: #fff;
+  background: rgb(var(--ember) / 0.22);
+  color: rgb(var(--ink));
 }
 
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0c1110;
+  background: rgb(var(--canvas));
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #243029;
-  border-radius: 4px;
+  background: rgb(var(--scroll-thumb));
+  border: 2px solid rgb(var(--canvas));
+  border-radius: 6px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #e8a76f;
+  background: rgb(var(--ember));
+}
+
+/* ── Theme switch animation ───────────────────────────────────────────────────
+ * Where the View Transitions API exists, ThemeToggle reveals the new theme as a
+ * circle growing out of the button; it animates ::view-transition-new(root)
+ * itself, so the browser's default cross-fade is switched off here.
+ * Elsewhere the colours simply ease across, via a class held on <html> for the
+ * length of the switch  only for that long, so it never slows down the
+ * hover transitions on cards and buttons. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+html.theme-fading *,
+html.theme-fading *::before,
+html.theme-fading *::after {
+  transition:
+    background-color 0.35s ease,
+    border-color 0.35s ease,
+    color 0.35s ease,
+    fill 0.35s ease,
+    box-shadow 0.35s ease !important;
 }
 
 /* Nothing on this page scrolls sideways, and on a phone a moment of horizontal
  * overflow is not a moment: the browser widens the layout viewport to fit it
  * and never narrows it again. Every section then renders at screen width
- * inside a wider page — content pinned to the left, a dead strip down the
+ * inside a wider page  content pinned to the left, a dead strip down the
  * right, on every section at once. The timeline reveal below was doing exactly
  * that (measured: a 390px viewport laying out a 457px page), so clip at the
  * root rather than trust that no future entry animation ever crosses the edge.
@@ -55,7 +197,7 @@
  * `clip` in preference to `hidden`: `hidden` turns the root into a scroll
  * container, which breaks `position: sticky` descendants. `hidden` is left in
  * front of it as the fallback for browsers without `overflow: clip`.
- * Declaring only overflow-x is safe here — when the other axis is `visible`,
+ * Declaring only overflow-x is safe here  when the other axis is `visible`,
  * neither value is forced to `auto`, so the page still scrolls vertically. */
 html,
 body {
@@ -65,13 +207,34 @@ body {
 }
 
 /* timeline center line + library overrides */
+/* A 2px rail instead of the library's 4px. The library positions the rail by
+ * its left edge, so halving the width means nudging it 1px right to stay
+ * centred under the icons: on the single-column layouts from its own `left`, on
+ * the two-column desktop layout from its `margin-left: -2px`. */
 .vertical-timeline::before {
-  background: rgba(255, 255, 255, 0.08) !important;
+  background: rgb(var(--line)) !important;
+  width: 2px !important;
+  margin-left: 1px !important;
+}
+
+@media only screen and (min-width: 1170px) {
+  .vertical-timeline.vertical-timeline--two-columns::before {
+    margin-left: -1px !important;
+  }
+}
+
+/* The library dims the date to 70% and sets it in its own weight. On the light
+ * ground that took it under 4.5:1, so it gets a real colour instead. On desktop
+ * it sits beside the card on the page; below 1170px it is inside the card. */
+.vertical-timeline-element-date {
+  color: rgb(var(--ink-muted));
+  opacity: 1 !important;
+  font-weight: 600 !important;
 }
 
 /* react-vertical-timeline-component reveals each card with `cd-bounce-2-inverse`,
  * and its own `@media (max-width: 1169px)` rule routes EVERY mobile viewport
- * through that keyframe — which starts the card at `translateX(100px)`. A
+ * through that keyframe  which starts the card at `translateX(100px)`. A
  * hundred pixels past the right edge of a 390px screen is what widened the
  * layout viewport site-wide (see the clip above). Swapping the keyframe for a
  * vertical one fixes the cause rather than only hiding it, and matches how the
@@ -98,7 +261,7 @@ body {
 
 /* The library's mobile layout spends 60px of left margin on the rail plus 5%
  * of the width on nothing, which on a 320px screen left the bullets about
- * 146px of text — three or four words a line. The rail is worth keeping, so
+ * 146px of text  three or four words a line. The rail is worth keeping, so
  * this shrinks it instead: a 32px icon (40px including its 4px ring) centred
  * on a line moved to left:14px, and the freed ~26px handed back to the
  * reading column along with the 5%. Capped at 767px rather than the library's
@@ -126,18 +289,14 @@ body {
 }
 
 .vertical-timeline-element-date {
-  font-family: "JetBrains Mono", monospace !important;
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif !important;
+  letter-spacing: -0.005em;
 }
 
 .hash-span {
   margin-top: -100px;
   padding-bottom: 100px;
   display: block;
-}
-
-.black-gradient {
-  background: #0e1413;
-  background: linear-gradient(to right, #1a2421, #0e1413);
 }
 
 /* canvas- styles */
@@ -155,84 +314,99 @@ body {
 @keyframes mulShdSpin {
   0%,
   100% {
-    box-shadow: 0em -2.6em 0em 0em #ffffff,
-      1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2),
-      2.5em 0em 0 0em rgba(255, 255, 255, 0.2),
-      1.75em 1.75em 0 0em rgba(255, 255, 255, 0.2),
-      0em 2.5em 0 0em rgba(255, 255, 255, 0.2),
-      -1.8em 1.8em 0 0em rgba(255, 255, 255, 0.2),
-      -2.6em 0em 0 0em rgba(255, 255, 255, 0.5),
-      -1.8em -1.8em 0 0em rgba(255, 255, 255, 0.7);
+    box-shadow:
+      0em -2.6em 0em 0em rgb(var(--ink)),
+      1.8em -1.8em 0 0em rgb(var(--ink) / 0.2),
+      2.5em 0em 0 0em rgb(var(--ink) / 0.2),
+      1.75em 1.75em 0 0em rgb(var(--ink) / 0.2),
+      0em 2.5em 0 0em rgb(var(--ink) / 0.2),
+      -1.8em 1.8em 0 0em rgb(var(--ink) / 0.2),
+      -2.6em 0em 0 0em rgb(var(--ink) / 0.5),
+      -1.8em -1.8em 0 0em rgb(var(--ink) / 0.7);
   }
   12.5% {
-    box-shadow: 0em -2.6em 0em 0em rgba(255, 255, 255, 0.7),
-      1.8em -1.8em 0 0em #ffffff, 2.5em 0em 0 0em rgba(255, 255, 255, 0.2),
-      1.75em 1.75em 0 0em rgba(255, 255, 255, 0.2),
-      0em 2.5em 0 0em rgba(255, 255, 255, 0.2),
-      -1.8em 1.8em 0 0em rgba(255, 255, 255, 0.2),
-      -2.6em 0em 0 0em rgba(255, 255, 255, 0.2),
-      -1.8em -1.8em 0 0em rgba(255, 255, 255, 0.5);
+    box-shadow:
+      0em -2.6em 0em 0em rgb(var(--ink) / 0.7),
+      1.8em -1.8em 0 0em rgb(var(--ink)),
+      2.5em 0em 0 0em rgb(var(--ink) / 0.2),
+      1.75em 1.75em 0 0em rgb(var(--ink) / 0.2),
+      0em 2.5em 0 0em rgb(var(--ink) / 0.2),
+      -1.8em 1.8em 0 0em rgb(var(--ink) / 0.2),
+      -2.6em 0em 0 0em rgb(var(--ink) / 0.2),
+      -1.8em -1.8em 0 0em rgb(var(--ink) / 0.5);
   }
   25% {
-    box-shadow: 0em -2.6em 0em 0em rgba(255, 255, 255, 0.5),
-      1.8em -1.8em 0 0em rgba(255, 255, 255, 0.7), 2.5em 0em 0 0em #ffffff,
-      1.75em 1.75em 0 0em rgba(255, 255, 255, 0.2),
-      0em 2.5em 0 0em rgba(255, 255, 255, 0.2),
-      -1.8em 1.8em 0 0em rgba(255, 255, 255, 0.2),
-      -2.6em 0em 0 0em rgba(255, 255, 255, 0.2),
-      -1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2);
+    box-shadow:
+      0em -2.6em 0em 0em rgb(var(--ink) / 0.5),
+      1.8em -1.8em 0 0em rgb(var(--ink) / 0.7),
+      2.5em 0em 0 0em rgb(var(--ink)),
+      1.75em 1.75em 0 0em rgb(var(--ink) / 0.2),
+      0em 2.5em 0 0em rgb(var(--ink) / 0.2),
+      -1.8em 1.8em 0 0em rgb(var(--ink) / 0.2),
+      -2.6em 0em 0 0em rgb(var(--ink) / 0.2),
+      -1.8em -1.8em 0 0em rgb(var(--ink) / 0.2);
   }
   37.5% {
-    box-shadow: 0em -2.6em 0em 0em rgba(255, 255, 255, 0.2),
-      1.8em -1.8em 0 0em rgba(255, 255, 255, 0.5),
-      2.5em 0em 0 0em rgba(255, 255, 255, 0.7), 1.75em 1.75em 0 0em #ffffff,
-      0em 2.5em 0 0em rgba(255, 255, 255, 0.2),
-      -1.8em 1.8em 0 0em rgba(255, 255, 255, 0.2),
-      -2.6em 0em 0 0em rgba(255, 255, 255, 0.2),
-      -1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2);
+    box-shadow:
+      0em -2.6em 0em 0em rgb(var(--ink) / 0.2),
+      1.8em -1.8em 0 0em rgb(var(--ink) / 0.5),
+      2.5em 0em 0 0em rgb(var(--ink) / 0.7),
+      1.75em 1.75em 0 0em rgb(var(--ink)),
+      0em 2.5em 0 0em rgb(var(--ink) / 0.2),
+      -1.8em 1.8em 0 0em rgb(var(--ink) / 0.2),
+      -2.6em 0em 0 0em rgb(var(--ink) / 0.2),
+      -1.8em -1.8em 0 0em rgb(var(--ink) / 0.2);
   }
   50% {
-    box-shadow: 0em -2.6em 0em 0em rgba(255, 255, 255, 0.2),
-      1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2),
-      2.5em 0em 0 0em rgba(255, 255, 255, 0.5),
-      1.75em 1.75em 0 0em rgba(255, 255, 255, 0.7), 0em 2.5em 0 0em #ffffff,
-      -1.8em 1.8em 0 0em rgba(255, 255, 255, 0.2),
-      -2.6em 0em 0 0em rgba(255, 255, 255, 0.2),
-      -1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2);
+    box-shadow:
+      0em -2.6em 0em 0em rgb(var(--ink) / 0.2),
+      1.8em -1.8em 0 0em rgb(var(--ink) / 0.2),
+      2.5em 0em 0 0em rgb(var(--ink) / 0.5),
+      1.75em 1.75em 0 0em rgb(var(--ink) / 0.7),
+      0em 2.5em 0 0em rgb(var(--ink)),
+      -1.8em 1.8em 0 0em rgb(var(--ink) / 0.2),
+      -2.6em 0em 0 0em rgb(var(--ink) / 0.2),
+      -1.8em -1.8em 0 0em rgb(var(--ink) / 0.2);
   }
   62.5% {
-    box-shadow: 0em -2.6em 0em 0em rgba(255, 255, 255, 0.2),
-      1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2),
-      2.5em 0em 0 0em rgba(255, 255, 255, 0.2),
-      1.75em 1.75em 0 0em rgba(255, 255, 255, 0.5),
-      0em 2.5em 0 0em rgba(255, 255, 255, 0.7), -1.8em 1.8em 0 0em #ffffff,
-      -2.6em 0em 0 0em rgba(255, 255, 255, 0.2),
-      -1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2);
+    box-shadow:
+      0em -2.6em 0em 0em rgb(var(--ink) / 0.2),
+      1.8em -1.8em 0 0em rgb(var(--ink) / 0.2),
+      2.5em 0em 0 0em rgb(var(--ink) / 0.2),
+      1.75em 1.75em 0 0em rgb(var(--ink) / 0.5),
+      0em 2.5em 0 0em rgb(var(--ink) / 0.7),
+      -1.8em 1.8em 0 0em rgb(var(--ink)),
+      -2.6em 0em 0 0em rgb(var(--ink) / 0.2),
+      -1.8em -1.8em 0 0em rgb(var(--ink) / 0.2);
   }
   75% {
-    box-shadow: 0em -2.6em 0em 0em rgba(255, 255, 255, 0.2),
-      1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2),
-      2.5em 0em 0 0em rgba(255, 255, 255, 0.2),
-      1.75em 1.75em 0 0em rgba(255, 255, 255, 0.2),
-      0em 2.5em 0 0em rgba(255, 255, 255, 0.5),
-      -1.8em 1.8em 0 0em rgba(255, 255, 255, 0.7), -2.6em 0em 0 0em #ffffff,
-      -1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2);
+    box-shadow:
+      0em -2.6em 0em 0em rgb(var(--ink) / 0.2),
+      1.8em -1.8em 0 0em rgb(var(--ink) / 0.2),
+      2.5em 0em 0 0em rgb(var(--ink) / 0.2),
+      1.75em 1.75em 0 0em rgb(var(--ink) / 0.2),
+      0em 2.5em 0 0em rgb(var(--ink) / 0.5),
+      -1.8em 1.8em 0 0em rgb(var(--ink) / 0.7),
+      -2.6em 0em 0 0em rgb(var(--ink)),
+      -1.8em -1.8em 0 0em rgb(var(--ink) / 0.2);
   }
   87.5% {
-    box-shadow: 0em -2.6em 0em 0em rgba(255, 255, 255, 0.2),
-      1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2),
-      2.5em 0em 0 0em rgba(255, 255, 255, 0.2),
-      1.75em 1.75em 0 0em rgba(255, 255, 255, 0.2),
-      0em 2.5em 0 0em rgba(255, 255, 255, 0.2),
-      -1.8em 1.8em 0 0em rgba(255, 255, 255, 0.5),
-      -2.6em 0em 0 0em rgba(255, 255, 255, 0.7), -1.8em -1.8em 0 0em #ffffff;
+    box-shadow:
+      0em -2.6em 0em 0em rgb(var(--ink) / 0.2),
+      1.8em -1.8em 0 0em rgb(var(--ink) / 0.2),
+      2.5em 0em 0 0em rgb(var(--ink) / 0.2),
+      1.75em 1.75em 0 0em rgb(var(--ink) / 0.2),
+      0em 2.5em 0 0em rgb(var(--ink) / 0.2),
+      -1.8em 1.8em 0 0em rgb(var(--ink) / 0.5),
+      -2.6em 0em 0 0em rgb(var(--ink) / 0.7),
+      -1.8em -1.8em 0 0em rgb(var(--ink));
   }
 }
 
 /* Visitors who have asked their OS to reduce motion.
  *
  * Most of this page's animation is framer-motion, which is handled in JS by
- * <MotionConfig reducedMotion="user"> in App.jsx — that drops transform and
+ * <MotionConfig reducedMotion="user"> in App.jsx  that drops transform and
  * layout animations while keeping opacity fades. The continuous ones it does
  * not own (hero typewriter, rotating starfield, auto-rotating globe) are
  * switched off at their own components via utils/useReducedMotion.
@@ -248,9 +422,10 @@ body {
   }
 
   /* Hover lifts on the project and client cards are a response to the pointer
-   * rather than unprompted motion, but they still travel — settle for the
+   * rather than unprompted motion, but they still travel  settle for the
    * colour change alone. */
-  .hover\:-translate-y-2:hover {
+  .hover\:-translate-y-2:hover,
+  .hover\:-translate-y-1:hover {
     transform: none !important;
   }
 
@@ -264,5 +439,5 @@ body {
 }
 
 /* Note: .canvas-loader keeps spinning even under reduce-motion. It is a
- * progress indicator — it only exists while the 3D model is downloading, and a
+ * progress indicator  it only exists while the 3D model is downloading, and a
  * frozen spinner reads as a hung page rather than a considerate one. */

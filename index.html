@@ -1,19 +1,22 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="google-site-verification" content="zSKd-3OoNq8LpOfowCUK_aEwd96PKbg2cu_3QAT9hEU" />
+    <meta
+      name="google-site-verification"
+      content="zSKd-3OoNq8LpOfowCUK_aEwd96PKbg2cu_3QAT9hEU"
+    />
     <meta
       name="description"
-      content="Adnan Yousaf — Full Stack Developer. I build the web applications businesses depend on: online stores, dashboards, booking systems and AI chatbots — from startup products to platforms used by the UN, WHO and national regulators. React, Next.js, Node, MongoDB, Stripe & AI integrations."
+      content="Adnan Yousaf  Full Stack Developer. I build the web applications businesses depend on: online stores, dashboards, booking systems and AI chatbots  from startup products to platforms used by the UN, WHO and national regulators. React, Next.js, Node, MongoDB, Stripe & AI integrations."
     />
     <title>Adnan Yousaf | Full Stack Developer</title>
     <link rel="canonical" href="https://ay-3d-portfolio.netlify.app/" />
 
     <!--
-      Link previews. og:image and og:url must be absolute — relative paths are
+      Link previews. og:image and og:url must be absolute  relative paths are
       resolved inconsistently and LinkedIn rejects them outright, which is why
       shared links used to preview as a bare URL with no card.
 
@@ -27,28 +30,58 @@
     <meta property="og:title" content="Adnan Yousaf | Full Stack Developer" />
     <meta
       property="og:description"
-      content="React, Next.js, Node and AI integrations — from e-commerce and dashboards to platforms used by the UN, WHO and national regulators."
+      content="React, Next.js, Node and AI integrations  from e-commerce and dashboards to platforms used by the UN, WHO and national regulators."
     />
-    <meta property="og:image" content="https://ay-3d-portfolio.netlify.app/og.png" />
+    <meta
+      property="og:image"
+      content="https://ay-3d-portfolio.netlify.app/og.png"
+    />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta
       property="og:image:alt"
-      content="Adnan Yousaf, Full Stack Developer — React, Next.js, Node and AI integrations."
+      content="Adnan Yousaf, Full Stack Developer  React, Next.js, Node and AI integrations."
     />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Adnan Yousaf | Full Stack Developer" />
     <meta
       name="twitter:description"
-      content="React, Next.js, Node and AI integrations — from e-commerce and dashboards to platforms used by the UN, WHO and national regulators."
+      content="React, Next.js, Node and AI integrations  from e-commerce and dashboards to platforms used by the UN, WHO and national regulators."
     />
-    <meta name="twitter:image" content="https://ay-3d-portfolio.netlify.app/og.png" />
-    <!-- Critical: guarantees the first paint is the dark theme, never a white flash. -->
+    <meta
+      name="twitter:image"
+      content="https://ay-3d-portfolio.netlify.app/og.png"
+    />
+    <meta name="theme-color" content="#f7f5f0" />
+    <!--
+      Theme, before first paint. A visitor who picked the dark theme (the
+      switch on the right edge, see ThemeToggle.jsx) gets data-theme="dark" on
+      <html> here, synchronously, so the page never flashes light while the CSS
+      and React load. Key and values must match src/utils/theme.js. Light is the
+      default; the OS dark-mode preference is deliberately not followed.
+    -->
+    <script>
+      try {
+        if (localStorage.getItem("theme") === "dark") {
+          document.documentElement.dataset.theme = "dark";
+          document.querySelector('meta[name="theme-color"]').content =
+            "#0c1110";
+        }
+      } catch (e) {}
+    </script>
+    <!-- Critical: the first paint is the page's own canvas colour, never a
+         flash of pure white or of the browser's default. Mirrors --canvas. -->
     <style>
       html,
       body {
+        background-color: #f7f5f0;
+        color-scheme: light;
+      }
+      html[data-theme="dark"],
+      html[data-theme="dark"] body {
         background-color: #0c1110;
+        color-scheme: dark;
       }
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -56,17 +89,17 @@
     <link
       rel="preload"
       as="style"
-      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,700..800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400..800&family=JetBrains+Mono:wght@400;500;600&display=swap"
     />
     <link
-      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,700..800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400..800&family=JetBrains+Mono:wght@400;500;600&display=swap"
       rel="stylesheet"
       media="print"
-      onload="this.media='all'"
+      onload="this.media = 'all'"
     />
     <noscript>
       <link
-        href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,700..800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400..800&family=JetBrains+Mono:wght@400;500;600&display=swap"
         rel="stylesheet"
       />
     </noscript>
@@ -75,41 +108,81 @@
     <!--
       Static shell: mirrors the initial render of src/components/Hero.jsx so the page
       paints before React loads (LCP). If the hero layout OR COPY changes, update this
-      too — the intro paragraph below is duplicated in Hero.jsx and a mismatch makes
+      too  the intro paragraph below is duplicated in Hero.jsx and a mismatch makes
       the text visibly swap the moment React mounts.
       React replaces this entire subtree on mount via createRoot().render().
     -->
     <div id="root">
-      <div class="relative z-0 bg-primary">
+      <div class="relative z-0 bg-canvas">
         <main>
           <div class="dot-grid">
-            <section class="relative w-full min-h-screen mx-auto flex items-center">
-              <div class="max-w-7xl mx-auto sm:px-16 px-6 w-full flex lg:flex-row flex-col items-center lg:gap-16 gap-12 pt-32 pb-20">
+            <section
+              class="relative isolate w-full min-h-screen mx-auto flex items-center"
+            >
+              <div
+                class="relative z-10 max-w-7xl mx-auto sm:px-16 px-6 w-full flex lg:flex-row flex-col items-center lg:gap-16 gap-12 pt-32 pb-20"
+              >
                 <div class="flex-1">
-                  <p class="font-mono text-mint sm:text-[16px] text-[13px] tracking-wide"><span class="text-secondary">// </span>Full Stack Developer</p>
-                  <h1 class="font-heading font-extrabold text-white lg:text-[76px] md:text-[60px] sm:text-[48px] text-[38px] leading-[1.05] mt-6">Adnan<br /><span class="text-peach">Yousaf.</span></h1>
-                  <p class="text-secondary font-normal lg:text-[19px] sm:text-[17px] text-[15px] lg:leading-[34px] mt-8 max-w-xl">Every project starts with two questions: what does the business need, and what do its users actually want? Then I build it — high-performance e-commerce, real-time dashboards, enterprise-grade platforms and AI-powered features — using AI in my own workflow to move faster.</p>
+                  <p
+                    class="inline-flex items-center gap-2.5 rounded-full border border-line bg-surface/80 shadow-card pl-3 pr-4 py-1.5 font-mono font-medium text-pine sm:text-[14px] text-[13px]"
+                  >
+                    <span class="w-2 h-2 rounded-full bg-pine"></span
+                    ><span class="inline-block min-w-[23ch]"
+                      ><span class="text-ink-muted">// </span>Full Stack
+                      Developer</span
+                    >
+                  </p>
+                  <h1
+                    class="font-heading font-extrabold text-ink lg:text-[80px] md:text-[64px] sm:text-[52px] text-[42px] leading-[1.02] tracking-[-0.035em] mt-2 mt-6"
+                  >
+                    Adnan<br /><span class="text-ember">Yousaf.</span>
+                  </h1>
+                  <p
+                    class="text-ink-body lg:text-[19px] sm:text-[18px] text-[16px] leading-[1.7] mt-8 max-w-xl"
+                  >
+                    Every project starts with two questions: what does the
+                    business need, and what do its users actually want? Then I
+                    build it high-performance e-commerce, real-time dashboards,
+                    enterprise-grade platforms and AI-powered features using AI
+                    in my own workflow to move faster.
+                  </p>
                   <div class="mt-10 flex flex-wrap gap-4">
-                    <a href="#project" class="bg-peach text-primary font-semibold py-3.5 sm:px-8 px-6 rounded-full">View my work</a>
-                    <a href="#contact" class="border border-white/20 text-white font-medium py-3.5 sm:px-8 px-6 rounded-full">Get in touch</a>
+                    <a
+                      href="#project"
+                      class="font-heading bg-ember text-canvas text-[15px] font-bold py-3.5 sm:px-8 px-6 rounded-full shadow-[0_8px_20px_-8px_rgba(176,74,20,0.6)]"
+                      >View my work</a
+                    >
+                    <a
+                      href="#contact"
+                      class="font-heading bg-surface border border-line-strong text-ink text-[15px] font-bold py-3.5 sm:px-8 px-6 rounded-full"
+                      >Get in touch</a
+                    >
                   </div>
                 </div>
                 <div class="flex-1 w-full max-w-[560px]">
-                  <div class="rounded-2xl border border-white/10 bg-black-100 shadow-card overflow-hidden w-full">
-                    <div class="flex items-center gap-2 px-5 py-3.5 border-b border-white/10 bg-white/[0.02]">
+                  <div
+                    class="rounded-2xl border border-ink/10 bg-code-bg shadow-float overflow-hidden w-full"
+                  >
+                    <div
+                      class="flex items-center gap-2 px-5 py-3.5 border-b border-white/10 bg-code-bar"
+                    >
                       <span class="w-3 h-3 rounded-full bg-[#ff5f57]"></span>
                       <span class="w-3 h-3 rounded-full bg-[#febc2e]"></span>
                       <span class="w-3 h-3 rounded-full bg-[#28c840]"></span>
-                      <span class="ml-3 font-mono text-[13px] text-secondary">db.developers.findOne()</span>
+                      <span class="ml-3 font-mono text-[13px] text-code-text"
+                        >db.developers.findOne()</span
+                      >
                     </div>
-                    <pre class="sm:p-6 p-4 font-mono sm:text-[15px] text-[12px] leading-7 overflow-x-auto text-secondary"><code>{
-  <span class="text-white-100">"_id"</span>: <span class="text-peach">"dev_adnan"</span>,
-  <span class="text-white-100">"role"</span>: <span class="text-peach">"Full Stack Developer"</span>,
-  <span class="text-white-100">"experience"</span>: <span class="text-peach">"3+ years"</span>,
-  <span class="text-white-100">"stack"</span>: [<span class="text-peach">"Mongo"</span>, <span class="text-peach">"Express"</span>, <span class="text-peach">"React"</span>, <span class="text-peach">"Node"</span>],
-  <span class="text-white-100">"ai_chatbots"</span>: <span class="text-mint">true</span>,
-  <span class="text-white-100">"open_to_work"</span>: <span class="text-mint">true</span>,
-  <span class="text-white-100">"coffee_consumed"</span>: <span class="text-[#a78bfa]">Infinity</span>
+                    <pre
+                      class="sm:p-6 p-4 font-mono sm:text-[15px] text-[12px] leading-7 overflow-x-auto text-code-text"
+                    ><code>{
+  <span class="text-code-key">"_id"</span>: <span class="text-code-string">"dev_adnan"</span>,
+  <span class="text-code-key">"role"</span>: <span class="text-code-string">"Full Stack Developer"</span>,
+  <span class="text-code-key">"experience"</span>: <span class="text-code-string">"3+ years"</span>,
+  <span class="text-code-key">"stack"</span>: [<span class="text-code-string">"Mongo"</span>, <span class="text-code-string">"Express"</span>, <span class="text-code-string">"React"</span>, <span class="text-code-string">"Node"</span>],
+  <span class="text-code-key">"ai_chatbots"</span>: <span class="text-code-bool">true</span>,
+  <span class="text-code-key">"open_to_work"</span>: <span class="text-code-bool">true</span>,
+  <span class="text-code-key">"coffee_consumed"</span>: <span class="text-code-num">Infinity</span>
 }</code></pre>
                   </div>
                 </div>

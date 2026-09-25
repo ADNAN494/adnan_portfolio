@@ -8,7 +8,7 @@ import { MockIntersectionObserver } from "./mocks";
 // that took the whole page down twice already: anything thrown out of the
 // canvas tree used to unmount <App> rather than degrade. Here WebGL is
 // unavailable (see test/setup.js), which is the same code path as a browser
-// Chrome has blocked — the page must still render every section.
+// Chrome has blocked  the page must still render every section.
 describe("App", () => {
   it("renders the whole page without WebGL", () => {
     const { container } = render(<App />);
@@ -23,7 +23,13 @@ describe("App", () => {
   it("renders every nav link and its target section", () => {
     render(<App />);
 
-    for (const title of ["About", "Skills", "Experience", "Projects", "Contact"]) {
+    for (const title of [
+      "About",
+      "Skills",
+      "Experience",
+      "Projects",
+      "Contact",
+    ]) {
       expect(screen.getAllByText(title).length).toBeGreaterThan(0);
     }
 
@@ -49,10 +55,10 @@ describe("App", () => {
     // active-link band and framer-motion's whileInView all at once. Nothing
     // here may throw, even though no canvas can be created.
     expect(() =>
-      act(() => MockIntersectionObserver.triggerAll(true))
+      act(() => MockIntersectionObserver.triggerAll(true)),
     ).not.toThrow();
     expect(() =>
-      act(() => MockIntersectionObserver.triggerAll(false))
+      act(() => MockIntersectionObserver.triggerAll(false)),
     ).not.toThrow();
   });
 });
