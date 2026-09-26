@@ -234,8 +234,9 @@ html.theme-fading *::after {
  * overflow is not a moment: the browser widens the layout viewport to fit it
  * and never narrows it again. Every section then renders at screen width
  * inside a wider page  content pinned to the left, a dead strip down the
- * right, on every section at once. The timeline reveal below was doing exactly
- * that (measured: a 390px viewport laying out a 457px page), so clip at the
+ * right, on every section at once. The old Experience timeline's card reveal
+ * did exactly that (measured: a 390px viewport laying out a 457px page), so
+ * clip at the
  * root rather than trust that no future entry animation ever crosses the edge.
  *
  * `clip` in preference to `hidden`: `hidden` turns the root into a scroll
@@ -248,93 +249,6 @@ body {
   max-width: 100%;
   overflow-x: hidden;
   overflow-x: clip;
-}
-
-/* timeline center line + library overrides */
-/* A 2px rail instead of the library's 4px. The library positions the rail by
- * its left edge, so halving the width means nudging it 1px right to stay
- * centred under the icons: on the single-column layouts from its own `left`, on
- * the two-column desktop layout from its `margin-left: -2px`. */
-.vertical-timeline::before {
-  background: rgb(var(--line)) !important;
-  width: 2px !important;
-  margin-left: 1px !important;
-}
-
-@media only screen and (min-width: 1170px) {
-  .vertical-timeline.vertical-timeline--two-columns::before {
-    margin-left: -1px !important;
-  }
-}
-
-/* The library dims the date to 70% and sets it in its own weight. On the light
- * ground that took it under 4.5:1, so it gets a real colour instead. On desktop
- * it sits beside the card on the page; below 1170px it is inside the card. */
-.vertical-timeline-element-date {
-  color: rgb(var(--ink-muted));
-  opacity: 1 !important;
-  font-weight: 600 !important;
-}
-
-/* react-vertical-timeline-component reveals each card with `cd-bounce-2-inverse`,
- * and its own `@media (max-width: 1169px)` rule routes EVERY mobile viewport
- * through that keyframe  which starts the card at `translateX(100px)`. A
- * hundred pixels past the right edge of a 390px screen is what widened the
- * layout viewport site-wide (see the clip above). Swapping the keyframe for a
- * vertical one fixes the cause rather than only hiding it, and matches how the
- * rest of the page arrives (framer-motion's `fadeIn("up")`).
- *
- * Overriding `animation-name` alone keeps the library's own duration and
- * timing, so only the direction of travel changes. */
-@media only screen and (max-width: 1169px) {
-  .vertical-timeline--animate .vertical-timeline-element-content.bounce-in {
-    animation-name: cd-bounce-2-up;
-  }
-}
-
-@keyframes cd-bounce-2-up {
-  0% {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* The library's mobile layout spends 60px of left margin on the rail plus 5%
- * of the width on nothing, which on a 320px screen left the bullets about
- * 146px of text  three or four words a line. The rail is worth keeping, so
- * this shrinks it instead: a 32px icon (40px including its 4px ring) centred
- * on a line moved to left:14px, and the freed ~26px handed back to the
- * reading column along with the 5%. Capped at 767px rather than the library's
- * own 1169px breakpoint: a tablet has width to spare, so it keeps the full-size
- * rail, and the two-column desktop layout is untouched either way. */
-@media only screen and (max-width: 767px) {
-  .vertical-timeline {
-    width: 100%;
-    padding: 1em 0;
-  }
-
-  .vertical-timeline::before {
-    left: 14px;
-  }
-
-  .vertical-timeline-element-icon {
-    width: 32px;
-    height: 32px;
-  }
-
-  .vertical-timeline-element-content {
-    margin-left: 48px;
-    padding: 1.25em 1.15em;
-  }
-}
-
-.vertical-timeline-element-date {
-  font-family: "Plus Jakarta Sans", system-ui, sans-serif !important;
-  letter-spacing: -0.005em;
 }
 
 .hash-span {
@@ -471,14 +385,6 @@ body {
   .hover\:-translate-y-2:hover,
   .hover\:-translate-y-1:hover {
     transform: none !important;
-  }
-
-  /* The timeline's card reveal is the library's own CSS animation, so
-   * <MotionConfig reducedMotion="user"> never sees it. Drop the travel and
-   * leave the card where it lands. */
-  .vertical-timeline--animate .vertical-timeline-element-content.bounce-in,
-  .vertical-timeline--animate .vertical-timeline-element-icon.bounce-in {
-    animation: none !important;
   }
 }
 

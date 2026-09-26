@@ -8,6 +8,50 @@ fix · **P3** polish.
 
 ---
 
+## Done 2026-09-26
+
+### [x] Experience section redesigned as a role switcher (P2)
+
+The two-column timeline ran **4,071px at 1440** and **5,754px at 390**: three
+roles with eight long bullets each, and on desktop every card left half the
+width empty. It is now a tab list of roles and one panel for the selected role.
+
+| Width | Before  | After   |
+| ----- | ------- | ------- |
+| 1440  | 4,071px | 1,091px |
+| 1024  | 2,828px | 1,190px |
+| 768   | 3,509px | 1,277px |
+| 390   | 5,754px | 1,531px |
+| 320   | 7,989px | 1,912px |
+
+- **Tabs.** Logo, company, role and years in a column beside the panel from
+  1024px. Below that, a row of logo tabs with the years (and company names from
+  640px). An ember indicator with the social rail's glow slides between tabs
+  (`layoutId`). Arrow keys, Home and End work (WAI-ARIA tabs). On desktop the
+  list stays in view (sticky) while a long panel scrolls.
+- **Panel.** Dates, title, company link, summary, the first **4** highlights
+  with "Show all 8 highlights", and the tech chips. A faint start year sits
+  behind the heading (≥640px), and the card has a lit ember top edge. Switching
+  roles crossfades and the card eases to the new role's height.
+- **Same entrance.** The old library's keyframes are rebuilt as `popIn` and
+  `bounceIn` in `utils/motion.js`: logos pop (0.5 → 1.2 → 1), tabs slide from
+  the left, and the panel slides from the right with the 20px overshoot. On
+  phones the panel rises instead. Measured in Chrome, the panel goes 100 → 23 →
+  −8 → **−20** → −1 → 0px.
+- **Removed:** `react-vertical-timeline-component` (dependency, its CSS import
+  and ~85 lines of overrides in `index.css`).
+- **Bug found in review:** DevTools device mode left the panel stuck 100px to
+  the right and cut off, and it stayed stuck after going back to desktop. The
+  entrance direction tracked the live breakpoint, and swapping framer-motion
+  variants after the entrance reset the axis the new variant didn't mention.
+  The direction is now fixed at mount, and every `bounceIn` variant sets both
+  axes. See the rule in ARCHITECTURE §6.
+- **Verified:** tests 33/33 (5 new in `Experience.test.jsx`). In Chrome at
+  320/390/768/1024/1440, both themes: no horizontal overflow, and the panel's
+  transform is `none` after resizing 1440 ↔ 390/768/1024/375.
+
+---
+
 ## Done 2026-09-25
 
 ### [x] Ember glow on the social links (P3)

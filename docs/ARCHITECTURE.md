@@ -13,11 +13,10 @@ job is a data edit, not a component edit.
 | Layer             | Choice                                                                                                  |
 | ----------------- | ------------------------------------------------------------------------------------------------------- |
 | Framework         | React 18, Vite 4 (`type: module`)                                                                       |
-| Styling           | Tailwind CSS 3 + PostCSS + Autoprefixer, plus `src/index.css` for fonts / dot-grid / timeline overrides |
+| Styling           | Tailwind CSS 3 + PostCSS + Autoprefixer, plus `src/index.css` for fonts / dot-grid / glow utilities      |
 | Shared type scale | `src/styles.js` (plain object of Tailwind class strings)                                                |
 | Animation         | Framer Motion 9 (scroll reveals, hero letter stagger), `react-simple-typewriter`                        |
 | 3D                | Three.js 0.149, `@react-three/fiber` 8, `@react-three/drei` 9, `maath` (star positions)                 |
-| Timeline          | `react-vertical-timeline-component`                                                                     |
 | Contact form      | `@emailjs/browser` (dynamically imported on submit)                                                     |
 
 Fonts: **Plus Jakarta Sans** (variable, 400–800) for everything a visitor
@@ -292,7 +291,7 @@ src/
 ├── main.jsx                 entry; deferred mount
 ├── App.jsx                  section composition
 ├── index.css                base colours, focus ring, .dot-grid hero ground, scrollbar,
-│                            timeline overrides, .canvas-loader
+│                            glow utilities, .canvas-loader
 ├── styles.js                shared type scale (hero, section heads, eyebrow, bodyText)
 ├── constants/index.js       ALL content: navLinks, stats, mernSkills, aiSkill,
 │                            paymentsSkill, extraTech, experiences, testimonials, projects
@@ -301,13 +300,14 @@ src/
 ├── utils/motion.js          fadeIn / slideIn / textVariant / staggerContainer
 ├── utils/webgl.js           WebGL probe ("ok" / "blocked" / "unsupported")
 ├── utils/theme.js           light/dark store: getTheme / setTheme / useTheme
+├── utils/useMediaQuery.js    live CSS media query match (see the §6 variants rule)
 └── components/
     ├── Navbar.jsx           scroll-aware nav, mobile drawer
     ├── ThemeToggle.jsx      floating light/dark switch, circle-reveal transition
     ├── SocialRail.jsx       fixed left-edge social links (md+), staged entrance
     ├── Hero.jsx             typewriter pill, letter-stagger name, dark code-window card
     ├── About.jsx            intro + stat cards + SocialIcons
-    ├── Experience.jsx       vertical timeline from `experiences`
+    ├── Experience.jsx       role switcher (tabs + one panel) from `experiences`
     ├── Tech.jsx             MERN cards + AI + payments + extraTech chips
     ├── Works.jsx            project cards from `projects`
     ├── Clients.jsx          organisation cards (replaced Feedbacks)
@@ -329,7 +329,7 @@ src/
 | ---------- | -------------------- | ----------------------------------------------------- |
 |            | Hero                 | inline                                                |
 | `#about`   | About + stats        | `stats`                                               |
-| `#work`    | Experience timeline  | `experiences`                                         |
+| `#work`    | Experience switcher  | `experiences`                                         |
 | `#skills`  | Skills / tech        | `mernSkills`, `aiSkill`, `paymentsSkill`, `extraTech` |
 | `#project` | Projects             | `projects`                                            |
 |            | Testimonials         | `testimonials`                                        |
@@ -385,6 +385,16 @@ Each entry in `experiences` carries `title`, `company_name`, `icon`, `iconBg`,
 - **`tech`** per-role stack chips, same treatment as the project-card tags, so
   the stack is scannable without reading every bullet.
 
+**How it renders.** `Experience.jsx` is a WAI-ARIA tab set, not a timeline.
+The roles sit in a tab list (a column beside the panel from `lg`, a row of logo
+tabs above it below `lg`), and one panel shows the selected role. Only the first
+`VISIBLE_POINTS` (4) `points` show until "Show all N highlights" is pressed, so
+**order `points` by strength**: the first four are the ones most visitors read.
+Every panel is rendered and stacked in one grid cell (crossfade in place). The
+cell is sized to the active panel by a `ResizeObserver` and eases only on a role
+switch. The entrance reproduces the old timeline's CSS keyframes
+(`popIn` / `bounceIn` in `utils/motion.js`).
+
 ### 5.4 Skills surfaced
 
 Three tiers of cards, then chips see `Tech.jsx`:
@@ -418,16 +428,13 @@ API, Bootstrap, MySQL, MSSQL, Firebase, Git & GitHub, Figma.
 - **Colour goes through tokens.** Use `text-ink*`, `bg-surface*`, `border-line*`,
   `ember`, `pine`, not hex values and not `text-white`. Text on an `ember` or
   `ink` fill is `text-canvas`, which is light on the light theme and dark on the
-  dark one. Where a library takes inline styles (the timeline), use
+  dark one. Where a library takes inline styles, use
   `rgb(var(--surface))` / `var(--shadow-card)` so the theme still applies. The
   one fixed-colour exception is the hero code window (`code.*`), dark in both
   themes. Body
   copy is `styles.bodyText`; headings are `font-heading`; in-section captions
   ("The core stack", "What I build") are `styles.label`. Anything that must be
   seen to be used takes `border-line-strong`, not `border-line`.
-- **Inside the timeline cards, use `div` rather than `p`.** The library styles
-  `.vertical-timeline-element-content p` (13px, weight 500, 1em top margin) at a
-  specificity a single Tailwind class can't beat.
 - New images: convert to **WebP** first (≤1200 px wide, quality 80), drop in
   `src/assets/`, export from `src/assets/index.js`. Don't commit the source
   PNG/JPG a raw full-page screenshot is 1–3 MB, the WebP is ~20–45 kB.
@@ -463,11 +470,13 @@ API, Bootstrap, MySQL, MSSQL, Firebase, Git & GitHub, Figma.
   `whitespace-nowrap` next to display type in a row that cannot wrap is the
   usual culprit see the `flex-wrap` on the `Clients.jsx` card header. Test at
   320 px, not at 390.
-- **`react-vertical-timeline-component` styles are overridden in `index.css`,
-  not forked.** Its mobile reveal (`cd-bounce-2-inverse`, which its own
-  `max-width: 1169px` rule applies to every phone and tablet) starts the card
-  100 px to the right; `index.css` swaps `animation-name` only, so the library
-  keeps its timing. The rail compaction below it is scoped to ≤767 px.
+- **Never derive a framer-motion variant from a live media query.** If the
+  variants change after the entrance has played, framer-motion applies the new
+  set, and any axis the new set doesn't mention goes back to its `hidden`
+  value. Swapping `bounceIn("right")` for `bounceIn("up")` on a resize past
+  1024px left the Experience panel stuck at `translateX(100px)`, cut off. Pick
+  the direction once at mount (`useState(isDesktop)`, as `Experience.jsx`
+  does), and keep both axes in every variant, as `bounceIn` does.
 
 ## 7. Commands
 
